@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.satya-eoa.invalid/v1/document.schema.json",
+  "title": "Document",
+  "description": "A document in a case (Portal spec §2.6.2). classified_type comes from body text / issuer, never heading, filename or uploader label (decision #15); when it differs from declared_type a suspected_anomaly.document_misclassified flag is raised.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["doc_id", "slot", "declared_type", "classified_type", "format_type", "sha256", "bytes", "page_count", "received_at", "signatures", "flag_count"],
+  "properties": {
+    "doc_id": { "$ref": "common.schema.json#/$defs/DocId" },
+    "slot": { "type": "string", "minLength": 1, "maxLength": 120, "description": "e.g. annex2.1(i) affidavit" },
+    "declared_type": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "classified_type": { "type": ["string", "null"], "maxLength": 120 },
+    "format_type": { "title": "FormatType", "type": "string", "enum": ["T", "E", "P"], "description": "T = AICTE template, E = external, P = portal data (design B)." },
+    "template_id": { "type": ["string", "null"], "maxLength": 120 },
+    "sha256": { "$ref": "common.schema.json#/$defs/Sha256" },
+    "bytes": { "type": "integer", "minimum": 0 },
+    "page_count": { "type": "integer", "minimum": 0 },
+    "received_at": { "$ref": "common.schema.json#/$defs/Timestamp" },
+    "signatures": { "type": "array", "items": { "$ref": "#/$defs/SignatureCheck" } },
+    "verification": { "$ref": "verification-result.schema.json" },
+    "flag_count": { "type": "integer", "minimum": 0 }
+  },
+  "$defs": {
+    "SignatureCheck": {
+      "title": "SignatureCheck",
+      "description": "One of the two independent signature checks (Portal spec §2.8, UI spec §4.3). An image-only mark is never verified (decision #16).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "state", "has_byte_range"],
+      "properties": {
+        "role": { "title": "SignatureRole", "type": "string", "enum": ["issuer", "uploader"] },
+        "state": {
+          "title": "SignatureState",
+          "type": "string",
+          "enum": ["verified", "image_only", "chain_broken", "edited_after_signing", "not_digital", "not_applicable", "present", "absent_required"]
+        },
+        "has_byte_range": { "type": "boolean", "description": "true only for a real CMS signature (/ByteRange)." },
+        "reason_code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{1,63}$" },
+        "page": { "type": "integer", "minimum": 1 },
+        "signer_role": { "type": "string", "enum": ["chairman", "secretary", "issuer", "unknown"] },
+        "trust_anchor_label": { "type": "string", "description": "Demo chain anchors are always 'TEST TRUST ANCHOR' (guard rail 10).", "maxLength": 64 }
+      },
+      "allOf": [
+        { "if": { "properties": { "role": { "const": "issuer" } } }, "then": { "properties": { "state": { "enum": ["verified", "image_only", "chain_broken", "edited_after_signing", "not_digital", "not_applicable"] } } } },
+        { "if": { "properties": { "role": { "const": "uploader" } } }, "then": { "properties": { "state": { "enum": ["present", "absent_required", "image_only"] } } } },
+        { "if": { "properties": { "state": { "const": "image_only" } } }, "then": { "properties": { "has_byte_range": { "const": false } } } }
+      ]
+    }
+  }
+}

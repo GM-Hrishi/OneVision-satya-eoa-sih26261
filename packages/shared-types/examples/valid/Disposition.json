@@ -1,0 +1,8 @@
+{
+  "action": "escalate_clarify",
+  "reason": "Land area in sworn table differs from the Application Report; ask the institution to clarify.",
+  "by_user_ref": "kc-sub-demo-rb-southern",
+  "by_role": "RB",
+  "at": "2026-12-14T12:01:00+05:30",
+  "ledger_no": 42
+}

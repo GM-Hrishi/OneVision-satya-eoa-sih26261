@@ -1,0 +1,39 @@
+{
+  "flag_id": "flg_01JB7Q9A000000000000000422",
+  "doc_id": "doc_01JB7Q9A000000000000000001",
+  "page": 4,
+  "regions": [
+    {
+      "x": 0.08,
+      "y": 0.41,
+      "w": 0.84,
+      "h": 0.12
+    }
+  ],
+  "rule_id": "LAND-AREA-RECON",
+  "rule_version": "0.1.0",
+  "rule_text_key": "affidavit.land_area_differs",
+  "aph_edition": "2024-27",
+  "extracted_value": 11.5,
+  "expected_value": 12.5,
+  "value_unit": "acre",
+  "delta": -1.0,
+  "extracted_source": {
+    "doc_label": "Affidavit 2 (sworn copy)",
+    "page": 4,
+    "row": "Total"
+  },
+  "expected_source": {
+    "label": "Application Report: land.total_area"
+  },
+  "confidence": 0.93,
+  "confidence_band": "high",
+  "label": "mismatch_detected",
+  "provenance": "satya",
+  "preliminary_indicator": true,
+  "severity": "warning",
+  "disposition": null,
+  "stage": "2",
+  "institution_visible": false,
+  "evidence_sha256": "3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f"
+}

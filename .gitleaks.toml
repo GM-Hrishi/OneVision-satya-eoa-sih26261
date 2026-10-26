@@ -1,0 +1,13 @@
+# gitleaks: default rules, plus an allow-list of the exact synthetic test values used in tests.
+# Never allow-list a path wholesale; add the specific synthetic string with a comment.
+title = "SATYA-EoA"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Synthetic, test-only values (never used outside unit tests)"
+regexes = [
+  '''synthetic-test-secret-not-used-anywhere-else-0001''',  # services/api/tests/conftest.py
+  '''another-synthetic-secret-value-0000000000''',          # services/api/tests/test_signature.py
+]

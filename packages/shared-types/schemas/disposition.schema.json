@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.satya-eoa.invalid/v1/disposition.schema.json",
+  "title": "Disposition",
+  "description": "An official's recorded decision on a flag (Portal spec §2.6.5; UI spec §4.2). No action changes regulatory status; undo is a new ledger entry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["action", "reason", "by_user_ref", "by_role", "at", "ledger_no"],
+  "properties": {
+    "action": { "title": "DispositionAction", "type": "string", "enum": ["accept", "override", "escalate_clarify", "escalate_refer", "escalate_manual"] },
+    "reason": { "type": "string", "minLength": 10, "maxLength": 4000 },
+    "reason_template_id": { "type": "string", "maxLength": 64 },
+    "by_user_ref": { "type": "string", "minLength": 1, "maxLength": 128, "description": "Opaque user reference (Keycloak subject), never a name." },
+    "by_role": { "$ref": "common.schema.json#/$defs/Role" },
+    "at": { "$ref": "common.schema.json#/$defs/Timestamp" },
+    "ledger_no": { "type": "integer", "minimum": 1 }
+  }
+}

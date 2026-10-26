@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.satya-eoa.invalid/v1/verification-label.schema.json",
+  "title": "VerificationLabel",
+  "description": "The six PS verification labels (Portal spec §2.6.3). Document label = most severe check outcome, in x-precedence order (most severe first). `verified` also requires at least one authenticity check; a valid uploader DSC never makes a document verified.",
+  "type": "string",
+  "enum": ["verified", "mismatch_detected", "expired", "verification_pending", "source_unavailable", "manual_review_required"],
+  "x-precedence": ["mismatch_detected", "expired", "manual_review_required", "source_unavailable", "verification_pending", "verified"]
+}

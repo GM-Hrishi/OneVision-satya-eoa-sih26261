@@ -1,0 +1,56 @@
+[project]
+name = "satya-eoa-workspace"
+version = "0.0.0"
+description = "SATYA-EoA Python workspace root (synthetic data only)"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["services/api", "services/worker", "packages/shared-types/python"]
+
+[dependency-groups]
+dev = [
+  "ruff==0.17.2",
+  "mypy==2.4.0",
+  "pytest==9.1.1",
+  "pytest-asyncio==1.4.1",
+  "httpx==0.28.1",
+  "datamodel-code-generator==0.86.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["packages/shared-types/python/satya_shared_types/generated"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S", "N", "SIM", "RUF"]
+ignore = ["S101"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["satya_shared_types", "satya_api", "satya_worker"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S105", "S106", "S311"]
+"**/migrations/**" = ["E501"]
+# Prose-heavy tooling (issue bodies, smoke-test messages); long lines and en dashes are content.
+"infra/scripts/*.py" = ["E501", "RUF001"]
+"tests/*.py" = ["E501", "S105", "S106", "S310"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true
+exclude = ["migrations/", "generated/"]
+
+[[tool.mypy.overrides]]
+# Celery ships no type hints; its decorators would otherwise make every task untyped.
+module = ["satya_worker.*"]
+disallow_untyped_decorators = false
+
+[tool.pytest.ini_options]
+markers = ["integration: needs the running compose stack (make up)"]
+addopts = "-m 'not integration'"

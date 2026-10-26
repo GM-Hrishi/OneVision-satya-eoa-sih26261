@@ -1,0 +1,173 @@
+{
+  "app": {
+    "name": "SATYA-EoA workbench",
+    "short": "SATYA",
+    "description": "SATYA-EoA workbench for Regulation Bureau officials: advisory, evidence-linked findings on Extension of Approval applications. Prototype on synthetic data."
+  },
+  "shell": {
+    "prototypeStrip": "Prototype · connected to a mock approval portal · synthetic data only",
+    "skipLink": "Skip to main content",
+    "railLabel": "Main navigation",
+    "utilityLabel": "Help, language and accessibility",
+    "menu": "Menu",
+    "closeMenu": "Close menu",
+    "breadcrumbLabel": "Breadcrumb",
+    "roleChip": "{role} · {region}",
+    "ayChip": "AY {ay}",
+    "signedInAs": "Signed in as {user}",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "languageLabel": "Language",
+    "english": "English",
+    "hindi": "हिन्दी",
+    "brand": "SATYA-EoA"
+  },
+  "nav": {
+    "home": "Home",
+    "overview": "Overview",
+    "queue": "Validation queue",
+    "help": "Help",
+    "accessibility": "Accessibility",
+    "about": "About",
+    "policies": "Policies",
+    "sitemap": "Sitemap",
+    "signin": "Sign in",
+    "roleHome": "Home"
+  },
+  "roles": {
+    "RB": "Regulation Bureau",
+    "SC": "Scrutiny expert",
+    "EV": "EVC expert",
+    "HC": "Hearing committee",
+    "RA": "Rule administrator",
+    "AU": "Auditor",
+    "INS": "Institution"
+  },
+  "regions": {
+    "southern": "Southern",
+    "national": "National",
+    "none": "No region assigned"
+  },
+  "footer": {
+    "label": "Site information",
+    "about": "About",
+    "policies": "Policies",
+    "help": "Help",
+    "accessibility": "Accessibility statement",
+    "sitemap": "Sitemap",
+    "lastUpdated": "Last updated: {date}",
+    "disclaimer": "Advisory decision support. Officials decide. Runs against a mock approval portal on synthetic data. Not affiliated with or connected to AICTE.",
+    "team": "© {year} Team OneVision · Smart India Hackathon 2026 prototype"
+  },
+  "queue": {
+    "title": "Validation queue",
+    "overviewTitle": "Cycle overview",
+    "description": "Applications awaiting first-pass validation, grouped by risk band. Prototype on synthetic data.",
+    "overviewDescription": "Cycle overview for the Regulation Bureau. Prototype on synthetic data.",
+    "intro": "Applications appear here after the mock approval portal sends a submitted application. Findings are advisory; every decision is recorded by an official.",
+    "emptyTitle": "No applications yet.",
+    "emptyBody": "Submit one from the mock portal.",
+    "emptyLink": "Open the mock approval portal",
+    "loading": "Loading the validation queue"
+  },
+  "signin": {
+    "title": "Sign in",
+    "description": "Sign in to the SATYA-EoA workbench with your SSO account.",
+    "heading": "Sign in to the workbench",
+    "redirecting": "Taking you to the sign-in page.",
+    "button": "Continue to sign-in",
+    "failed": "Sign-in did not complete. Try again."
+  },
+  "forbidden": {
+    "title": "Not assigned to you",
+    "description": "Access denied page.",
+    "heading": "Not assigned to you",
+    "body": "Your account does not have access to this page. Access depends on your role and the regions assigned to you.",
+    "institution": "Institutions use the mock approval portal. The workbench is for officials.",
+    "home": "Go to your home page"
+  },
+  "roleHome": {
+    "title": "Home",
+    "description": "Home page for your role.",
+    "heading": "Home",
+    "body": "No screens for the {role} role are enabled in this build yet. They arrive in later slices.",
+    "help": "Read the help page"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The requested page does not exist.",
+    "heading": "Page not found",
+    "body": "The page you asked for does not exist or has moved.",
+    "home": "Go to the home page"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "heading": "Something went wrong",
+    "body": "The error has been logged. Try again, or return to the home page.",
+    "retry": "Try again",
+    "reference": "Reference: {digest}",
+    "home": "Go to the home page"
+  },
+  "help": {
+    "title": "Help",
+    "description": "How to use the SATYA-EoA workbench prototype.",
+    "heading": "Help",
+    "whatHeading": "What the workbench does",
+    "whatBody": "SATYA-EoA checks Extension of Approval applications sent by the mock approval portal and shows advisory findings with evidence, the rule applied and the APH clause. It never approves, rejects or clears anything. An official records every decision.",
+    "labelsHeading": "Verification labels",
+    "labelsBody": "Every document shows exactly one label, always as text: Verified, Mismatch detected, Expired, Verification pending, Source unavailable, Manual review required.",
+    "riskHeading": "Risk band",
+    "riskBody": "High, Medium or Low orders the review queue only. It is not a finding and is never shown to the institution.",
+    "dataHeading": "Data in this prototype",
+    "dataBody": "All applications, institutions and people are synthetic. Source checks marked MOCK SOURCE come from mock adapters, and demo signatures chain to a TEST TRUST ANCHOR.",
+    "keysHeading": "Keyboard use",
+    "keysBody": "Press Tab to move, Enter to follow a link or press a button, and Escape to close the menu. The first Tab on every page offers a link that skips to the main content."
+  },
+  "accessibility": {
+    "title": "Accessibility statement",
+    "description": "Accessibility statement for the SATYA-EoA workbench prototype (WCAG 2.1 AA, GIGW 3.0).",
+    "heading": "Accessibility statement",
+    "commitment": "We build the SATYA-EoA workbench to be usable by everyone, including people who use a keyboard, a screen reader, magnification or high-contrast settings.",
+    "standardsHeading": "Standards",
+    "standardsBody": "Target: WCAG 2.1 level AA and the Guidelines for Indian Government Websites (GIGW 3.0).",
+    "featuresHeading": "What is in place",
+    "feature1": "A skip link and one main heading on every page",
+    "feature2": "Full keyboard operation with a visible focus outline",
+    "feature3": "Text can be resized to 200% without loss of content",
+    "feature4": "Every status is written as text, never shown by colour alone",
+    "feature5": "Animations are turned off when your system asks for reduced motion",
+    "feature6": "English and Hindi",
+    "limitsHeading": "Known limitations",
+    "limitsBody": "This is a prototype. Hindi text is still being reviewed by a native speaker, and a full audit with assistive technology is planned before any pilot.",
+    "reportHeading": "Report a problem",
+    "reportBody": "Report accessibility problems to Team OneVision through the project's issue tracker."
+  },
+  "about": {
+    "title": "About",
+    "description": "About the SATYA-EoA prototype.",
+    "heading": "About SATYA-EoA",
+    "body1": "SATYA-EoA is the missing first-pass scrutiny for self-disclosure Extension of Approval, and an evidence assistant for every committee after it.",
+    "body2": "It reads AICTE's own templates the way they were designed, checks each document at its official source where one exists, and reconciles sworn claims against portal data and past years. Findings are advisory; officials decide.",
+    "body3": "This prototype runs against a mock approval portal built by the team, on synthetic data only. It is not affiliated with, endorsed by or connected to AICTE."
+  },
+  "policies": {
+    "title": "Policies",
+    "description": "Privacy, cookie, security and use policies for the SATYA-EoA prototype.",
+    "heading": "Policies",
+    "privacyHeading": "Privacy",
+    "privacyBody": "The prototype holds synthetic data only. It stores no real names, contact details, identity numbers or documents.",
+    "cookiesHeading": "Cookies",
+    "cookiesBody": "Two kinds of cookie are set: a secure, HTTP-only session cookie after you sign in, and a language cookie that remembers English or Hindi. No tracking or analytics cookies are used.",
+    "securityHeading": "Security",
+    "securityBody": "All traffic uses HTTPS. Sign-in is handled by the single sign-on service; this application never sees or stores your password.",
+    "useHeading": "Use",
+    "useBody": "The workbench gives advisory findings to support officials. Statutory scrutiny, inspections and final decisions stay with the competent authorities."
+  },
+  "sitemap": {
+    "title": "Sitemap",
+    "description": "All pages of the SATYA-EoA workbench prototype.",
+    "heading": "Sitemap",
+    "workHeading": "Work",
+    "infoHeading": "Information"
+  }
+}

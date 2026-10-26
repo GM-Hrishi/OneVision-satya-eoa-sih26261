@@ -1,0 +1,17 @@
+{
+  "alert_id": "alr_01JB7Q9A000000000000000007",
+  "type": "pending_source",
+  "subtype": "source_unavailable",
+  "severity": "warning",
+  "audience_roles": [
+    "RB"
+  ],
+  "case_id": "cas_01JB7Q9A000000000000000003",
+  "application_id": "1-90000004217",
+  "doc_id": "doc_01JB7Q9A000000000000000006",
+  "label": "source_unavailable",
+  "aph_clause": "Annex-2.1(v)",
+  "text_key": "alert.pending_source.source_unavailable",
+  "created_at": "2026-12-14T11:09:31+05:30",
+  "read": false
+}

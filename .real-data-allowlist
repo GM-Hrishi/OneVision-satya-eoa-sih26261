@@ -1,0 +1,2 @@
+# Documented synthetic fixtures that match a personal-data pattern. Format (tab-separated):
+# <path-glob>	<exact matched text>	<reason>

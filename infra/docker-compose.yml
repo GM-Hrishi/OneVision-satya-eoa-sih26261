@@ -1,0 +1,255 @@
+# SATYA-EoA local stack (decision #38-A). Synthetic data only.
+# Use through the Makefile: `make secrets && make up`. Only Caddy publishes ports (80, 443).
+# Memory limits (total of long-running services 5.6 GiB, one-shot jobs 0.75 GiB; budget 8 GiB):
+#   postgres 768m · valkey 256m · keycloak 1280m · api 512m · worker 768m · web 768m
+#   mock-portal 512m · caddy 128m · migrate 256m (one-shot) · keycloak-config 512m (one-shot)
+name: satya
+
+x-restart: &restart
+  restart: unless-stopped
+
+x-logging: &logging
+  logging:
+    driver: json-file
+    options: { max-size: "10m", max-file: "3" }
+
+secrets:
+  extra_ca:
+    # Optional CA bundle for build-time downloads behind a TLS proxy. Empty by default.
+    file: ${SATYA_EXTRA_CA_FILE:-./certs/no-extra-ca.pem}
+
+services:
+  postgres:
+    image: pgvector/pgvector:0.8.7-pg18
+    <<: [*restart, *logging]
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_SUPERUSER_PASSWORD:?run make secrets}
+      SATYA_DB_MIGRATOR_PASSWORD: ${SATYA_DB_MIGRATOR_PASSWORD:?}
+      SATYA_DB_APP_PASSWORD: ${SATYA_DB_APP_PASSWORD:?}
+      KEYCLOAK_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:?}
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d satya && pg_isready -U postgres -d keycloak"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    mem_limit: 768m
+    networks: [backend]
+
+  valkey:
+    image: valkey/valkey:9.1.2-alpine
+    <<: [*restart, *logging]
+    environment:
+      VALKEY_PASSWORD: ${VALKEY_PASSWORD:?}
+    command: ["sh", "-c", "exec valkey-server --requirepass \"$$VALKEY_PASSWORD\" --appendonly yes --maxmemory 192mb --maxmemory-policy noeviction"]
+    volumes:
+      - valkeydata:/data
+    healthcheck:
+      test: ["CMD-SHELL", "valkey-cli --no-auth-warning -a \"$$VALKEY_PASSWORD\" ping | grep -q PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    mem_limit: 256m
+    networks: [backend]
+
+  keycloak:
+    image: keycloak/keycloak:26.8.1
+    <<: [*restart, *logging]
+    command: ["start", "--import-realm"]
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:?}
+      KC_HOSTNAME: ${SATYA_AUTH_ORIGIN:-https://auth.localhost}
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
+      KC_HEALTH_ENABLED: "true"
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME:?}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD:?}
+      JAVA_OPTS_KC_HEAP: "-XX:MaxRAMPercentage=65 -XX:InitialRAMPercentage=25"
+    volumes:
+      - ./keycloak/realm-satya.json:/opt/keycloak/data/import/realm-satya.json:ro
+    depends_on:
+      postgres: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000 && printf 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q '\"UP\"' <&3"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+    mem_limit: 1280m
+    networks: [backend]
+
+  # One-shot: sets client secrets and demo-user passwords from .env (S0.7). Re-runs are idempotent.
+  keycloak-config:
+    image: keycloak/keycloak:26.8.1
+    <<: *logging
+    entrypoint: ["/bin/bash", "/opt/satya/keycloak-post-start.sh"]
+    environment:
+      KC_URL: http://keycloak:8080
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME:?}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD:?}
+      DEMO_USER_PASSWORD: ${DEMO_USER_PASSWORD:?}
+      SATYA_WEB_CLIENT_SECRET: ${SATYA_WEB_CLIENT_SECRET:?}
+      SATYA_MOCK_PORTAL_CLIENT_SECRET: ${SATYA_MOCK_PORTAL_CLIENT_SECRET:?}
+      PORTAL_INTEGRATION_CLIENT_SECRET: ${PORTAL_INTEGRATION_CLIENT_SECRET:?}
+      JAVA_OPTS_KC_HEAP: "-XX:MaxRAMPercentage=60"
+    volumes:
+      - ./scripts/keycloak-post-start.sh:/opt/satya/keycloak-post-start.sh:ro
+    depends_on:
+      keycloak: { condition: service_healthy }
+    restart: "no"
+    mem_limit: 512m
+    networks: [backend]
+
+  # One-shot: Alembic migrations as the migration role (DDL). The api never holds these credentials.
+  migrate:
+    build: &api-build
+      context: ..
+      dockerfile: services/api/Dockerfile
+      secrets: [extra_ca]
+    image: satya/api:dev
+    <<: *logging
+    working_dir: /app/services/api
+    command: ["alembic", "upgrade", "head"]
+    environment:
+      SATYA_MIGRATOR_DATABASE_URL: postgresql+psycopg://satya_migrator:${SATYA_DB_MIGRATOR_PASSWORD:?}@postgres:5432/satya
+    depends_on:
+      postgres: { condition: service_healthy }
+    restart: "no"
+    healthcheck: { disable: true }
+    mem_limit: 256m
+    networks: [backend]
+
+  api:
+    build: *api-build
+    image: satya/api:dev
+    <<: [*restart, *logging]
+    environment: &api-env
+      SATYA_ENV: dev
+      SATYA_DATABASE_URL: postgresql+psycopg://satya_app:${SATYA_DB_APP_PASSWORD:?}@postgres:5432/satya
+      SATYA_VALKEY_URL: redis://:${VALKEY_PASSWORD:?}@valkey:6379/0
+      SATYA_KEYCLOAK_URL: http://keycloak:8080
+      SATYA_HMAC_KEYS: ${PORTAL_HMAC_KID:?}=${PORTAL_HMAC_SECRET:?}
+      SATYA_CORS_ORIGINS: ${SATYA_WEB_ORIGIN:-https://localhost},${SATYA_PORTAL_ORIGIN:-https://portal.localhost}
+      SATYA_MAX_BODY_BYTES: ${SATYA_MAX_BODY_BYTES:-1048576}
+      SATYA_RATE_LIMIT: ${SATYA_RATE_LIMIT:-120/minute}
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+      valkey: { condition: service_healthy }
+    mem_limit: 512m
+    networks: [backend, edge]
+
+  worker:
+    build: &worker-build
+      context: ..
+      dockerfile: services/worker/Dockerfile
+      target: runtime
+      secrets: [extra_ca]
+    image: satya/worker:dev
+    <<: [*restart, *logging]
+    environment:
+      SATYA_VALKEY_URL: redis://:${VALKEY_PASSWORD:?}@valkey:6379/0
+      SATYA_DATABASE_URL: postgresql+psycopg://satya_app:${SATYA_DB_APP_PASSWORD:?}@postgres:5432/satya
+    depends_on:
+      valkey: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+    mem_limit: 768m
+    networks: [backend]
+
+  # Only for `make smoke`: runs the worker integration tests on the compose network.
+  worker-test:
+    profiles: ["test"]
+    build:
+      <<: *worker-build
+      target: test
+    image: satya/worker-test:dev
+    environment:
+      SATYA_VALKEY_URL: redis://:${VALKEY_PASSWORD:?}@valkey:6379/0
+    depends_on:
+      worker: { condition: service_healthy }
+    restart: "no"
+    mem_limit: 256m
+    networks: [backend]
+
+  web:
+    build:
+      context: ..
+      dockerfile: apps/web/Dockerfile
+      secrets: [extra_ca]
+    image: satya/web:dev
+    <<: [*restart, *logging]
+    environment:
+      NEXTAUTH_URL: ${SATYA_WEB_ORIGIN:-https://localhost}/auth
+      NEXTAUTH_SECRET: ${SATYA_WEB_AUTH_SECRET:?}
+      KEYCLOAK_ISSUER: ${SATYA_AUTH_ORIGIN:-https://auth.localhost}/realms/satya
+      KEYCLOAK_INTERNAL_URL: http://keycloak:8080/realms/satya
+      KEYCLOAK_CLIENT_ID: satya-web
+      KEYCLOAK_CLIENT_SECRET: ${SATYA_WEB_CLIENT_SECRET:?}
+      SATYA_API_INTERNAL_URL: http://api:8000
+      SATYA_PORTAL_ORIGIN: ${SATYA_PORTAL_ORIGIN:-https://portal.localhost}
+    depends_on:
+      api: { condition: service_healthy }
+      keycloak: { condition: service_healthy }
+    mem_limit: 768m
+    networks: [edge, backend]
+
+  mock-portal:
+    build:
+      context: ..
+      dockerfile: apps/mock-portal/Dockerfile
+      secrets: [extra_ca]
+    image: satya/mock-portal:dev
+    <<: [*restart, *logging]
+    environment:
+      SATYA_API_INTERNAL_URL: http://api:8000
+      PORTAL_HMAC_KID: ${PORTAL_HMAC_KID:?}
+      PORTAL_HMAC_SECRET: ${PORTAL_HMAC_SECRET:?}
+      SATYA_WEB_ORIGIN: ${SATYA_WEB_ORIGIN:-https://localhost}
+    depends_on:
+      api: { condition: service_healthy }
+    mem_limit: 512m
+    networks: [edge]
+
+  caddy:
+    image: caddy:2.11.7-alpine
+    <<: [*restart, *logging]
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      SATYA_MAX_BODY_BYTES: ${SATYA_MAX_BODY_BYTES:-1048576}
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data
+      - caddyconfig:/config
+    depends_on:
+      api: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8081/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    mem_limit: 128m
+    networks:
+      edge:
+        # Lets containers reach the public names through Caddy if ever needed.
+        aliases: [auth.localhost, portal.localhost]
+      backend: {}
+
+networks:
+  backend:
+    internal: true
+  edge: {}
+
+volumes:
+  pgdata:
+  valkeydata:
+  caddydata:
+  caddyconfig:

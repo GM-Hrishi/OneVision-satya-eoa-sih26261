@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.satya-eoa.invalid/v1/flag.schema.json",
+  "title": "Flag",
+  "description": "An evidence-linked finding (Portal spec §2.6.4). Every flag cites rule_id + rule_version + aph_clause + aph_edition (guard rail 6). Anomaly/forgery-type flags carry preliminary_indicator: true (PS FR2).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "flag_id", "doc_id", "page", "regions", "rule_id", "rule_version", "rule_text_key", "aph_clause", "aph_edition",
+    "extracted_value", "expected_value", "value_unit", "extracted_source", "expected_source", "confidence", "confidence_band",
+    "label", "provenance", "preliminary_indicator", "severity", "disposition", "stage", "institution_visible", "evidence_sha256"
+  ],
+  "properties": {
+    "flag_id": { "$ref": "common.schema.json#/$defs/FlagId" },
+    "doc_id": { "anyOf": [{ "$ref": "common.schema.json#/$defs/DocId" }, { "type": "null" }], "description": "null for snapshot-level findings." },
+    "page": { "type": ["integer", "null"], "minimum": 1 },
+    "regions": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/Region" } },
+    "rule_id": { "type": "string", "pattern": "^[A-Z][A-Z0-9-]{1,63}$" },
+    "rule_version": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "rule_text_key": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "aph_clause": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "aph_edition": { "type": "string", "minLength": 1, "maxLength": 32, "description": "e.g. 2024-27" },
+    "extracted_value": { "type": ["string", "number", "boolean", "null"] },
+    "expected_value": { "type": ["string", "number", "boolean", "null"] },
+    "value_unit": { "type": ["string", "null"], "maxLength": 32 },
+    "delta": { "type": ["number", "null"] },
+    "extracted_source": {
+      "title": "ExtractedSource",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["doc_label", "page"],
+      "properties": {
+        "doc_label": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "page": { "type": ["integer", "null"], "minimum": 1 },
+        "row": { "type": ["string", "integer", "null"] }
+      }
+    },
+    "expected_source": {
+      "title": "ExpectedSource",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label"],
+      "properties": { "label": { "type": "string", "minLength": 1, "maxLength": 200 } }
+    },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "confidence_band": { "title": "ConfidenceBand", "type": "string", "enum": ["high", "medium", "low"] },
+    "label": { "$ref": "verification-label.schema.json" },
+    "provenance": { "title": "Provenance", "type": "string", "enum": ["satya", "portal"] },
+    "preliminary_indicator": { "type": "boolean" },
+    "severity": { "$ref": "common.schema.json#/$defs/Severity" },
+    "disposition": { "anyOf": [{ "$ref": "disposition.schema.json" }, { "type": "null" }] },
+    "check_ref": { "type": "string", "maxLength": 128 },
+    "stage": { "title": "Stage", "type": "string", "enum": ["1", "2", "3", "4", "5", "6", "7"], "description": "C2 stage ①–⑦." },
+    "institution_visible": { "type": "boolean" },
+    "yoy": {
+      "title": "FlagYoy",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ay_a_ref", "ay_b_ref", "verdict"],
+      "properties": {
+        "ay_a_ref": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "ay_b_ref": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "verdict": { "$ref": "yoy-verdict.schema.json" }
+      }
+    },
+    "evidence_sha256": { "$ref": "common.schema.json#/$defs/Sha256" }
+  }
+}

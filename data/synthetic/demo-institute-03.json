@@ -1,0 +1,45 @@
+{
+  "_synthetic": "SYNTHETIC FIXTURE. Invented values for the SATYA-EoA demo. Not a real institution, person, application or document.",
+  "profile_id": "demo-institute-03",
+  "institution_name": "Demo Institute of Technology 03",
+  "institution_type": "Private-Self Financing",
+  "trust_name": "Demo Educational Trust 03",
+  "trust_registration_ref": "DEMO-TRUST-REG-0003",
+  "application_id": "1-90000004217",
+  "permanent_id": "1-9000317",
+  "ay": "2026-27",
+  "regional_office": "Southern",
+  "state": "Tamil Nadu",
+  "district": "Demo District 07",
+  "town": "Demo Town 03",
+  "category_set": ["EoA Only"],
+  "route": "self_disclosure",
+  "courses": [
+    { "programme": "Engineering and Technology", "level": "UG", "course": "Computer Science and Engineering", "intake_approved": { "2024-25": 120, "2025-26": 120 }, "intake_applied": 120 },
+    { "programme": "Engineering and Technology", "level": "UG", "course": "Electronics and Communication Engineering", "intake_approved": { "2024-25": 60, "2025-26": 60 }, "intake_applied": 60 },
+    { "programme": "Engineering and Technology", "level": "UG", "course": "Mechanical Engineering", "intake_approved": { "2024-25": 60, "2025-26": 60 }, "intake_applied": 60 }
+  ],
+  "land": {
+    "total_area": 12.5,
+    "unit": "acre",
+    "pieces": 2,
+    "max_distance_km": 0.4,
+    "coordinates": {
+      "_note": "Deliberately a point in the Bay of Bengal so it can never match a real campus.",
+      "lat": { "deg": 12, "min": 30, "sec": 0, "hemisphere": "N" },
+      "lon": { "deg": 81, "min": 30, "sec": 0, "hemisphere": "E" }
+    },
+    "deeds": [
+      { "holder_token": "hld_tok_demo_0001", "deed_token": "ded_tok_demo_0001", "registration_date": "2009-06-15", "plot_no": "DEMO-PLOT-11", "village_district": "Demo Town 03 / Demo District 07", "area_acre": 8.0 },
+      { "holder_token": "hld_tok_demo_0001", "deed_token": "ded_tok_demo_0002", "registration_date": "2012-02-20", "plot_no": "DEMO-PLOT-12", "village_district": "Demo Town 03 / Demo District 07", "area_acre": 4.5 }
+    ]
+  },
+  "buildings": [
+    { "block": "Academic Block A", "sanctioned_area_m2": 9800, "constructed_area_m2": 9800, "approving_authority": "Demo Local Planning Authority 07", "approval_date": "2010-03-01" },
+    { "block": "Administrative Block", "sanctioned_area_m2": 2100, "constructed_area_m2": 2100, "approving_authority": "Demo Local Planning Authority 07", "approval_date": "2010-03-01" }
+  ],
+  "documents_synthetic_refs": {
+    "fire_licence_no": "9017/RFL/NMSB/2026",
+    "form_d_licence_no": "93/2025"
+  }
+}

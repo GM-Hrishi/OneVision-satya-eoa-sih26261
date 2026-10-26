@@ -1,0 +1,19 @@
+# Keep build contexts small and free of secrets and real data.
+.git
+.github
+.env
+.env.*
+!.env.example
+.logs
+data/real-samples
+**/node_modules
+**/.next
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/.mypy_cache
+**/coverage
+infra/caddy/*.crt
+docs
+infra/certs

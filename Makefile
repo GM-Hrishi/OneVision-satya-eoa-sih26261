@@ -1,0 +1,87 @@
+# SATYA-EoA developer commands. Synthetic data only.
+SHELL := /bin/bash
+.DEFAULT_GOAL := help
+COMPOSE := docker compose --env-file .env -f infra/docker-compose.yml
+
+help: ## List targets
+	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*## "}{printf "  %-16s %s\n",$$1,$$2}'
+
+install: ## Install JS and Python dependencies
+	pnpm install --frozen-lockfile
+	uv sync --all-packages --frozen
+
+gen-types: ## Regenerate TS types + Pydantic models from packages/shared-types/schemas
+	pnpm --filter @satya/shared-types gen
+
+check-types-diff: gen-types ## Regenerate and fail if generated code differs from the commit
+	git diff --exit-code -- packages/shared-types
+
+guard: ## Real-data guard (same script as CI)
+	@bash infra/scripts/real-data-guard.sh
+
+secret-scan: ## gitleaks over the git history (same as CI)
+	docker run --rm -v "$$PWD:/repo" zricethezav/gitleaks:v8.30.1 git /repo --redact --no-banner --config /repo/.gitleaks.toml
+
+lint: ## ESLint + ruff
+	pnpm -r lint
+	uv run ruff check .
+	uv run ruff format --check .
+
+typecheck: ## tsc + mypy
+	pnpm -r typecheck
+	uv run mypy services/api/src services/worker/src packages/shared-types/python/satya_shared_types
+
+test: ## Unit tests (no running stack needed)
+	pnpm -r test
+	uv run pytest packages/shared-types/python
+	uv run pytest services/api
+	uv run pytest services/worker
+
+secrets: ## Generate .env from .env.example with random values (keeps an existing .env)
+	@bash infra/scripts/gen-secrets.sh
+
+up: ## Build and start the whole stack, then wait until every service is healthy
+	@test -f .env || { echo "No .env: run 'make secrets' first"; exit 1; }
+	$(COMPOSE) up -d --build --remove-orphans
+	@bash infra/scripts/wait-healthy.sh 600
+
+down: ## Stop the stack (keeps volumes)
+	$(COMPOSE) down
+
+ps: ## Show service status
+	$(COMPOSE) ps -a
+
+logs: ## Follow logs (SERVICE=api to filter)
+	$(COMPOSE) logs -f --tail 100 $(SERVICE)
+
+reset: ## Stop the stack and DROP ALL VOLUMES (asks first)
+	@read -r -p "This deletes the database, Keycloak data and Caddy certificates. Type 'reset' to continue: " ans; \
+	  if [ "$$ans" = "reset" ]; then $(COMPOSE) --profile test down -v --remove-orphans; else echo "Aborted."; fi
+
+mem-check: ## Check every service has a memory limit and the sum is <= 8 GiB
+	@bash infra/scripts/mem-check.sh
+
+config: ## Validate the compose file
+	$(COMPOSE) config --quiet && echo "compose config OK"
+
+ledger-verify: ## Recompute the ledger hash chain inside the api container
+	$(COMPOSE) exec -T api python -m satya_api.ledger_verify
+
+trust-ca: ## Export Caddy's local root CA to infra/caddy/local-root.crt (import it into your OS/browser)
+	$(COMPOSE) cp caddy:/data/caddy/pki/authorities/local/root.crt infra/caddy/local-root.crt
+	@echo "Exported infra/caddy/local-root.crt. See docs/DEV-SETUP.md to trust it."
+
+smoke: ## Cross-service smoke tests against the running stack
+	bash tests/smoke.sh
+	uv run python tests/oidc_login_check.py rb.southern.demo RB
+	$(COMPOSE) --profile test run --rm --build worker-test
+
+e2e: ## Browser acceptance (Playwright/Chromium): workbench sign-in + shell, mock portal signed events
+	NODE_PATH=$$(npm root -g) node tests/e2e/workbench.cjs
+	NODE_PATH=$$(npm root -g) node tests/e2e/mock-portal.cjs
+	$(COMPOSE) exec -T api python -m satya_api.ledger_verify
+
+test-db: ## Postgres-backed API tests in a throwaway pgvector container
+	bash infra/scripts/test-db.sh
+
+.PHONY: guard secret-scan help install secrets up down ps logs reset mem-check config ledger-verify trust-ca smoke e2e test-db gen-types check-types-diff lint typecheck test

@@ -1,0 +1,197 @@
+{
+  "ay": "2026-27",
+  "captured_at": "2026-12-14T11:05:00+05:30",
+  "basic": {
+    "application_id": "1-90000004217",
+    "permanent_id": "1-9000317",
+    "institution_type": "Private-Self Financing",
+    "status": "Submitted",
+    "application_date": "2026-11-20",
+    "submission_date": null,
+    "regional_office": "Southern",
+    "overall_deficiency": "no"
+  },
+  "trust": {
+    "name": "Demo Educational Trust 03",
+    "registration_ref": "DEMO-TRUST-REG-0003"
+  },
+  "trustees": [
+    {
+      "name": "Demo Trustee 01",
+      "role": "Chairman",
+      "tenure_from": "2021-04-01",
+      "tenure_to": "2026-03-31"
+    }
+  ],
+  "authorised_signatory": {
+    "name": "Demo Trustee 01",
+    "designation": "chairman"
+  },
+  "courses": [
+    {
+      "programme": "Engineering and Technology",
+      "level": "UG",
+      "course": "Computer Science and Engineering",
+      "intake_approved": [
+        {
+          "ay": "2024-25",
+          "intake": 120
+        },
+        {
+          "ay": "2025-26",
+          "intake": 120
+        }
+      ],
+      "intake_applied": 120,
+      "faculty_required": 40,
+      "faculty_actual": 41,
+      "nri_status": "No",
+      "international_students_status": "No",
+      "nba_status": "Not accredited"
+    }
+  ],
+  "land": {
+    "total_area": 12.5,
+    "unit": "acre",
+    "pieces": 2,
+    "max_distance_km": 0.4,
+    "land_use_certificate_issuer": "Demo Local Planning Authority 07",
+    "land_use_certificate_date": "2009-05-02",
+    "coordinates": {
+      "lat": {
+        "deg": 12,
+        "min": 30,
+        "sec": 0,
+        "hemisphere": "N"
+      },
+      "lon": {
+        "deg": 81,
+        "min": 30,
+        "sec": 0,
+        "hemisphere": "E"
+      }
+    },
+    "deeds": [
+      {
+        "holder": "Demo Educational Trust 03",
+        "document_no": "DEMO-DEED-0001",
+        "registration_date": "2009-06-15",
+        "plot_no": "DEMO-PLOT-11",
+        "village_district": "Demo Town 03 / Demo District 07",
+        "area_acre": 8.0
+      },
+      {
+        "holder": "Demo Educational Trust 03",
+        "document_no": "DEMO-DEED-0002",
+        "registration_date": "2012-02-20",
+        "plot_no": "DEMO-PLOT-12",
+        "village_district": "Demo Town 03 / Demo District 07",
+        "area_acre": 4.5
+      }
+    ]
+  },
+  "buildings": [
+    {
+      "block": "Academic Block A",
+      "sanctioned_area_m2": 9800,
+      "constructed_area_m2": 9800,
+      "approving_authority": "Demo Local Planning Authority 07",
+      "approval_date": "2010-03-01"
+    }
+  ],
+  "rooms": {
+    "administrative": [
+      {
+        "room_id": "A-101",
+        "room_type": "Principal Office",
+        "carpet_area_m2": 30,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      }
+    ],
+    "amenities": [],
+    "instructional": [
+      {
+        "room_id": "I-201",
+        "room_type": "Classroom",
+        "carpet_area_m2": 66,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      }
+    ],
+    "instructional_common": []
+  },
+  "facilities": {
+    "items": [
+      {
+        "name": "Library",
+        "value": "Yes"
+      }
+    ]
+  },
+  "committees": {
+    "items": [
+      {
+        "name": "Anti-Ragging Committee",
+        "value": "Yes"
+      }
+    ]
+  },
+  "bank": {
+    "bank_name": "Demo Bank",
+    "ifsc": "DEMO0000003"
+  },
+  "finance": {
+    "fy": "2025-26",
+    "income_total_paise": 1250000000,
+    "expenditure_total_paise": 1190000000,
+    "heads": [
+      {
+        "head": "Tuition fees",
+        "income_paise": 1100000000,
+        "expenditure_paise": 0
+      }
+    ]
+  },
+  "declaration": {
+    "items": {
+      "a": true,
+      "b": true,
+      "c": true,
+      "d": true,
+      "e": true,
+      "f": true
+    },
+    "category_list": [
+      "EoA Only"
+    ]
+  },
+  "faculty": [
+    {
+      "faculty_id": "1-90000000101",
+      "designation": "Assistant Professor",
+      "appointment_type": "Regular",
+      "programme": "Engineering and Technology",
+      "department": "Computer Science and Engineering",
+      "date_of_joining": "2019-07-01",
+      "highest_qualification_level": "PG",
+      "relieved_date": null,
+      "is_duplicate": false,
+      "pan_validation": "Valid",
+      "record_status": "Valid"
+    }
+  ],
+  "deficiency_report": {
+    "template_year": "2026-27",
+    "sections": [
+      {
+        "section": "Principal eligibility",
+        "deficiency": "no"
+      }
+    ],
+    "overall": "no",
+    "principal_eligibility": "yes"
+  }
+}

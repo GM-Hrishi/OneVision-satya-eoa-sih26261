@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.satya-eoa.invalid/v1/risk-band.schema.json",
+  "title": "RiskBand",
+  "description": "Risk band (decision #20). Orders review only; never a 0–100 score; never shown to the institution.",
+  "type": "string",
+  "enum": ["high", "medium", "low"]
+}

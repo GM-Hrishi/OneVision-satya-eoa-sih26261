@@ -1,0 +1,1297 @@
+# GENERATED from packages/shared-types/schemas by scripts/generate.mjs. Do not edit.
+
+from __future__ import annotations
+
+from datetime import date
+from enum import StrEnum
+from typing import Annotated, Any, Literal
+
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, RootModel
+
+
+class SatyaContracts(BaseModel):
+    """
+    GENERATED from packages/shared-types/schemas by scripts/generate.mjs. Do not edit. All SATYA-EoA contracts (Portal spec §2) in one document.
+    """
+
+
+class AcademicYear(RootModel[str]):
+    root: Annotated[str, Field(pattern="^[0-9]{4}-[0-9]{2}$", title="AcademicYear")]
+    """
+    Academic year as printed, e.g. 2026-27.
+    """
+
+
+class AlertId(RootModel[str]):
+    root: Annotated[str, Field(pattern="^alr_[0-9A-HJKMNP-TV-Z]{26}$", title="AlertId")]
+
+
+class AlertSubtype(StrEnum):
+    document_missing = "document_missing"
+    field_missing = "field_missing"
+    category_line_missing = "category_line_missing"
+    uploader_dsc_missing = "uploader_dsc_missing"
+    document_expired = "document_expired"
+    expiring_soon = "expiring_soon"
+    partial_oc_limit_reached = "partial_oc_limit_reached"
+    signing_cert_expired = "signing_cert_expired"
+    source_pending_overdue = "source_pending_overdue"
+    source_unavailable = "source_unavailable"
+    trust_anchor_revalidation = "trust_anchor_revalidation"
+    affidavit_diff = "affidavit_diff"
+    signature_integrity = "signature_integrity"
+    signature_image_only = "signature_image_only"
+    stamp_chronology = "stamp_chronology"
+    identity_graph = "identity_graph"
+    yoy_discrepancy = "yoy_discrepancy"
+    document_misclassified = "document_misclassified"
+    media_reuse = "media_reuse"
+    flag_undisposed_overdue = "flag_undisposed_overdue"
+    manual_task_overdue = "manual_task_overdue"
+    clarification_overdue = "clarification_overdue"
+    compliance_window_expiring = "compliance_window_expiring"
+    compliance_window_lapsed = "compliance_window_lapsed"
+    case_assigned = "case_assigned"
+    sitting_scheduled = "sitting_scheduled"
+    evc_scheduled = "evc_scheduled"
+    hearing_scheduled = "hearing_scheduled"
+    selection_round_opened = "selection_round_opened"
+
+
+class AlertType(StrEnum):
+    missing_info = "missing_info"
+    expired = "expired"
+    pending_source = "pending_source"
+    suspected_anomaly = "suspected_anomaly"
+    unresolved = "unresolved"
+    role = "role"
+
+
+class ApplicationId(RootModel[str]):
+    root: Annotated[str, Field(pattern="^1-[0-9]{10,11}$", title="ApplicationId")]
+    """
+    Portal application ID in printed form (design D4). Demo data uses 1-9….
+    """
+
+
+class TriState(StrEnum):
+    """
+    Flag only; blank in the report = unknown, never no (design D4).
+    """
+
+    yes = "yes"
+    no = "no"
+    unknown = "unknown"
+
+
+class SnapshotTrust(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    name: Annotated[
+        str, Field(json_schema_extra={"handling": "K"}, max_length=200, min_length=1)
+    ]
+    registration_ref: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "K"}, max_length=120, min_length=1),
+    ] = None
+
+
+class Designation(StrEnum):
+    chairman = "chairman"
+    secretary = "secretary"
+    authorised_person = "authorised_person"
+
+
+class SnapshotSignatory(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    name: Annotated[
+        str,
+        Field(
+            json_schema_extra={"handling": "T", "token-field": "signatory_token"},
+            max_length=200,
+            min_length=1,
+        ),
+    ]
+    """
+    Chairman/Secretary name, used only for the M6 signer check (§2.8). Tokenised at the gateway (keyed HMAC-SHA256) before anything is stored; stored as signatory_token.
+    """
+    designation: Annotated[Designation, Field(json_schema_extra={"handling": "K"})]
+
+
+class ApprovedIntake(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    ay: Annotated[AcademicYear, Field(json_schema_extra={"handling": "K"})]
+    intake: Annotated[int, Field(ge=0, json_schema_extra={"handling": "K"})]
+
+
+class SnapshotCourse(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    programme: Annotated[
+        str, Field(json_schema_extra={"handling": "K"}, max_length=200, min_length=1)
+    ]
+    level: Annotated[
+        str, Field(json_schema_extra={"handling": "K"}, max_length=32, min_length=1)
+    ]
+    course: Annotated[
+        str, Field(json_schema_extra={"handling": "K"}, max_length=200, min_length=1)
+    ]
+    intake_approved: Annotated[
+        list[ApprovedIntake] | None,
+        Field(json_schema_extra={"handling": "K"}, max_length=2),
+    ] = None
+    """
+    Intake approved for the last 2 AYs.
+    """
+    intake_applied: Annotated[int, Field(ge=0, json_schema_extra={"handling": "K"})]
+    faculty_required: Annotated[
+        int | None, Field(ge=0, json_schema_extra={"handling": "K"})
+    ] = None
+    faculty_actual: Annotated[
+        int | None, Field(ge=0, json_schema_extra={"handling": "K"})
+    ] = None
+    nri_status: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "K"}, max_length=64, min_length=1),
+    ] = None
+    international_students_status: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "K"}, max_length=64, min_length=1),
+    ] = None
+    nba_status: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "K"}, max_length=64, min_length=1),
+    ] = None
+
+
+class Unit(StrEnum):
+    acre = "acre"
+    hectare = "hectare"
+    sq_m = "sq_m"
+
+
+class LatitudeHemisphere(StrEnum):
+    N = "N"
+    S = "S"
+
+
+class LatitudeDms(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    deg: Annotated[int, Field(ge=0, json_schema_extra={"handling": "K"}, le=180)]
+    min: Annotated[int, Field(ge=0, json_schema_extra={"handling": "K"}, le=59)]
+    sec: Annotated[int, Field(ge=0, json_schema_extra={"handling": "K"}, le=59)]
+    hemisphere: Annotated[
+        LatitudeHemisphere,
+        Field(json_schema_extra={"handling": "K"}, title="LatitudeHemisphere"),
+    ]
+
+
+class LongitudeHemisphere(StrEnum):
+    E = "E"
+    W = "W"
+
+
+class LongitudeDms(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    deg: Annotated[int, Field(ge=0, json_schema_extra={"handling": "K"}, le=180)]
+    min: Annotated[int, Field(ge=0, json_schema_extra={"handling": "K"}, le=59)]
+    sec: Annotated[int, Field(ge=0, json_schema_extra={"handling": "K"}, le=59)]
+    hemisphere: Annotated[
+        LongitudeHemisphere,
+        Field(json_schema_extra={"handling": "K"}, title="LongitudeHemisphere"),
+    ]
+
+
+class CoordinatesDms(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    lat: Annotated[
+        LatitudeDms, Field(json_schema_extra={"handling": "K"}, title="LatitudeDms")
+    ]
+    lon: Annotated[
+        LongitudeDms, Field(json_schema_extra={"handling": "K"}, title="LongitudeDms")
+    ]
+
+
+class SnapshotBank(BaseModel):
+    """
+    Account number is X (rejected), never part of this model.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    bank_name: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "K"}, max_length=200, min_length=1),
+    ] = None
+    ifsc: Annotated[
+        str | None,
+        Field(
+            json_schema_extra={"handling": "K"},
+            max_length=11,
+            min_length=1,
+            pattern="^[A-Z]{4}0[A-Z0-9]{6}$",
+        ),
+    ] = None
+
+
+class FinanceHead(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    head: Annotated[
+        str, Field(json_schema_extra={"handling": "K"}, max_length=200, min_length=1)
+    ]
+    income_paise: Annotated[
+        int | None, Field(ge=0, json_schema_extra={"handling": "K"})
+    ] = None
+    expenditure_paise: Annotated[
+        int | None, Field(ge=0, json_schema_extra={"handling": "K"})
+    ] = None
+
+
+class SnapshotFinance(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    fy: Annotated[
+        str | None,
+        Field(
+            json_schema_extra={"handling": "K"},
+            max_length=16,
+            min_length=1,
+            pattern="^[0-9]{4}-[0-9]{2}$",
+        ),
+    ] = None
+    income_total_paise: Annotated[
+        int | None, Field(ge=0, json_schema_extra={"handling": "K"})
+    ] = None
+    expenditure_total_paise: Annotated[
+        int | None, Field(ge=0, json_schema_extra={"handling": "K"})
+    ] = None
+    heads: Annotated[
+        list[FinanceHead] | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+
+
+class DeclarationItems(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    a: Annotated[bool | None, Field(json_schema_extra={"handling": "K"})] = None
+    b: Annotated[bool | None, Field(json_schema_extra={"handling": "K"})] = None
+    c: Annotated[bool | None, Field(json_schema_extra={"handling": "K"})] = None
+    d: Annotated[bool | None, Field(json_schema_extra={"handling": "K"})] = None
+    e: Annotated[bool | None, Field(json_schema_extra={"handling": "K"})] = None
+    f: Annotated[bool | None, Field(json_schema_extra={"handling": "K"})] = None
+
+
+class CategoryListItem(RootModel[str]):
+    root: Annotated[
+        str, Field(json_schema_extra={"handling": "K"}, max_length=200, min_length=1)
+    ]
+
+
+class SnapshotDeclaration(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    items: Annotated[
+        DeclarationItems | None,
+        Field(json_schema_extra={"handling": "K"}, title="DeclarationItems"),
+    ] = None
+    category_list: Annotated[
+        list[CategoryListItem] | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+
+
+class Deficiency(StrEnum):
+    yes = "yes"
+    no = "no"
+
+
+class DeficiencySection(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    section: Annotated[
+        str, Field(json_schema_extra={"handling": "R"}, max_length=200, min_length=1)
+    ]
+    deficiency: Annotated[Deficiency, Field(json_schema_extra={"handling": "R"})]
+
+
+class Overall(StrEnum):
+    yes = "yes"
+    no = "no"
+    unknown = "unknown"
+
+
+class PrincipalEligibility(StrEnum):
+    """
+    The only HOI-derived value SATYA keeps (HOI personal details are X).
+    """
+
+    yes = "yes"
+    no = "no"
+    unknown = "unknown"
+
+
+class DeficiencyReportResult(BaseModel):
+    """
+    Portal Deficiency Report result, imported not recomputed (D2, guard rail 8).
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    template_year: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "R"}, max_length=16, min_length=1),
+    ] = None
+    sections: Annotated[
+        list[DeficiencySection] | None, Field(json_schema_extra={"handling": "R"})
+    ] = None
+    overall: Annotated[Overall, Field(json_schema_extra={"handling": "R"})]
+    principal_eligibility: Annotated[
+        PrincipalEligibility | None, Field(json_schema_extra={"handling": "R"})
+    ] = None
+    """
+    The only HOI-derived value SATYA keeps (HOI personal details are X).
+    """
+
+
+class CaseId(RootModel[str]):
+    root: Annotated[str, Field(pattern="^cas_[0-9A-HJKMNP-TV-Z]{26}$", title="CaseId")]
+
+
+class CheckKind(StrEnum):
+    issuer_signature = "issuer_signature"
+    uploader_signature = "uploader_signature"
+    source_lookup = "source_lookup"
+    qr_consistency = "qr_consistency"
+    expiry = "expiry"
+    format = "format"
+    chronology = "chronology"
+
+
+class FieldDiff(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    field: Annotated[str, Field(min_length=1)]
+    submitted: str | float | bool | None
+    source: str | float | bool | None
+
+
+class ExpiryBasis(StrEnum):
+    printed = "printed"
+    computed_from_state_rule = "computed_from_state_rule"
+
+
+class SourceMode(StrEnum):
+    live = "live"
+    mock = "mock"
+    offline = "offline"
+    none = "none"
+
+
+class CheckSource(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    adapter_id: Annotated[str, Field(pattern="^[a-z0-9][a-z0-9-]{1,63}$")]
+    mode: Annotated[SourceMode, Field(title="SourceMode")]
+    name: Annotated[str, Field(max_length=200, min_length=1)]
+
+
+class CorrelationId(RootModel[str]):
+    root: Annotated[
+        str, Field(pattern="^cor_[0-9A-HJKMNP-TV-Z]{26}$", title="CorrelationId")
+    ]
+
+
+class Date(RootModel[date]):
+    root: Annotated[date, Field(title="Date")]
+
+
+class DispositionAction(StrEnum):
+    accept = "accept"
+    override = "override"
+    escalate_clarify = "escalate_clarify"
+    escalate_refer = "escalate_refer"
+    escalate_manual = "escalate_manual"
+
+
+class DocId(RootModel[str]):
+    root: Annotated[str, Field(pattern="^doc_[0-9A-HJKMNP-TV-Z]{26}$", title="DocId")]
+
+
+class FormatType(StrEnum):
+    """
+    T = AICTE template, E = external, P = portal data (design B).
+    """
+
+    T = "T"
+    E = "E"
+    P = "P"
+
+
+class EventId(RootModel[str]):
+    root: Annotated[str, Field(pattern="^evt_[0-9A-HJKMNP-TV-Z]{26}$", title="EventId")]
+
+
+class EventType(StrEnum):
+    """
+    All inbound and outbound event types.
+    """
+
+    application_precheck_requested = "application.precheck_requested"
+    application_submitted = "application.submitted"
+    application_reopened = "application.reopened"
+    committee_scrutiny_constituted = "committee.scrutiny_constituted"
+    committee_rescrutiny_constituted = "committee.rescrutiny_constituted"
+    deficiency_posted = "deficiency.posted"
+    evc_selection_round_opened = "evc.selection_round_opened"
+    evc_selection_recorded = "evc.selection_recorded"
+    evc_scheduled = "evc.scheduled"
+    evc_media_submitted = "evc.media_submitted"
+    hearing_scheduled = "hearing.scheduled"
+    compliance_submitted = "compliance.submitted"
+    decision_recorded = "decision.recorded"
+    eoa_letter_issued = "eoa.letter_issued"
+    enrolment_uploaded = "enrolment.uploaded"
+    faculty_record_changed = "faculty.record_changed"
+    complaint_referred = "complaint.referred"
+    precheck_completed = "precheck.completed"
+    case_validation_completed = "case.validation_completed"
+    case_evidence_pack_ready = "case.evidence_pack_ready"
+    evc_selection_proposal_ready = "evc.selection_proposal_ready"
+    evc_checklist_ready = "evc.checklist_ready"
+    evc_media_check_completed = "evc.media_check_completed"
+    case_dossier_ready = "case.dossier_ready"
+    document_status_changed = "document.status_changed"
+    alert_raised = "alert.raised"
+    observation_recorded = "observation.recorded"
+    observation_withdrawn = "observation.withdrawn"
+    clarification_requested = "clarification.requested"
+    referral_recommended = "referral.recommended"
+    deficiency_candidates_proposed = "deficiency.candidates_proposed"
+    ingest_failed = "ingest.failed"
+
+
+class ExtractedSource(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    doc_label: Annotated[str, Field(max_length=200, min_length=1)]
+    page: Annotated[int | None, Field(ge=1)]
+    row: str | int | None = None
+
+
+class ExpectedSource(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    label: Annotated[str, Field(max_length=200, min_length=1)]
+
+
+class ConfidenceBand(StrEnum):
+    high = "high"
+    medium = "medium"
+    low = "low"
+
+
+class Provenance(StrEnum):
+    satya = "satya"
+    portal = "portal"
+
+
+class Stage(StrEnum):
+    """
+    C2 stage ①–⑦.
+    """
+
+    field_1 = "1"
+    field_2 = "2"
+    field_3 = "3"
+    field_4 = "4"
+    field_5 = "5"
+    field_6 = "6"
+    field_7 = "7"
+
+
+class FlagId(RootModel[str]):
+    root: Annotated[str, Field(pattern="^flg_[0-9A-HJKMNP-TV-Z]{26}$", title="FlagId")]
+
+
+class InboundEventType(StrEnum):
+    """
+    Portal → SATYA (Portal spec §2.4).
+    """
+
+    application_precheck_requested = "application.precheck_requested"
+    application_submitted = "application.submitted"
+    application_reopened = "application.reopened"
+    committee_scrutiny_constituted = "committee.scrutiny_constituted"
+    committee_rescrutiny_constituted = "committee.rescrutiny_constituted"
+    deficiency_posted = "deficiency.posted"
+    evc_selection_round_opened = "evc.selection_round_opened"
+    evc_selection_recorded = "evc.selection_recorded"
+    evc_scheduled = "evc.scheduled"
+    evc_media_submitted = "evc.media_submitted"
+    hearing_scheduled = "hearing.scheduled"
+    compliance_submitted = "compliance.submitted"
+    decision_recorded = "decision.recorded"
+    eoa_letter_issued = "eoa.letter_issued"
+    enrolment_uploaded = "enrolment.uploaded"
+    faculty_record_changed = "faculty.record_changed"
+    complaint_referred = "complaint.referred"
+
+
+class OutboundEventType(StrEnum):
+    """
+    SATYA → portal (Portal spec §2.5), all advisory.
+    """
+
+    precheck_completed = "precheck.completed"
+    case_validation_completed = "case.validation_completed"
+    case_evidence_pack_ready = "case.evidence_pack_ready"
+    evc_selection_proposal_ready = "evc.selection_proposal_ready"
+    evc_checklist_ready = "evc.checklist_ready"
+    evc_media_check_completed = "evc.media_check_completed"
+    case_dossier_ready = "case.dossier_ready"
+    document_status_changed = "document.status_changed"
+    alert_raised = "alert.raised"
+    observation_recorded = "observation.recorded"
+    observation_withdrawn = "observation.withdrawn"
+    clarification_requested = "clarification.requested"
+    referral_recommended = "referral.recommended"
+    deficiency_candidates_proposed = "deficiency.candidates_proposed"
+    ingest_failed = "ingest.failed"
+
+
+class PermanentId(RootModel[str]):
+    root: Annotated[str, Field(pattern="^1-[0-9]{7,11}$", title="PermanentId")]
+    """
+    Portal permanent ID in printed form (design D4).
+    """
+
+
+class PrintedItem(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    name: Annotated[
+        str, Field(json_schema_extra={"handling": "R"}, max_length=200, min_length=1)
+    ]
+    value: Annotated[
+        str, Field(json_schema_extra={"handling": "R"}, max_length=400, min_length=1)
+    ]
+
+
+class PrintedSection(BaseModel):
+    """
+    Portal-computed section kept as printed, display only (D2).
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    items: Annotated[
+        list[PrintedItem] | None, Field(json_schema_extra={"handling": "R"})
+    ] = None
+
+
+class ReceiptId(RootModel[str]):
+    root: Annotated[
+        str, Field(pattern="^rcp_[0-9A-HJKMNP-TV-Z]{26}$", title="ReceiptId")
+    ]
+
+
+class Region(BaseModel):
+    """
+    Evidence region on a page, normalised 0–1.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    x: Annotated[float, Field(ge=0.0, le=1.0)]
+    y: Annotated[float, Field(ge=0.0, le=1.0)]
+    w: Annotated[float, Field(ge=0.0, le=1.0)]
+    h: Annotated[float, Field(ge=0.0, le=1.0)]
+
+
+class RiskBand(StrEnum):
+    """
+    Risk band (decision #20). Orders review only; never a 0–100 score; never shown to the institution.
+    """
+
+    high = "high"
+    medium = "medium"
+    low = "low"
+
+
+class Role(StrEnum):
+    """
+    Keycloak realm roles (UI spec §1).
+    """
+
+    RB = "RB"
+    SC = "SC"
+    EV = "EV"
+    HC = "HC"
+    RA = "RA"
+    AU = "AU"
+    INS = "INS"
+
+
+class RoomRow(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    room_id: Annotated[
+        str, Field(json_schema_extra={"handling": "K"}, max_length=64, min_length=1)
+    ]
+    room_type: Annotated[
+        str, Field(json_schema_extra={"handling": "K"}, max_length=120, min_length=1)
+    ]
+    carpet_area_m2: Annotated[float, Field(ge=0.0, json_schema_extra={"handling": "K"})]
+    flooring: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "K"}, max_length=32, min_length=1),
+    ] = None
+    """
+    Completion of flooring, as printed (e.g. Ready).
+    """
+    walls_painting: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "K"}, max_length=32, min_length=1),
+    ] = None
+    electrification: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "K"}, max_length=32, min_length=1),
+    ] = None
+
+
+class RunId(RootModel[str]):
+    root: Annotated[str, Field(pattern="^run_[0-9A-HJKMNP-TV-Z]{26}$", title="RunId")]
+
+
+class Severity(StrEnum):
+    info = "info"
+    warning = "warning"
+    critical = "critical"
+
+
+class Sha256(RootModel[str]):
+    root: Annotated[str, Field(pattern="^[0-9a-f]{64}$", title="Sha256")]
+
+
+class SignatureRole(StrEnum):
+    issuer = "issuer"
+    uploader = "uploader"
+
+
+class SignatureState(StrEnum):
+    verified = "verified"
+    image_only = "image_only"
+    chain_broken = "chain_broken"
+    edited_after_signing = "edited_after_signing"
+    not_digital = "not_digital"
+    not_applicable = "not_applicable"
+    present = "present"
+    absent_required = "absent_required"
+
+
+class SignerRole(StrEnum):
+    chairman = "chairman"
+    secretary = "secretary"
+    issuer = "issuer"
+    unknown = "unknown"
+
+
+class SignatureCheck(BaseModel):
+    """
+    One of the two independent signature checks (Portal spec §2.8, UI spec §4.3). An image-only mark is never verified (decision #16).
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    role: Annotated[SignatureRole, Field(title="SignatureRole")]
+    state: Annotated[SignatureState, Field(title="SignatureState")]
+    has_byte_range: bool
+    """
+    true only for a real CMS signature (/ByteRange).
+    """
+    reason_code: Annotated[str | None, Field(pattern="^[A-Z][A-Z0-9_]{1,63}$")] = None
+    page: Annotated[int | None, Field(ge=1)] = None
+    signer_role: SignerRole | None = None
+    trust_anchor_label: Annotated[str | None, Field(max_length=64)] = None
+    """
+    Demo chain anchors are always 'TEST TRUST ANCHOR' (guard rail 10).
+    """
+
+
+class Subject(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    application_id: ApplicationId
+    permanent_id: PermanentId | None = None
+    ay: AcademicYear
+
+
+class Timestamp(RootModel[AwareDatetime]):
+    root: Annotated[AwareDatetime, Field(title="Timestamp")]
+    """
+    RFC 3339 date-time with offset (format-checked; Pydantic AwareDatetime); stored UTC, shown IST.
+    """
+
+
+class VerificationLabel(StrEnum):
+    """
+    The six PS verification labels (Portal spec §2.6.3). Document label = most severe check outcome, in x-precedence order (most severe first). `verified` also requires at least one authenticity check; a valid uploader DSC never makes a document verified.
+    """
+
+    verified = "verified"
+    mismatch_detected = "mismatch_detected"
+    expired = "expired"
+    verification_pending = "verification_pending"
+    source_unavailable = "source_unavailable"
+    manual_review_required = "manual_review_required"
+
+
+class DecidedBy(StrEnum):
+    system = "system"
+    official = "official"
+
+
+class YoyVerdict(StrEnum):
+    """
+    M13 year-over-year verdict (design C4a): explained by an approved application, or a discrepancy.
+    """
+
+    explained = "explained"
+    discrepancy = "discrepancy"
+
+
+class Alert(BaseModel):
+    """
+    Alert with type + subtype (Portal spec §2.9). Institution-facing alerts are limited to missing_info, expired, unresolved.clarification_* and unresolved.compliance_window_*.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    alert_id: AlertId
+    type: AlertType
+    subtype: AlertSubtype
+    severity: Severity
+    audience_roles: Annotated[list[Role], Field(min_length=1)]
+    case_id: CaseId
+    application_id: ApplicationId
+    flag_id: FlagId | None = None
+    doc_id: DocId | None = None
+    label: VerificationLabel | None = None
+    aph_clause: Annotated[str | None, Field(max_length=64, min_length=1)] = None
+    text_key: Annotated[str, Field(max_length=128, min_length=1)]
+    due_at: Timestamp | None = None
+    created_at: Timestamp
+    read: bool
+
+
+class SnapshotBasic(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    application_id: Annotated[ApplicationId, Field(json_schema_extra={"handling": "K"})]
+    permanent_id: Annotated[
+        PermanentId | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+    institution_type: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "K"}, max_length=120, min_length=1),
+    ] = None
+    status: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "K"}, max_length=120, min_length=1),
+    ] = None
+    application_date: Annotated[
+        Date | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+    submission_date: Annotated[
+        Date | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+    regional_office: Annotated[
+        str, Field(json_schema_extra={"handling": "K"}, max_length=64, min_length=1)
+    ]
+    overall_deficiency: Annotated[
+        TriState, Field(json_schema_extra={"handling": "K"}, title="TriState")
+    ]
+    """
+    Flag only; blank in the report = unknown, never no (design D4).
+    """
+
+
+class SnapshotTrustee(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    name: Annotated[
+        str,
+        Field(
+            json_schema_extra={"handling": "T", "token-field": "trustee_token"},
+            max_length=200,
+            min_length=1,
+        ),
+    ]
+    """
+    Trustee name. Tokenised at the gateway (keyed HMAC-SHA256) before anything is stored; stored as trustee_token.
+    """
+    role: Annotated[
+        str, Field(json_schema_extra={"handling": "K"}, max_length=64, min_length=1)
+    ]
+    tenure_from: Annotated[Date | None, Field(json_schema_extra={"handling": "K"})] = (
+        None
+    )
+    tenure_to: Annotated[Date | None, Field(json_schema_extra={"handling": "K"})] = None
+
+
+class SnapshotDeed(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    holder: Annotated[
+        str,
+        Field(
+            json_schema_extra={"handling": "T", "token-field": "holder_token"},
+            max_length=200,
+            min_length=1,
+        ),
+    ]
+    """
+    Deed holder. Tokenised at the gateway (keyed HMAC-SHA256) before anything is stored; stored as holder_token.
+    """
+    document_no: Annotated[
+        str,
+        Field(
+            json_schema_extra={"handling": "T", "token-field": "deed_token"},
+            max_length=200,
+            min_length=1,
+        ),
+    ]
+    """
+    Deed document number. Tokenised at the gateway (keyed HMAC-SHA256) before anything is stored; stored as deed_token.
+    """
+    registration_date: Annotated[
+        Date | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+    plot_no: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "K"}, max_length=64, min_length=1),
+    ] = None
+    village_district: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "K"}, max_length=200, min_length=1),
+    ] = None
+    area_acre: Annotated[float, Field(ge=0.0, json_schema_extra={"handling": "K"})]
+
+
+class SnapshotLand(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    total_area: Annotated[
+        float | None, Field(ge=0.0, json_schema_extra={"handling": "K"})
+    ] = None
+    unit: Annotated[Unit | None, Field(json_schema_extra={"handling": "K"})] = None
+    pieces: Annotated[int | None, Field(ge=0, json_schema_extra={"handling": "K"})] = (
+        None
+    )
+    max_distance_km: Annotated[
+        float | None, Field(ge=0.0, json_schema_extra={"handling": "K"})
+    ] = None
+    land_use_certificate_issuer: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "K"}, max_length=200, min_length=1),
+    ] = None
+    land_use_certificate_date: Annotated[
+        Date | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+    coordinates: Annotated[
+        CoordinatesDms | None,
+        Field(json_schema_extra={"handling": "K"}, title="CoordinatesDms"),
+    ] = None
+    deeds: Annotated[
+        list[SnapshotDeed] | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+
+
+class SnapshotBuilding(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    block: Annotated[
+        str, Field(json_schema_extra={"handling": "K"}, max_length=200, min_length=1)
+    ]
+    sanctioned_area_m2: Annotated[
+        float | None, Field(ge=0.0, json_schema_extra={"handling": "K"})
+    ] = None
+    constructed_area_m2: Annotated[
+        float | None, Field(ge=0.0, json_schema_extra={"handling": "K"})
+    ] = None
+    approving_authority: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "K"}, max_length=200, min_length=1),
+    ] = None
+    approval_date: Annotated[
+        Date | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+
+
+class SnapshotRooms(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    administrative: Annotated[
+        list[RoomRow] | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+    amenities: Annotated[
+        list[RoomRow] | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+    instructional: Annotated[
+        list[RoomRow] | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+    instructional_common: Annotated[
+        list[RoomRow] | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+
+
+class SnapshotFaculty(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    faculty_id: Annotated[
+        str,
+        Field(
+            json_schema_extra={"handling": "T", "token-field": "faculty_token"},
+            max_length=200,
+            min_length=1,
+        ),
+    ]
+    """
+    Portal Faculty ID (1- + 9–11 digits). Reveal only via a logged official action (AU-04). Tokenised at the gateway (keyed HMAC-SHA256) before anything is stored; stored as faculty_token.
+    """
+    designation: Annotated[
+        str, Field(json_schema_extra={"handling": "K"}, max_length=64, min_length=1)
+    ]
+    appointment_type: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "K"}, max_length=64, min_length=1),
+    ] = None
+    programme: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "K"}, max_length=200, min_length=1),
+    ] = None
+    department: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "K"}, max_length=200, min_length=1),
+    ] = None
+    date_of_joining: Annotated[
+        Date | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+    highest_qualification_level: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "K"}, max_length=64, min_length=1),
+    ] = None
+    relieved_date: Annotated[
+        Date | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+    is_duplicate: Annotated[bool | None, Field(json_schema_extra={"handling": "R"})] = (
+        None
+    )
+    """
+    Portal's own within-portal duplicate flag (D2); never recomputed.
+    """
+    pan_validation: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "R"}, max_length=32, min_length=1),
+    ] = None
+    """
+    Portal's PAN validation result only (D2); the PAN itself is X.
+    """
+    record_status: Annotated[
+        str | None,
+        Field(json_schema_extra={"handling": "R"}, max_length=32, min_length=1),
+    ] = None
+
+
+class ApplicationSnapshot(BaseModel):
+    """
+    The Application Report field set as the portal sends it (Portal spec §2.6.1). Every property carries x-handling: K keep, T tokenise (keyed HMAC-SHA256, key never stored with the data), R result only (portal's computed value, D2). Fields marked X must not be sent and do not exist in this model; they are listed in x-rejected-fields and the gateway answers PERSONAL_DATA_REJECTED. Unknown fields are rejected (additionalProperties false) for data minimisation.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    ay: Annotated[AcademicYear, Field(json_schema_extra={"handling": "K"})]
+    captured_at: Annotated[
+        Timestamp | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+    basic: Annotated[
+        SnapshotBasic, Field(json_schema_extra={"handling": "K"}, title="SnapshotBasic")
+    ]
+    trust: Annotated[
+        SnapshotTrust | None,
+        Field(json_schema_extra={"handling": "K"}, title="SnapshotTrust"),
+    ] = None
+    trustees: Annotated[
+        list[SnapshotTrustee] | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+    authorised_signatory: Annotated[
+        SnapshotSignatory | None,
+        Field(json_schema_extra={"handling": "K"}, title="SnapshotSignatory"),
+    ] = None
+    courses: Annotated[
+        list[SnapshotCourse] | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+    land: Annotated[
+        SnapshotLand | None,
+        Field(json_schema_extra={"handling": "K"}, title="SnapshotLand"),
+    ] = None
+    buildings: Annotated[
+        list[SnapshotBuilding] | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+    rooms: Annotated[
+        SnapshotRooms | None,
+        Field(json_schema_extra={"handling": "K"}, title="SnapshotRooms"),
+    ] = None
+    facilities: Annotated[
+        PrintedSection | None, Field(json_schema_extra={"handling": "R"})
+    ] = None
+    committees: Annotated[
+        PrintedSection | None, Field(json_schema_extra={"handling": "R"})
+    ] = None
+    bank: Annotated[
+        SnapshotBank | None,
+        Field(json_schema_extra={"handling": "K"}, title="SnapshotBank"),
+    ] = None
+    """
+    Account number is X (rejected), never part of this model.
+    """
+    finance: Annotated[
+        SnapshotFinance | None,
+        Field(json_schema_extra={"handling": "K"}, title="SnapshotFinance"),
+    ] = None
+    declaration: Annotated[
+        SnapshotDeclaration | None,
+        Field(json_schema_extra={"handling": "K"}, title="SnapshotDeclaration"),
+    ] = None
+    faculty: Annotated[
+        list[SnapshotFaculty] | None, Field(json_schema_extra={"handling": "K"})
+    ] = None
+    deficiency_report: Annotated[
+        DeficiencyReportResult | None,
+        Field(json_schema_extra={"handling": "R"}, title="DeficiencyReportResult"),
+    ] = None
+    """
+    Portal Deficiency Report result, imported not recomputed (D2, guard rail 8).
+    """
+
+
+class CheckEvidence(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    page: Annotated[int, Field(ge=1)]
+    regions: list[Region] | None = None
+
+
+class Check(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    kind: Annotated[CheckKind, Field(title="CheckKind")]
+    outcome: VerificationLabel
+    reason_code: Annotated[str, Field(pattern="^[A-Z][A-Z0-9_]{1,63}$")]
+    evidence: Annotated[CheckEvidence | None, Field(title="CheckEvidence")] = None
+    source: CheckSource | None = None
+    checked_at: Timestamp | None = None
+    response_sha256: Sha256 | None = None
+    attempts: Annotated[int | None, Field(ge=0)] = None
+    field_diff: list[FieldDiff] | None = None
+    """
+    Drives mismatch_detected.
+    """
+    valid_from: Date | None = None
+    valid_to: Date | None = None
+    basis: Annotated[ExpiryBasis | None, Field(title="ExpiryBasis")] = None
+
+
+class Disposition(BaseModel):
+    """
+    An official's recorded decision on a flag (Portal spec §2.6.5; UI spec §4.2). No action changes regulatory status; undo is a new ledger entry.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    action: Annotated[DispositionAction, Field(title="DispositionAction")]
+    reason: Annotated[str, Field(max_length=4000, min_length=10)]
+    reason_template_id: Annotated[str | None, Field(max_length=64)] = None
+    by_user_ref: Annotated[str, Field(max_length=128, min_length=1)]
+    """
+    Opaque user reference (Keycloak subject), never a name.
+    """
+    by_role: Role
+    at: Timestamp
+    ledger_no: Annotated[int, Field(ge=1)]
+
+
+class EventEnvelope(BaseModel):
+    """
+    Event envelope for both directions (Portal spec §2.3). Every inbound type is a proposed hook that the mock portal implements (guard rail 2). Outbound events must carry advisory: true and regulatory_effect: none (guard rail 1). Consumers ignore unknown top-level fields (§2.12).
+    """
+
+    spec: Literal["satya.event/1"]
+    event_id: EventId
+    type: EventType
+    occurred_at: Timestamp
+    producer: Annotated[str, Field(pattern="^[a-z][a-z0-9-]{1,40}$")]
+    """
+    e.g. mock-portal, satya
+    """
+    subject: Subject
+    sequence: Annotated[int, Field(ge=1)]
+    """
+    Per application, increases by 1.
+    """
+    correlation_id: CorrelationId
+    data: dict[str, Any]
+    """
+    Type-specific payload (§2.4, §2.5). Per-type schemas arrive with their slices.
+    """
+    advisory: Literal[True] | None = None
+    regulatory_effect: Literal["none"] | None = None
+    case_id: CaseId | None = None
+    run_id: RunId | None = None
+    deep_link: Annotated[str | None, Field(pattern="^/[A-Za-z0-9/_-]{1,200}$")] = None
+    """
+    Opaque path; no personal data, no tokens.
+    """
+
+
+class FlagYoy(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    ay_a_ref: Annotated[str, Field(max_length=128, min_length=1)]
+    ay_b_ref: Annotated[str, Field(max_length=128, min_length=1)]
+    verdict: YoyVerdict
+
+
+class Flag(BaseModel):
+    """
+    An evidence-linked finding (Portal spec §2.6.4). Every flag cites rule_id + rule_version + aph_clause + aph_edition (guard rail 6). Anomaly/forgery-type flags carry preliminary_indicator: true (PS FR2).
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    flag_id: FlagId
+    doc_id: DocId | None
+    """
+    null for snapshot-level findings.
+    """
+    page: Annotated[int | None, Field(ge=1)]
+    regions: list[Region]
+    rule_id: Annotated[str, Field(pattern="^[A-Z][A-Z0-9-]{1,63}$")]
+    rule_version: Annotated[str, Field(max_length=32, min_length=1)]
+    rule_text_key: Annotated[str, Field(max_length=128, min_length=1)]
+    aph_clause: Annotated[str, Field(max_length=64, min_length=1)]
+    aph_edition: Annotated[str, Field(max_length=32, min_length=1)]
+    """
+    e.g. 2024-27
+    """
+    extracted_value: str | float | bool | None
+    expected_value: str | float | bool | None
+    value_unit: Annotated[str | None, Field(max_length=32)]
+    delta: float | None = None
+    extracted_source: Annotated[ExtractedSource, Field(title="ExtractedSource")]
+    expected_source: Annotated[ExpectedSource, Field(title="ExpectedSource")]
+    confidence: Annotated[float, Field(ge=0.0, le=1.0)]
+    confidence_band: Annotated[ConfidenceBand, Field(title="ConfidenceBand")]
+    label: VerificationLabel
+    provenance: Annotated[Provenance, Field(title="Provenance")]
+    preliminary_indicator: bool
+    severity: Severity
+    disposition: Disposition | None
+    check_ref: Annotated[str | None, Field(max_length=128)] = None
+    stage: Annotated[Stage, Field(title="Stage")]
+    """
+    C2 stage ①–⑦.
+    """
+    institution_visible: bool
+    yoy: Annotated[FlagYoy | None, Field(title="FlagYoy")] = None
+    evidence_sha256: Sha256
+
+
+class VerificationResult(BaseModel):
+    """
+    Per-document verification with all checks (Portal spec §2.7). Every mock result is shown as MOCK SOURCE (guard rail 10).
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    doc_id: DocId
+    label: VerificationLabel
+    decided_by: Annotated[DecidedBy, Field(title="DecidedBy")]
+    basis_note: Annotated[str | None, Field(max_length=4000, min_length=10)] = None
+    """
+    Required when an official resolves the label.
+    """
+    checks: list[Check]
+
+
+class Document(BaseModel):
+    """
+    A document in a case (Portal spec §2.6.2). classified_type comes from body text / issuer, never heading, filename or uploader label (decision #15); when it differs from declared_type a suspected_anomaly.document_misclassified flag is raised.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    doc_id: DocId
+    slot: Annotated[str, Field(max_length=120, min_length=1)]
+    """
+    e.g. annex2.1(i) affidavit
+    """
+    declared_type: Annotated[str, Field(max_length=120, min_length=1)]
+    classified_type: Annotated[str | None, Field(max_length=120)]
+    format_type: Annotated[FormatType, Field(title="FormatType")]
+    """
+    T = AICTE template, E = external, P = portal data (design B).
+    """
+    template_id: Annotated[str | None, Field(max_length=120)] = None
+    sha256: Sha256
+    bytes: Annotated[int, Field(ge=0)]
+    page_count: Annotated[int, Field(ge=0)]
+    received_at: Timestamp
+    signatures: list[SignatureCheck]
+    verification: VerificationResult | None = None
+    flag_count: Annotated[int, Field(ge=0)]

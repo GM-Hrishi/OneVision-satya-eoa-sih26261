@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.satya-eoa.invalid/v1/event-envelope.schema.json",
+  "title": "EventEnvelope",
+  "description": "Event envelope for both directions (Portal spec §2.3). Every inbound type is a proposed hook that the mock portal implements (guard rail 2). Outbound events must carry advisory: true and regulatory_effect: none (guard rail 1). Consumers ignore unknown top-level fields (§2.12).",
+  "type": "object",
+  "required": ["spec", "event_id", "type", "occurred_at", "producer", "subject", "sequence", "correlation_id", "data"],
+  "properties": {
+    "spec": { "type": "string", "const": "satya.event/1" },
+    "event_id": { "$ref": "common.schema.json#/$defs/EventId" },
+    "type": { "$ref": "#/$defs/EventType" },
+    "occurred_at": { "$ref": "common.schema.json#/$defs/Timestamp" },
+    "producer": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,40}$", "description": "e.g. mock-portal, satya" },
+    "subject": { "$ref": "common.schema.json#/$defs/Subject" },
+    "sequence": { "type": "integer", "minimum": 1, "description": "Per application, increases by 1." },
+    "correlation_id": { "$ref": "common.schema.json#/$defs/CorrelationId" },
+    "data": { "type": "object", "description": "Type-specific payload (§2.4, §2.5). Per-type schemas arrive with their slices." },
+    "advisory": { "type": "boolean", "const": true },
+    "regulatory_effect": { "type": "string", "const": "none" },
+    "case_id": { "$ref": "common.schema.json#/$defs/CaseId" },
+    "run_id": { "$ref": "common.schema.json#/$defs/RunId" },
+    "deep_link": { "type": "string", "pattern": "^/[A-Za-z0-9/_-]{1,200}$", "description": "Opaque path; no personal data, no tokens." }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "type": { "$ref": "#/$defs/OutboundEventType" } }, "required": ["type"] },
+      "then": { "required": ["advisory", "regulatory_effect"] }
+    }
+  ],
+  "$defs": {
+    "InboundEventType": {
+      "title": "InboundEventType",
+      "description": "Portal → SATYA (Portal spec §2.4).",
+      "type": "string",
+      "enum": [
+        "application.precheck_requested",
+        "application.submitted",
+        "application.reopened",
+        "committee.scrutiny_constituted",
+        "committee.rescrutiny_constituted",
+        "deficiency.posted",
+        "evc.selection_round_opened",
+        "evc.selection_recorded",
+        "evc.scheduled",
+        "evc.media_submitted",
+        "hearing.scheduled",
+        "compliance.submitted",
+        "decision.recorded",
+        "eoa.letter_issued",
+        "enrolment.uploaded",
+        "faculty.record_changed",
+        "complaint.referred"
+      ]
+    },
+    "OutboundEventType": {
+      "title": "OutboundEventType",
+      "description": "SATYA → portal (Portal spec §2.5), all advisory.",
+      "type": "string",
+      "enum": [
+        "precheck.completed",
+        "case.validation_completed",
+        "case.evidence_pack_ready",
+        "evc.selection_proposal_ready",
+        "evc.checklist_ready",
+        "evc.media_check_completed",
+        "case.dossier_ready",
+        "document.status_changed",
+        "alert.raised",
+        "observation.recorded",
+        "observation.withdrawn",
+        "clarification.requested",
+        "referral.recommended",
+        "deficiency.candidates_proposed",
+        "ingest.failed"
+      ]
+    },
+    "EventType": {
+      "title": "EventType",
+      "description": "All inbound and outbound event types.",
+      "type": "string",
+      "enum": [
+        "application.precheck_requested",
+        "application.submitted",
+        "application.reopened",
+        "committee.scrutiny_constituted",
+        "committee.rescrutiny_constituted",
+        "deficiency.posted",
+        "evc.selection_round_opened",
+        "evc.selection_recorded",
+        "evc.scheduled",
+        "evc.media_submitted",
+        "hearing.scheduled",
+        "compliance.submitted",
+        "decision.recorded",
+        "eoa.letter_issued",
+        "enrolment.uploaded",
+        "faculty.record_changed",
+        "complaint.referred",
+        "precheck.completed",
+        "case.validation_completed",
+        "case.evidence_pack_ready",
+        "evc.selection_proposal_ready",
+        "evc.checklist_ready",
+        "evc.media_check_completed",
+        "case.dossier_ready",
+        "document.status_changed",
+        "alert.raised",
+        "observation.recorded",
+        "observation.withdrawn",
+        "clarification.requested",
+        "referral.recommended",
+        "deficiency.candidates_proposed",
+        "ingest.failed"
+      ]
+    }
+  }
+}

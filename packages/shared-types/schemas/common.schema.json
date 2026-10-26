@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.satya-eoa.invalid/v1/common.schema.json",
+  "title": "Common",
+  "description": "Shared primitives (Portal spec §2 conventions). Synthetic data only.",
+  "$defs": {
+    "AcademicYear": {
+      "title": "AcademicYear",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}$",
+      "description": "Academic year as printed, e.g. 2026-27."
+    },
+    "ApplicationId": {
+      "title": "ApplicationId",
+      "type": "string",
+      "pattern": "^1-[0-9]{10,11}$",
+      "description": "Portal application ID in printed form (design D4). Demo data uses 1-9…."
+    },
+    "PermanentId": {
+      "title": "PermanentId",
+      "type": "string",
+      "pattern": "^1-[0-9]{7,11}$",
+      "description": "Portal permanent ID in printed form (design D4)."
+    },
+    "Timestamp": {
+      "title": "Timestamp",
+      "type": "string",
+      "format": "date-time",
+      "description": "RFC 3339 date-time with offset (format-checked; Pydantic AwareDatetime); stored UTC, shown IST."
+    },
+    "Date": {
+      "title": "Date",
+      "type": "string",
+      "format": "date"
+    },
+    "Sha256": {
+      "title": "Sha256",
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "EventId": {
+      "title": "EventId",
+      "type": "string",
+      "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "CorrelationId": {
+      "title": "CorrelationId",
+      "type": "string",
+      "pattern": "^cor_[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "CaseId": {
+      "title": "CaseId",
+      "type": "string",
+      "pattern": "^cas_[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "RunId": {
+      "title": "RunId",
+      "type": "string",
+      "pattern": "^run_[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "DocId": {
+      "title": "DocId",
+      "type": "string",
+      "pattern": "^doc_[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "FlagId": {
+      "title": "FlagId",
+      "type": "string",
+      "pattern": "^flg_[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "AlertId": {
+      "title": "AlertId",
+      "type": "string",
+      "pattern": "^alr_[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "ReceiptId": {
+      "title": "ReceiptId",
+      "type": "string",
+      "pattern": "^rcp_[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "Role": {
+      "title": "Role",
+      "description": "Keycloak realm roles (UI spec §1).",
+      "type": "string",
+      "enum": [
+        "RB",
+        "SC",
+        "EV",
+        "HC",
+        "RA",
+        "AU",
+        "INS"
+      ]
+    },
+    "Severity": {
+      "title": "Severity",
+      "type": "string",
+      "enum": [
+        "info",
+        "warning",
+        "critical"
+      ]
+    },
+    "Region": {
+      "title": "Region",
+      "description": "Evidence region on a page, normalised 0–1.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "w",
+        "h"
+      ],
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "w": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "h": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "Subject": {
+      "title": "Subject",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "application_id",
+        "ay"
+      ],
+      "properties": {
+        "application_id": {
+          "$ref": "#/$defs/ApplicationId"
+        },
+        "permanent_id": {
+          "$ref": "#/$defs/PermanentId"
+        },
+        "ay": {
+          "$ref": "#/$defs/AcademicYear"
+        }
+      }
+    }
+  }
+}

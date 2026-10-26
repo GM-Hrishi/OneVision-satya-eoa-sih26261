@@ -1,0 +1,37 @@
+{
+  "name": "@satya/web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SATYA workbench shell (advisory decision support; synthetic data only).",
+  "scripts": {
+    "dev": "next dev",
+    "build": "node scripts/gen-tokens.mjs --check && next build",
+    "start": "next start",
+    "gen:tokens": "node scripts/gen-tokens.mjs",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@fontsource/noto-sans-devanagari": "5.3.0",
+    "@fontsource/noto-sans-mono": "5.3.0",
+    "@fontsource/public-sans": "5.3.0",
+    "next": "16.4.3",
+    "next-auth": "4.24.15",
+    "next-intl": "4.14.9",
+    "react": "19.3.1",
+    "react-aria-components": "1.22.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.4.3",
+    "typescript": "6.0.3",
+    "vite": "8.3.5",
+    "vitest": "5.0.5"
+  }
+}

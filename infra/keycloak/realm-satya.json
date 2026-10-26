@@ -1,0 +1,349 @@
+{
+  "realm": "satya",
+  "enabled": true,
+  "displayName": "SATYA-EoA (prototype · synthetic data only)",
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": false,
+  "rememberMe": false,
+  "loginWithEmailAllowed": false,
+  "duplicateEmailsAllowed": false,
+  "editUsernameAllowed": false,
+  "verifyEmail": false,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "failureFactor": 5,
+  "maxFailureWaitSeconds": 900,
+  "minimumQuickLoginWaitSeconds": 60,
+  "waitIncrementSeconds": 60,
+  "quickLoginCheckMilliSeconds": 1000,
+  "maxDeltaTimeSeconds": 43200,
+  "passwordPolicy": "length(14) and upperCase(1) and lowerCase(1) and digits(1) and specialChars(1) and notUsername(undefined) and notEmail(undefined)",
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "revokeRefreshToken": true,
+  "refreshTokenMaxReuse": 0,
+  "eventsEnabled": true,
+  "eventsExpiration": 2592000,
+  "adminEventsEnabled": true,
+  "adminEventsDetailsEnabled": false,
+  "internationalizationEnabled": true,
+  "supportedLocales": [
+    "en",
+    "hi"
+  ],
+  "defaultLocale": "en",
+  "browserSecurityHeaders": {
+    "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'none'; object-src 'none';",
+    "xFrameOptions": "DENY",
+    "xContentTypeOptions": "nosniff",
+    "referrerPolicy": "no-referrer",
+    "strictTransportSecurity": "max-age=31536000; includeSubDomains",
+    "xRobotsTag": "none"
+  },
+  "roles": {
+    "realm": [
+      {
+        "name": "RB",
+        "description": "Regulation Bureau official (workbench; assigned regions)"
+      },
+      {
+        "name": "SC",
+        "description": "Scrutiny / Re-scrutiny expert (Phase 2)"
+      },
+      {
+        "name": "EV",
+        "description": "EVC expert / Regional Office (Phase 2)"
+      },
+      {
+        "name": "HC",
+        "description": "SHC / SAC / EC member (Phase 2, read-only evidence)"
+      },
+      {
+        "name": "RA",
+        "description": "Rule administrator (rules, templates, issuers, adapters; no case actions)"
+      },
+      {
+        "name": "AU",
+        "description": "Auditor (read-only ledger, access log, case replay)"
+      },
+      {
+        "name": "INS",
+        "description": "Institution (mock portal only; no workbench access)"
+      }
+    ]
+  },
+  "groups": [
+    {
+      "name": "regions",
+      "subGroups": [
+        {
+          "name": "southern"
+        },
+        {
+          "name": "national"
+        }
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "satya-web",
+      "name": "SATYA workbench",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "frontchannelLogout": true,
+      "redirectUris": [
+        "https://localhost/auth/callback/keycloak"
+      ],
+      "webOrigins": [
+        "https://localhost"
+      ],
+      "rootUrl": "https://localhost",
+      "baseUrl": "/",
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "https://localhost/*",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "backchannel.logout.session.required": "true"
+      },
+      "fullScopeAllowed": true,
+      "protocolMappers": [
+        {
+          "name": "realm roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "groups",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-group-membership-mapper",
+          "config": {
+            "claim.name": "groups",
+            "full.path": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ],
+      "defaultClientScopes": [
+        "openid",
+        "profile",
+        "email",
+        "roles",
+        "web-origins",
+        "basic",
+        "acr"
+      ],
+      "optionalClientScopes": []
+    },
+    {
+      "clientId": "satya-mock-portal",
+      "name": "Approval Portal (Mock, for demo)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "frontchannelLogout": true,
+      "redirectUris": [
+        "https://portal.localhost/auth/callback/keycloak"
+      ],
+      "webOrigins": [
+        "https://portal.localhost"
+      ],
+      "rootUrl": "https://portal.localhost",
+      "baseUrl": "/",
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "https://portal.localhost/*",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "backchannel.logout.session.required": "true"
+      },
+      "fullScopeAllowed": true,
+      "protocolMappers": [
+        {
+          "name": "realm roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "claim.name": "roles",
+            "multivalued": "true",
+            "jsonType.label": "String",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "groups",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-group-membership-mapper",
+          "config": {
+            "claim.name": "groups",
+            "full.path": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ],
+      "defaultClientScopes": [
+        "openid",
+        "profile",
+        "email",
+        "roles",
+        "web-origins",
+        "basic",
+        "acr"
+      ],
+      "optionalClientScopes": []
+    },
+    {
+      "clientId": "portal-integration",
+      "name": "Portal Integration API (service client)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [],
+      "webOrigins": [],
+      "attributes": {
+        "access.token.lifespan": "300"
+      }
+    }
+  ],
+  "users": [
+    {
+      "username": "rb.southern.demo",
+      "enabled": true,
+      "email": "rb.southern.demo@example.invalid",
+      "emailVerified": true,
+      "firstName": "Demo",
+      "lastName": "Regulation Bureau Southern",
+      "realmRoles": [
+        "RB"
+      ],
+      "groups": [
+        "/regions/southern"
+      ],
+      "requiredActions": []
+    },
+    {
+      "username": "rb.national.demo",
+      "enabled": true,
+      "email": "rb.national.demo@example.invalid",
+      "emailVerified": true,
+      "firstName": "Demo",
+      "lastName": "Regulation Bureau National",
+      "realmRoles": [
+        "RB"
+      ],
+      "groups": [
+        "/regions/national"
+      ],
+      "requiredActions": []
+    },
+    {
+      "username": "sc.demo",
+      "enabled": true,
+      "email": "sc.demo@example.invalid",
+      "emailVerified": true,
+      "firstName": "Demo",
+      "lastName": "Scrutiny Expert",
+      "realmRoles": [
+        "SC"
+      ],
+      "groups": [],
+      "requiredActions": []
+    },
+    {
+      "username": "ev.demo",
+      "enabled": true,
+      "email": "ev.demo@example.invalid",
+      "emailVerified": true,
+      "firstName": "Demo",
+      "lastName": "EVC Expert",
+      "realmRoles": [
+        "EV"
+      ],
+      "groups": [],
+      "requiredActions": []
+    },
+    {
+      "username": "hc.demo",
+      "enabled": true,
+      "email": "hc.demo@example.invalid",
+      "emailVerified": true,
+      "firstName": "Demo",
+      "lastName": "Hearing Committee",
+      "realmRoles": [
+        "HC"
+      ],
+      "groups": [],
+      "requiredActions": []
+    },
+    {
+      "username": "ra.demo",
+      "enabled": true,
+      "email": "ra.demo@example.invalid",
+      "emailVerified": true,
+      "firstName": "Demo",
+      "lastName": "Rule Administrator",
+      "realmRoles": [
+        "RA"
+      ],
+      "groups": [],
+      "requiredActions": []
+    },
+    {
+      "username": "auditor.demo",
+      "enabled": true,
+      "email": "auditor.demo@example.invalid",
+      "emailVerified": true,
+      "firstName": "Demo",
+      "lastName": "Auditor",
+      "realmRoles": [
+        "AU"
+      ],
+      "groups": [],
+      "requiredActions": []
+    },
+    {
+      "username": "institution.demo03",
+      "enabled": true,
+      "email": "institution.demo03@example.invalid",
+      "emailVerified": true,
+      "firstName": "Demo",
+      "lastName": "Institution 03",
+      "realmRoles": [
+        "INS"
+      ],
+      "groups": [],
+      "requiredActions": []
+    }
+  ]
+}

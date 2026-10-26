@@ -1,0 +1,8 @@
+{
+  "action": "approve",
+  "reason": "ok",
+  "by_user_ref": "kc-sub-demo-rb-southern",
+  "by_role": "RB",
+  "at": "2026-12-14T12:01:00+05:30",
+  "ledger_no": 42
+}

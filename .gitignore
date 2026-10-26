@@ -1,0 +1,49 @@
+# ---- Real data: must never be committed (guard rail 3) ----
+data/real-samples/
+*.real.pdf
+
+# ---- Secrets ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+infra/caddy/data/
+infra/caddy/config/
+
+# ---- Logs and local state ----
+.logs/
+*.log
+.DS_Store
+Thumbs.db
+
+# ---- JS ----
+node_modules/
+.next/
+out/
+dist/
+coverage/
+*.tsbuildinfo
+.pnpm-store/
+playwright-report/
+test-results/
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+htmlcov/
+.coverage
+
+# ---- Editors ----
+.idea/
+.vscode/*
+!.vscode/extensions.json
+infra/caddy/*.crt
+infra/certs/*.pem
+!infra/certs/no-extra-ca.pem
+next-env.d.ts

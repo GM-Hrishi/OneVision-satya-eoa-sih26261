@@ -1,0 +1,71 @@
+# SATYA-EoA edge proxy: the only published entry point. Local HTTPS with Caddy's internal CA.
+# Trust the CA once per machine: `make trust-ca` (see docs/DEV-SETUP.md).
+{
+	local_certs
+	servers {
+		protocols h1 h2
+	}
+}
+
+(security_headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		X-Frame-Options "DENY"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+		Cross-Origin-Opener-Policy "same-origin"
+		# Apps set a nonce-based CSP themselves; this is the fallback when an upstream sets none.
+		?Content-Security-Policy "default-src 'self'; frame-ancestors 'none'; base-uri 'self'; object-src 'none'; form-action 'self'"
+		-Server
+		-X-Powered-By
+	}
+}
+
+# Workbench + gateway
+localhost {
+	tls internal
+	import security_headers
+	encode zstd gzip
+
+	handle_path /api/* {
+		request_body {
+			max_size {$SATYA_MAX_BODY_BYTES:1048576}
+		}
+		header Content-Security-Policy "default-src 'none'; frame-ancestors 'none'"
+		header Cache-Control "no-store"
+		reverse_proxy api:8000
+	}
+	handle {
+		reverse_proxy web:3000
+	}
+}
+
+# Mock approval portal (demo stand-in)
+portal.localhost {
+	tls internal
+	import security_headers
+	encode zstd gzip
+	reverse_proxy mock-portal:3000
+}
+
+# Keycloak (SSO). The admin console is not exposed through the edge.
+auth.localhost {
+	tls internal
+	import security_headers
+	@admin path /admin /admin/*
+	respond @admin 404
+	reverse_proxy keycloak:8080 {
+		header_up X-Forwarded-Proto https
+		# Keycloak sends frame-ancestors 'self'; tighten to 'none' (no embedded login anywhere).
+		header_down Content-Security-Policy "frame-src 'self'; frame-ancestors 'none'; object-src 'none'; base-uri 'self'"
+		header_down X-Frame-Options "DENY"
+	}
+}
+
+# Plain-HTTP requests to any name are redirected to HTTPS by Caddy automatically.
+
+# Container-local health endpoint (not published).
+http://:8081 {
+	respond /healthz "ok" 200
+}

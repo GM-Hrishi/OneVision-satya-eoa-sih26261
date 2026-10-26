@@ -1,0 +1,17 @@
+{
+  "spec": "satya.event/0",
+  "event_id": "evt_01JB7Q8N3V9Z6K2M4R5T8W0XYZ",
+  "type": "application.approved",
+  "occurred_at": "2026-12-14T11:05:42+05:30",
+  "producer": "mock-portal",
+  "subject": {
+    "application_id": "1-90000004217",
+    "permanent_id": "1-9000317",
+    "ay": "2026-27"
+  },
+  "sequence": 1,
+  "correlation_id": "cor_01JB7Q8M000000000000000000",
+  "data": {
+    "snapshot_ref": "synthetic/demo-institute-03"
+  }
+}

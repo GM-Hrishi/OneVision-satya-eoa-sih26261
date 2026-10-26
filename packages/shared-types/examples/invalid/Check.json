@@ -1,0 +1,14 @@
+{
+  "kind": "vibes",
+  "outcome": "verified",
+  "reason_code": "SRC_MATCH",
+  "source": {
+    "adapter_id": "tn-fire-licence",
+    "mode": "scraped",
+    "name": "x"
+  },
+  "checked_at": "2026-12-14T11:07:10+05:30",
+  "response_sha256": "3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+  "attempts": 1,
+  "field_diff": []
+}

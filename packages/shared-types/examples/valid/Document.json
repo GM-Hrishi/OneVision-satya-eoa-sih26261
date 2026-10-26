@@ -1,0 +1,75 @@
+{
+  "doc_id": "doc_01JB7Q9A000000000000000005",
+  "slot": "annex2.1(v) fire",
+  "declared_type": "fire_safety_certificate",
+  "classified_type": "fire_safety_certificate",
+  "format_type": "E",
+  "template_id": null,
+  "sha256": "3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+  "bytes": 482113,
+  "page_count": 2,
+  "received_at": "2026-12-14T11:06:01+05:30",
+  "signatures": [
+    {
+      "role": "issuer",
+      "state": "image_only",
+      "has_byte_range": false,
+      "reason_code": "SIG_IMAGE_ONLY",
+      "page": 2,
+      "signer_role": "issuer"
+    },
+    {
+      "role": "uploader",
+      "state": "present",
+      "has_byte_range": true,
+      "signer_role": "chairman",
+      "trust_anchor_label": "TEST TRUST ANCHOR"
+    }
+  ],
+  "verification": {
+    "doc_id": "doc_01JB7Q9A000000000000000005",
+    "label": "manual_review_required",
+    "decided_by": "system",
+    "checks": [
+      {
+        "kind": "issuer_signature",
+        "outcome": "manual_review_required",
+        "reason_code": "SIG_IMAGE_ONLY",
+        "evidence": {
+          "page": 2,
+          "regions": [
+            {
+              "x": 0.61,
+              "y": 0.83,
+              "w": 0.3,
+              "h": 0.07
+            }
+          ]
+        }
+      },
+      {
+        "kind": "source_lookup",
+        "outcome": "verified",
+        "reason_code": "SRC_MATCH",
+        "source": {
+          "adapter_id": "tn-fire-licence",
+          "mode": "mock",
+          "name": "TN fire licence (mock)"
+        },
+        "checked_at": "2026-12-14T11:07:10+05:30",
+        "response_sha256": "3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+        "attempts": 1,
+        "field_diff": []
+      },
+      {
+        "kind": "expiry",
+        "outcome": "verified",
+        "reason_code": "VALID_ON_PROCESSING_DATE",
+        "valid_from": "2025-03-01",
+        "valid_to": "2028-02-29",
+        "basis": "printed"
+      }
+    ]
+  },
+  "flag_count": 1
+}

@@ -1,0 +1,136 @@
+# SATYA-EoA CI: lint, types, unit tests, contract regeneration, compose validation, secret scan,
+# real-data guard and a stack smoke test. Synthetic data only.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  UV_VERSION: "0.11.32"
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  js:
+    name: JS lint, types, tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r lint
+      - run: pnpm -r typecheck
+      - run: pnpm -r test
+      - name: Design tokens match UI spec §8
+        run: node apps/web/scripts/gen-tokens.mjs --check
+
+  python:
+    name: Python lint, types, tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: ${{ env.UV_VERSION }}
+      - run: uv sync --all-packages --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy services/api/src services/worker/src packages/shared-types/python/satya_shared_types
+      - run: uv run pytest packages/shared-types/python
+      - run: uv run pytest services/api
+      - run: uv run pytest services/worker
+      - name: Postgres-backed API tests (pgvector container, real migrations)
+        run: bash infra/scripts/test-db.sh
+
+  contracts:
+    name: Shared-types regeneration diff
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: pnpm
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: ${{ env.UV_VERSION }}
+      - run: pnpm install --frozen-lockfile
+      - run: uv sync --all-packages --frozen
+      - name: Regenerate TS + Pydantic from JSON Schema and fail on any diff
+        run: |
+          pnpm --filter @satya/shared-types gen
+          git status --porcelain packages/shared-types
+          git diff --exit-code -- packages/shared-types
+
+  compose:
+    name: Compose config and memory budget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: docker compose --env-file .env.example -f infra/docker-compose.yml --profile test config --quiet
+      - run: ENV_FILE=../.env.example bash infra/scripts/mem-check.sh
+      - name: Caddyfile is valid
+        run: docker run --rm -v "$PWD/infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro" caddy:2.11.7-alpine caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+
+  secret-scan:
+    name: Secret scan (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: gitleaks over the full git history
+        run: docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:v8.30.1 git /repo --redact --no-banner -v --config /repo/.gitleaks.toml
+
+  real-data-guard:
+    name: Real-data guard
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: bash infra/scripts/real-data-guard.sh
+
+  smoke:
+    name: Stack smoke test
+    runs-on: ubuntu-latest
+    needs: [js, python, compose]
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          version: ${{ env.UV_VERSION }}
+      - run: uv sync --all-packages --frozen
+      - name: Generate random secrets
+        run: make secrets
+      - name: Boot the full stack (all 8 services + one-shot jobs) and wait for health
+        run: make up
+      - name: Trust Caddy's local CA for this run
+        run: make trust-ca
+      - name: Health, meta, signed event, duplicate, tampered, expired, ledger, OIDC login, worker ping
+        run: make smoke
+      - name: Browser acceptance (workbench + mock portal)
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq libnss3-tools
+          mkdir -p ~/.pki/nssdb
+          certutil -d sql:$HOME/.pki/nssdb -N --empty-password
+          certutil -d sql:$HOME/.pki/nssdb -A -t "C,," -n "SATYA Caddy local root" -i infra/caddy/local-root.crt
+          npm install -g playwright@1.64.1
+          npx -y playwright@1.64.1 install --with-deps chromium
+          make e2e
+      - name: Service status and logs on failure
+        if: failure()
+        run: |
+          docker compose --env-file .env -f infra/docker-compose.yml ps -a
+          docker compose --env-file .env -f infra/docker-compose.yml logs --tail 80

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.satya-eoa.invalid/v1/yoy-verdict.schema.json",
+  "title": "YoyVerdict",
+  "description": "M13 year-over-year verdict (design C4a): explained by an approved application, or a discrepancy.",
+  "type": "string",
+  "enum": ["explained", "discrepancy"]
+}

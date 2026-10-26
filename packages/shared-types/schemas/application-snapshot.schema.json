@@ -1,0 +1,943 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.satya-eoa.invalid/v1/application-snapshot.schema.json",
+  "title": "ApplicationSnapshot",
+  "description": "The Application Report field set as the portal sends it (Portal spec §2.6.1). Every property carries x-handling: K keep, T tokenise (keyed HMAC-SHA256, key never stored with the data), R result only (portal's computed value, D2). Fields marked X must not be sent and do not exist in this model; they are listed in x-rejected-fields and the gateway answers PERSONAL_DATA_REJECTED. Unknown fields are rejected (additionalProperties false) for data minimisation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ay",
+    "basic"
+  ],
+  "x-rejected-fields": [
+    "hoi",
+    "hoi.name",
+    "hoi.dob",
+    "hoi.contact",
+    "hoi.pan",
+    "hoi.address",
+    "bank.account_number",
+    "faculty[].pan",
+    "faculty[].dob",
+    "faculty[].name",
+    "faculty[].mobile",
+    "faculty[].email"
+  ],
+  "properties": {
+    "ay": {
+      "$ref": "common.schema.json#/$defs/AcademicYear",
+      "x-handling": "K"
+    },
+    "captured_at": {
+      "$ref": "common.schema.json#/$defs/Timestamp",
+      "x-handling": "K"
+    },
+    "basic": {
+      "type": "object",
+      "additionalProperties": false,
+      "title": "SnapshotBasic",
+      "required": [
+        "application_id",
+        "regional_office",
+        "overall_deficiency"
+      ],
+      "properties": {
+        "application_id": {
+          "$ref": "common.schema.json#/$defs/ApplicationId",
+          "x-handling": "K"
+        },
+        "permanent_id": {
+          "$ref": "common.schema.json#/$defs/PermanentId",
+          "x-handling": "K"
+        },
+        "institution_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "x-handling": "K"
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "x-handling": "K"
+        },
+        "application_date": {
+          "$ref": "common.schema.json#/$defs/Date",
+          "x-handling": "K"
+        },
+        "submission_date": {
+          "anyOf": [
+            {
+              "$ref": "common.schema.json#/$defs/Date"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "x-handling": "K"
+        },
+        "regional_office": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "x-handling": "K"
+        },
+        "overall_deficiency": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ],
+          "title": "TriState",
+          "description": "Flag only; blank in the report = unknown, never no (design D4).",
+          "x-handling": "K"
+        }
+      },
+      "x-handling": "K"
+    },
+    "trust": {
+      "type": "object",
+      "additionalProperties": false,
+      "title": "SnapshotTrust",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "x-handling": "K"
+        },
+        "registration_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "x-handling": "K"
+        }
+      },
+      "x-handling": "K"
+    },
+    "trustees": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "title": "SnapshotTrustee",
+        "required": [
+          "name",
+          "role"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "x-handling": "T",
+            "x-token-field": "trustee_token",
+            "description": "Trustee name. Tokenised at the gateway (keyed HMAC-SHA256) before anything is stored; stored as trustee_token."
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "x-handling": "K"
+          },
+          "tenure_from": {
+            "$ref": "common.schema.json#/$defs/Date",
+            "x-handling": "K"
+          },
+          "tenure_to": {
+            "anyOf": [
+              {
+                "$ref": "common.schema.json#/$defs/Date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-handling": "K"
+          }
+        },
+        "x-handling": "K"
+      },
+      "x-handling": "K"
+    },
+    "authorised_signatory": {
+      "type": "object",
+      "additionalProperties": false,
+      "title": "SnapshotSignatory",
+      "required": [
+        "name",
+        "designation"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "x-handling": "T",
+          "x-token-field": "signatory_token",
+          "description": "Chairman/Secretary name, used only for the M6 signer check (§2.8). Tokenised at the gateway (keyed HMAC-SHA256) before anything is stored; stored as signatory_token."
+        },
+        "designation": {
+          "type": "string",
+          "enum": [
+            "chairman",
+            "secretary",
+            "authorised_person"
+          ],
+          "x-handling": "K"
+        }
+      },
+      "x-handling": "K"
+    },
+    "courses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "title": "SnapshotCourse",
+        "required": [
+          "programme",
+          "level",
+          "course",
+          "intake_applied"
+        ],
+        "properties": {
+          "programme": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "x-handling": "K"
+          },
+          "level": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32,
+            "x-handling": "K"
+          },
+          "course": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "x-handling": "K"
+          },
+          "intake_approved": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "title": "ApprovedIntake",
+              "required": [
+                "ay",
+                "intake"
+              ],
+              "properties": {
+                "ay": {
+                  "$ref": "common.schema.json#/$defs/AcademicYear",
+                  "x-handling": "K"
+                },
+                "intake": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "x-handling": "K"
+                }
+              },
+              "x-handling": "K"
+            },
+            "maxItems": 2,
+            "description": "Intake approved for the last 2 AYs.",
+            "x-handling": "K"
+          },
+          "intake_applied": {
+            "type": "integer",
+            "minimum": 0,
+            "x-handling": "K"
+          },
+          "faculty_required": {
+            "type": "integer",
+            "minimum": 0,
+            "x-handling": "K"
+          },
+          "faculty_actual": {
+            "type": "integer",
+            "minimum": 0,
+            "x-handling": "K"
+          },
+          "nri_status": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "x-handling": "K"
+          },
+          "international_students_status": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "x-handling": "K"
+          },
+          "nba_status": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "x-handling": "K"
+          }
+        },
+        "x-handling": "K"
+      },
+      "x-handling": "K"
+    },
+    "land": {
+      "type": "object",
+      "additionalProperties": false,
+      "title": "SnapshotLand",
+      "properties": {
+        "total_area": {
+          "type": "number",
+          "minimum": 0,
+          "x-handling": "K"
+        },
+        "unit": {
+          "type": "string",
+          "enum": [
+            "acre",
+            "hectare",
+            "sq_m"
+          ],
+          "x-handling": "K"
+        },
+        "pieces": {
+          "type": "integer",
+          "minimum": 0,
+          "x-handling": "K"
+        },
+        "max_distance_km": {
+          "type": "number",
+          "minimum": 0,
+          "x-handling": "K"
+        },
+        "land_use_certificate_issuer": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "x-handling": "K"
+        },
+        "land_use_certificate_date": {
+          "$ref": "common.schema.json#/$defs/Date",
+          "x-handling": "K"
+        },
+        "coordinates": {
+          "type": "object",
+          "additionalProperties": false,
+          "title": "CoordinatesDms",
+          "required": [
+            "lat",
+            "lon"
+          ],
+          "properties": {
+            "lat": {
+              "type": "object",
+              "additionalProperties": false,
+              "title": "LatitudeDms",
+              "required": [
+                "deg",
+                "min",
+                "sec",
+                "hemisphere"
+              ],
+              "properties": {
+                "deg": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 180,
+                  "x-handling": "K"
+                },
+                "min": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 59,
+                  "x-handling": "K"
+                },
+                "sec": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 59,
+                  "x-handling": "K"
+                },
+                "hemisphere": {
+                  "type": "string",
+                  "enum": [
+                    "N",
+                    "S"
+                  ],
+                  "title": "LatitudeHemisphere",
+                  "x-handling": "K"
+                }
+              },
+              "x-handling": "K"
+            },
+            "lon": {
+              "type": "object",
+              "additionalProperties": false,
+              "title": "LongitudeDms",
+              "required": [
+                "deg",
+                "min",
+                "sec",
+                "hemisphere"
+              ],
+              "properties": {
+                "deg": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 180,
+                  "x-handling": "K"
+                },
+                "min": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 59,
+                  "x-handling": "K"
+                },
+                "sec": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 59,
+                  "x-handling": "K"
+                },
+                "hemisphere": {
+                  "type": "string",
+                  "enum": [
+                    "E",
+                    "W"
+                  ],
+                  "title": "LongitudeHemisphere",
+                  "x-handling": "K"
+                }
+              },
+              "x-handling": "K"
+            }
+          },
+          "x-handling": "K"
+        },
+        "deeds": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "title": "SnapshotDeed",
+            "required": [
+              "holder",
+              "document_no",
+              "area_acre"
+            ],
+            "properties": {
+              "holder": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "x-handling": "T",
+                "x-token-field": "holder_token",
+                "description": "Deed holder. Tokenised at the gateway (keyed HMAC-SHA256) before anything is stored; stored as holder_token."
+              },
+              "document_no": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "x-handling": "T",
+                "x-token-field": "deed_token",
+                "description": "Deed document number. Tokenised at the gateway (keyed HMAC-SHA256) before anything is stored; stored as deed_token."
+              },
+              "registration_date": {
+                "$ref": "common.schema.json#/$defs/Date",
+                "x-handling": "K"
+              },
+              "plot_no": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "x-handling": "K"
+              },
+              "village_district": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "x-handling": "K"
+              },
+              "area_acre": {
+                "type": "number",
+                "minimum": 0,
+                "x-handling": "K"
+              }
+            },
+            "x-handling": "K"
+          },
+          "x-handling": "K"
+        }
+      },
+      "x-handling": "K"
+    },
+    "buildings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "title": "SnapshotBuilding",
+        "required": [
+          "block"
+        ],
+        "properties": {
+          "block": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "x-handling": "K"
+          },
+          "sanctioned_area_m2": {
+            "type": "number",
+            "minimum": 0,
+            "x-handling": "K"
+          },
+          "constructed_area_m2": {
+            "type": "number",
+            "minimum": 0,
+            "x-handling": "K"
+          },
+          "approving_authority": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "x-handling": "K"
+          },
+          "approval_date": {
+            "$ref": "common.schema.json#/$defs/Date",
+            "x-handling": "K"
+          }
+        },
+        "x-handling": "K"
+      },
+      "x-handling": "K"
+    },
+    "rooms": {
+      "type": "object",
+      "additionalProperties": false,
+      "title": "SnapshotRooms",
+      "properties": {
+        "administrative": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RoomRow",
+            "x-handling": "K"
+          },
+          "x-handling": "K"
+        },
+        "amenities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RoomRow",
+            "x-handling": "K"
+          },
+          "x-handling": "K"
+        },
+        "instructional": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RoomRow",
+            "x-handling": "K"
+          },
+          "x-handling": "K"
+        },
+        "instructional_common": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RoomRow",
+            "x-handling": "K"
+          },
+          "x-handling": "K"
+        }
+      },
+      "x-handling": "K"
+    },
+    "facilities": {
+      "$ref": "#/$defs/PrintedSection",
+      "x-handling": "R"
+    },
+    "committees": {
+      "$ref": "#/$defs/PrintedSection",
+      "x-handling": "R"
+    },
+    "bank": {
+      "type": "object",
+      "additionalProperties": false,
+      "title": "SnapshotBank",
+      "description": "Account number is X (rejected), never part of this model.",
+      "properties": {
+        "bank_name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "x-handling": "K"
+        },
+        "ifsc": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 11,
+          "pattern": "^[A-Z]{4}0[A-Z0-9]{6}$",
+          "x-handling": "K"
+        }
+      },
+      "x-handling": "K"
+    },
+    "finance": {
+      "type": "object",
+      "additionalProperties": false,
+      "title": "SnapshotFinance",
+      "properties": {
+        "fy": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16,
+          "pattern": "^[0-9]{4}-[0-9]{2}$",
+          "x-handling": "K"
+        },
+        "income_total_paise": {
+          "type": "integer",
+          "minimum": 0,
+          "x-handling": "K"
+        },
+        "expenditure_total_paise": {
+          "type": "integer",
+          "minimum": 0,
+          "x-handling": "K"
+        },
+        "heads": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "title": "FinanceHead",
+            "required": [
+              "head"
+            ],
+            "properties": {
+              "head": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "x-handling": "K"
+              },
+              "income_paise": {
+                "type": "integer",
+                "minimum": 0,
+                "x-handling": "K"
+              },
+              "expenditure_paise": {
+                "type": "integer",
+                "minimum": 0,
+                "x-handling": "K"
+              }
+            },
+            "x-handling": "K"
+          },
+          "x-handling": "K"
+        }
+      },
+      "x-handling": "K"
+    },
+    "declaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "title": "SnapshotDeclaration",
+      "properties": {
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "title": "DeclarationItems",
+          "properties": {
+            "a": {
+              "type": "boolean",
+              "x-handling": "K"
+            },
+            "b": {
+              "type": "boolean",
+              "x-handling": "K"
+            },
+            "c": {
+              "type": "boolean",
+              "x-handling": "K"
+            },
+            "d": {
+              "type": "boolean",
+              "x-handling": "K"
+            },
+            "e": {
+              "type": "boolean",
+              "x-handling": "K"
+            },
+            "f": {
+              "type": "boolean",
+              "x-handling": "K"
+            }
+          },
+          "x-handling": "K"
+        },
+        "category_list": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "x-handling": "K"
+          },
+          "x-handling": "K"
+        }
+      },
+      "x-handling": "K"
+    },
+    "faculty": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "title": "SnapshotFaculty",
+        "required": [
+          "faculty_id",
+          "designation"
+        ],
+        "properties": {
+          "faculty_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "x-handling": "T",
+            "x-token-field": "faculty_token",
+            "description": "Portal Faculty ID (1- + 9–11 digits). Reveal only via a logged official action (AU-04). Tokenised at the gateway (keyed HMAC-SHA256) before anything is stored; stored as faculty_token."
+          },
+          "designation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "x-handling": "K"
+          },
+          "appointment_type": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "x-handling": "K"
+          },
+          "programme": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "x-handling": "K"
+          },
+          "department": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200,
+            "x-handling": "K"
+          },
+          "date_of_joining": {
+            "$ref": "common.schema.json#/$defs/Date",
+            "x-handling": "K"
+          },
+          "highest_qualification_level": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "x-handling": "K"
+          },
+          "relieved_date": {
+            "anyOf": [
+              {
+                "$ref": "common.schema.json#/$defs/Date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "x-handling": "K"
+          },
+          "is_duplicate": {
+            "type": "boolean",
+            "x-handling": "R",
+            "description": "Portal's own within-portal duplicate flag (D2); never recomputed."
+          },
+          "pan_validation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32,
+            "description": "Portal's PAN validation result only (D2); the PAN itself is X.",
+            "x-handling": "R"
+          },
+          "record_status": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32,
+            "x-handling": "R"
+          }
+        },
+        "x-handling": "K"
+      },
+      "x-handling": "K"
+    },
+    "deficiency_report": {
+      "type": "object",
+      "additionalProperties": false,
+      "title": "DeficiencyReportResult",
+      "description": "Portal Deficiency Report result, imported not recomputed (D2, guard rail 8).",
+      "required": [
+        "overall"
+      ],
+      "properties": {
+        "template_year": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 16,
+          "x-handling": "R"
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "title": "DeficiencySection",
+            "required": [
+              "section",
+              "deficiency"
+            ],
+            "properties": {
+              "section": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "x-handling": "R"
+              },
+              "deficiency": {
+                "type": "string",
+                "enum": [
+                  "yes",
+                  "no"
+                ],
+                "x-handling": "R"
+              }
+            },
+            "x-handling": "R"
+          },
+          "x-handling": "R"
+        },
+        "overall": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ],
+          "x-handling": "R"
+        },
+        "principal_eligibility": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ],
+          "description": "The only HOI-derived value SATYA keeps (HOI personal details are X).",
+          "x-handling": "R"
+        }
+      },
+      "x-handling": "R"
+    }
+  },
+  "$defs": {
+    "RoomRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "title": "RoomRow",
+      "required": [
+        "room_id",
+        "room_type",
+        "carpet_area_m2"
+      ],
+      "properties": {
+        "room_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "x-handling": "K"
+        },
+        "room_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "x-handling": "K"
+        },
+        "carpet_area_m2": {
+          "type": "number",
+          "minimum": 0,
+          "x-handling": "K"
+        },
+        "flooring": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "description": "Completion of flooring, as printed (e.g. Ready).",
+          "x-handling": "K"
+        },
+        "walls_painting": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "x-handling": "K"
+        },
+        "electrification": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "x-handling": "K"
+        }
+      },
+      "x-handling": "K"
+    },
+    "PrintedSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "title": "PrintedSection",
+      "description": "Portal-computed section kept as printed, display only (D2).",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "title": "PrintedItem",
+            "required": [
+              "name",
+              "value"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "x-handling": "R"
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 400,
+                "x-handling": "R"
+              }
+            },
+            "x-handling": "R"
+          },
+          "x-handling": "R"
+        }
+      },
+      "x-handling": "R"
+    }
+  }
+}

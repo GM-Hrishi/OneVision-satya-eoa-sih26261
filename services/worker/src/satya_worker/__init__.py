@@ -1,0 +1,1 @@
+"""SATYA-EoA worker package."""

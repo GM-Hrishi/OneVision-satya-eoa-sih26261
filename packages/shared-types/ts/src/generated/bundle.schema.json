@@ -1,0 +1,2326 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.satya-eoa.invalid/v1/bundle.schema.json",
+  "title": "SatyaContracts",
+  "description": "GENERATED from packages/shared-types/schemas by scripts/generate.mjs. Do not edit. All SATYA-EoA contracts (Portal spec §2) in one document.",
+  "type": "object",
+  "$defs": {
+    "AcademicYear": {
+      "title": "AcademicYear",
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}$",
+      "description": "Academic year as printed, e.g. 2026-27."
+    },
+    "Alert": {
+      "title": "Alert",
+      "description": "Alert with type + subtype (Portal spec §2.9). Institution-facing alerts are limited to missing_info, expired, unresolved.clarification_* and unresolved.compliance_window_*.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alert_id",
+        "type",
+        "subtype",
+        "severity",
+        "audience_roles",
+        "case_id",
+        "application_id",
+        "text_key",
+        "created_at",
+        "read"
+      ],
+      "properties": {
+        "alert_id": {
+          "$ref": "#/$defs/AlertId"
+        },
+        "type": {
+          "$ref": "#/$defs/AlertType"
+        },
+        "subtype": {
+          "$ref": "#/$defs/AlertSubtype"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "audience_roles": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/Role"
+          }
+        },
+        "case_id": {
+          "$ref": "#/$defs/CaseId"
+        },
+        "application_id": {
+          "$ref": "#/$defs/ApplicationId"
+        },
+        "flag_id": {
+          "$ref": "#/$defs/FlagId"
+        },
+        "doc_id": {
+          "$ref": "#/$defs/DocId"
+        },
+        "label": {
+          "$ref": "#/$defs/VerificationLabel"
+        },
+        "aph_clause": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "text_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "due_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "created_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "read": {
+          "type": "boolean"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "missing_info"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "document_missing",
+                  "field_missing",
+                  "category_line_missing",
+                  "uploader_dsc_missing"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "expired"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "document_expired",
+                  "expiring_soon",
+                  "partial_oc_limit_reached",
+                  "signing_cert_expired"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "pending_source"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "source_pending_overdue",
+                  "source_unavailable",
+                  "trust_anchor_revalidation"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "suspected_anomaly"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "affidavit_diff",
+                  "signature_integrity",
+                  "signature_image_only",
+                  "stamp_chronology",
+                  "identity_graph",
+                  "yoy_discrepancy",
+                  "document_misclassified",
+                  "media_reuse"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "unresolved"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "flag_undisposed_overdue",
+                  "manual_task_overdue",
+                  "clarification_overdue",
+                  "compliance_window_expiring",
+                  "compliance_window_lapsed"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "role"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "subtype": {
+                "enum": [
+                  "case_assigned",
+                  "sitting_scheduled",
+                  "evc_scheduled",
+                  "hearing_scheduled",
+                  "selection_round_opened"
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "x-subtypes": {
+        "missing_info": [
+          "document_missing",
+          "field_missing",
+          "category_line_missing",
+          "uploader_dsc_missing"
+        ],
+        "expired": [
+          "document_expired",
+          "expiring_soon",
+          "partial_oc_limit_reached",
+          "signing_cert_expired"
+        ],
+        "pending_source": [
+          "source_pending_overdue",
+          "source_unavailable",
+          "trust_anchor_revalidation"
+        ],
+        "suspected_anomaly": [
+          "affidavit_diff",
+          "signature_integrity",
+          "signature_image_only",
+          "stamp_chronology",
+          "identity_graph",
+          "yoy_discrepancy",
+          "document_misclassified",
+          "media_reuse"
+        ],
+        "unresolved": [
+          "flag_undisposed_overdue",
+          "manual_task_overdue",
+          "clarification_overdue",
+          "compliance_window_expiring",
+          "compliance_window_lapsed"
+        ],
+        "role": [
+          "case_assigned",
+          "sitting_scheduled",
+          "evc_scheduled",
+          "hearing_scheduled",
+          "selection_round_opened"
+        ]
+      }
+    },
+    "AlertId": {
+      "title": "AlertId",
+      "type": "string",
+      "pattern": "^alr_[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "AlertSubtype": {
+      "title": "AlertSubtype",
+      "type": "string",
+      "enum": [
+        "document_missing",
+        "field_missing",
+        "category_line_missing",
+        "uploader_dsc_missing",
+        "document_expired",
+        "expiring_soon",
+        "partial_oc_limit_reached",
+        "signing_cert_expired",
+        "source_pending_overdue",
+        "source_unavailable",
+        "trust_anchor_revalidation",
+        "affidavit_diff",
+        "signature_integrity",
+        "signature_image_only",
+        "stamp_chronology",
+        "identity_graph",
+        "yoy_discrepancy",
+        "document_misclassified",
+        "media_reuse",
+        "flag_undisposed_overdue",
+        "manual_task_overdue",
+        "clarification_overdue",
+        "compliance_window_expiring",
+        "compliance_window_lapsed",
+        "case_assigned",
+        "sitting_scheduled",
+        "evc_scheduled",
+        "hearing_scheduled",
+        "selection_round_opened"
+      ]
+    },
+    "AlertType": {
+      "title": "AlertType",
+      "type": "string",
+      "enum": [
+        "missing_info",
+        "expired",
+        "pending_source",
+        "suspected_anomaly",
+        "unresolved",
+        "role"
+      ]
+    },
+    "ApplicationId": {
+      "title": "ApplicationId",
+      "type": "string",
+      "pattern": "^1-[0-9]{10,11}$",
+      "description": "Portal application ID in printed form (design D4). Demo data uses 1-9…."
+    },
+    "ApplicationSnapshot": {
+      "title": "ApplicationSnapshot",
+      "description": "The Application Report field set as the portal sends it (Portal spec §2.6.1). Every property carries x-handling: K keep, T tokenise (keyed HMAC-SHA256, key never stored with the data), R result only (portal's computed value, D2). Fields marked X must not be sent and do not exist in this model; they are listed in x-rejected-fields and the gateway answers PERSONAL_DATA_REJECTED. Unknown fields are rejected (additionalProperties false) for data minimisation.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ay",
+        "basic"
+      ],
+      "x-rejected-fields": [
+        "hoi",
+        "hoi.name",
+        "hoi.dob",
+        "hoi.contact",
+        "hoi.pan",
+        "hoi.address",
+        "bank.account_number",
+        "faculty[].pan",
+        "faculty[].dob",
+        "faculty[].name",
+        "faculty[].mobile",
+        "faculty[].email"
+      ],
+      "properties": {
+        "ay": {
+          "$ref": "#/$defs/AcademicYear",
+          "x-handling": "K"
+        },
+        "captured_at": {
+          "$ref": "#/$defs/Timestamp",
+          "x-handling": "K"
+        },
+        "basic": {
+          "type": "object",
+          "additionalProperties": false,
+          "title": "SnapshotBasic",
+          "required": [
+            "application_id",
+            "regional_office",
+            "overall_deficiency"
+          ],
+          "properties": {
+            "application_id": {
+              "$ref": "#/$defs/ApplicationId",
+              "x-handling": "K"
+            },
+            "permanent_id": {
+              "$ref": "#/$defs/PermanentId",
+              "x-handling": "K"
+            },
+            "institution_type": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "x-handling": "K"
+            },
+            "status": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "x-handling": "K"
+            },
+            "application_date": {
+              "$ref": "#/$defs/Date",
+              "x-handling": "K"
+            },
+            "submission_date": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/Date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "x-handling": "K"
+            },
+            "regional_office": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64,
+              "x-handling": "K"
+            },
+            "overall_deficiency": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no",
+                "unknown"
+              ],
+              "title": "TriState",
+              "description": "Flag only; blank in the report = unknown, never no (design D4).",
+              "x-handling": "K"
+            }
+          },
+          "x-handling": "K"
+        },
+        "trust": {
+          "type": "object",
+          "additionalProperties": false,
+          "title": "SnapshotTrust",
+          "required": [
+            "name"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "x-handling": "K"
+            },
+            "registration_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "x-handling": "K"
+            }
+          },
+          "x-handling": "K"
+        },
+        "trustees": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "title": "SnapshotTrustee",
+            "required": [
+              "name",
+              "role"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "x-handling": "T",
+                "x-token-field": "trustee_token",
+                "description": "Trustee name. Tokenised at the gateway (keyed HMAC-SHA256) before anything is stored; stored as trustee_token."
+              },
+              "role": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "x-handling": "K"
+              },
+              "tenure_from": {
+                "$ref": "#/$defs/Date",
+                "x-handling": "K"
+              },
+              "tenure_to": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Date"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "x-handling": "K"
+              }
+            },
+            "x-handling": "K"
+          },
+          "x-handling": "K"
+        },
+        "authorised_signatory": {
+          "type": "object",
+          "additionalProperties": false,
+          "title": "SnapshotSignatory",
+          "required": [
+            "name",
+            "designation"
+          ],
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "x-handling": "T",
+              "x-token-field": "signatory_token",
+              "description": "Chairman/Secretary name, used only for the M6 signer check (§2.8). Tokenised at the gateway (keyed HMAC-SHA256) before anything is stored; stored as signatory_token."
+            },
+            "designation": {
+              "type": "string",
+              "enum": [
+                "chairman",
+                "secretary",
+                "authorised_person"
+              ],
+              "x-handling": "K"
+            }
+          },
+          "x-handling": "K"
+        },
+        "courses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "title": "SnapshotCourse",
+            "required": [
+              "programme",
+              "level",
+              "course",
+              "intake_applied"
+            ],
+            "properties": {
+              "programme": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "x-handling": "K"
+              },
+              "level": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 32,
+                "x-handling": "K"
+              },
+              "course": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "x-handling": "K"
+              },
+              "intake_approved": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "title": "ApprovedIntake",
+                  "required": [
+                    "ay",
+                    "intake"
+                  ],
+                  "properties": {
+                    "ay": {
+                      "$ref": "#/$defs/AcademicYear",
+                      "x-handling": "K"
+                    },
+                    "intake": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "x-handling": "K"
+                    }
+                  },
+                  "x-handling": "K"
+                },
+                "maxItems": 2,
+                "description": "Intake approved for the last 2 AYs.",
+                "x-handling": "K"
+              },
+              "intake_applied": {
+                "type": "integer",
+                "minimum": 0,
+                "x-handling": "K"
+              },
+              "faculty_required": {
+                "type": "integer",
+                "minimum": 0,
+                "x-handling": "K"
+              },
+              "faculty_actual": {
+                "type": "integer",
+                "minimum": 0,
+                "x-handling": "K"
+              },
+              "nri_status": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "x-handling": "K"
+              },
+              "international_students_status": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "x-handling": "K"
+              },
+              "nba_status": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "x-handling": "K"
+              }
+            },
+            "x-handling": "K"
+          },
+          "x-handling": "K"
+        },
+        "land": {
+          "type": "object",
+          "additionalProperties": false,
+          "title": "SnapshotLand",
+          "properties": {
+            "total_area": {
+              "type": "number",
+              "minimum": 0,
+              "x-handling": "K"
+            },
+            "unit": {
+              "type": "string",
+              "enum": [
+                "acre",
+                "hectare",
+                "sq_m"
+              ],
+              "x-handling": "K"
+            },
+            "pieces": {
+              "type": "integer",
+              "minimum": 0,
+              "x-handling": "K"
+            },
+            "max_distance_km": {
+              "type": "number",
+              "minimum": 0,
+              "x-handling": "K"
+            },
+            "land_use_certificate_issuer": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "x-handling": "K"
+            },
+            "land_use_certificate_date": {
+              "$ref": "#/$defs/Date",
+              "x-handling": "K"
+            },
+            "coordinates": {
+              "type": "object",
+              "additionalProperties": false,
+              "title": "CoordinatesDms",
+              "required": [
+                "lat",
+                "lon"
+              ],
+              "properties": {
+                "lat": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "title": "LatitudeDms",
+                  "required": [
+                    "deg",
+                    "min",
+                    "sec",
+                    "hemisphere"
+                  ],
+                  "properties": {
+                    "deg": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 180,
+                      "x-handling": "K"
+                    },
+                    "min": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 59,
+                      "x-handling": "K"
+                    },
+                    "sec": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 59,
+                      "x-handling": "K"
+                    },
+                    "hemisphere": {
+                      "type": "string",
+                      "enum": [
+                        "N",
+                        "S"
+                      ],
+                      "title": "LatitudeHemisphere",
+                      "x-handling": "K"
+                    }
+                  },
+                  "x-handling": "K"
+                },
+                "lon": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "title": "LongitudeDms",
+                  "required": [
+                    "deg",
+                    "min",
+                    "sec",
+                    "hemisphere"
+                  ],
+                  "properties": {
+                    "deg": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 180,
+                      "x-handling": "K"
+                    },
+                    "min": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 59,
+                      "x-handling": "K"
+                    },
+                    "sec": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 59,
+                      "x-handling": "K"
+                    },
+                    "hemisphere": {
+                      "type": "string",
+                      "enum": [
+                        "E",
+                        "W"
+                      ],
+                      "title": "LongitudeHemisphere",
+                      "x-handling": "K"
+                    }
+                  },
+                  "x-handling": "K"
+                }
+              },
+              "x-handling": "K"
+            },
+            "deeds": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "title": "SnapshotDeed",
+                "required": [
+                  "holder",
+                  "document_no",
+                  "area_acre"
+                ],
+                "properties": {
+                  "holder": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "x-handling": "T",
+                    "x-token-field": "holder_token",
+                    "description": "Deed holder. Tokenised at the gateway (keyed HMAC-SHA256) before anything is stored; stored as holder_token."
+                  },
+                  "document_no": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "x-handling": "T",
+                    "x-token-field": "deed_token",
+                    "description": "Deed document number. Tokenised at the gateway (keyed HMAC-SHA256) before anything is stored; stored as deed_token."
+                  },
+                  "registration_date": {
+                    "$ref": "#/$defs/Date",
+                    "x-handling": "K"
+                  },
+                  "plot_no": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 64,
+                    "x-handling": "K"
+                  },
+                  "village_district": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "x-handling": "K"
+                  },
+                  "area_acre": {
+                    "type": "number",
+                    "minimum": 0,
+                    "x-handling": "K"
+                  }
+                },
+                "x-handling": "K"
+              },
+              "x-handling": "K"
+            }
+          },
+          "x-handling": "K"
+        },
+        "buildings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "title": "SnapshotBuilding",
+            "required": [
+              "block"
+            ],
+            "properties": {
+              "block": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "x-handling": "K"
+              },
+              "sanctioned_area_m2": {
+                "type": "number",
+                "minimum": 0,
+                "x-handling": "K"
+              },
+              "constructed_area_m2": {
+                "type": "number",
+                "minimum": 0,
+                "x-handling": "K"
+              },
+              "approving_authority": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "x-handling": "K"
+              },
+              "approval_date": {
+                "$ref": "#/$defs/Date",
+                "x-handling": "K"
+              }
+            },
+            "x-handling": "K"
+          },
+          "x-handling": "K"
+        },
+        "rooms": {
+          "type": "object",
+          "additionalProperties": false,
+          "title": "SnapshotRooms",
+          "properties": {
+            "administrative": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/RoomRow",
+                "x-handling": "K"
+              },
+              "x-handling": "K"
+            },
+            "amenities": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/RoomRow",
+                "x-handling": "K"
+              },
+              "x-handling": "K"
+            },
+            "instructional": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/RoomRow",
+                "x-handling": "K"
+              },
+              "x-handling": "K"
+            },
+            "instructional_common": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/RoomRow",
+                "x-handling": "K"
+              },
+              "x-handling": "K"
+            }
+          },
+          "x-handling": "K"
+        },
+        "facilities": {
+          "$ref": "#/$defs/PrintedSection",
+          "x-handling": "R"
+        },
+        "committees": {
+          "$ref": "#/$defs/PrintedSection",
+          "x-handling": "R"
+        },
+        "bank": {
+          "type": "object",
+          "additionalProperties": false,
+          "title": "SnapshotBank",
+          "description": "Account number is X (rejected), never part of this model.",
+          "properties": {
+            "bank_name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "x-handling": "K"
+            },
+            "ifsc": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 11,
+              "pattern": "^[A-Z]{4}0[A-Z0-9]{6}$",
+              "x-handling": "K"
+            }
+          },
+          "x-handling": "K"
+        },
+        "finance": {
+          "type": "object",
+          "additionalProperties": false,
+          "title": "SnapshotFinance",
+          "properties": {
+            "fy": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 16,
+              "pattern": "^[0-9]{4}-[0-9]{2}$",
+              "x-handling": "K"
+            },
+            "income_total_paise": {
+              "type": "integer",
+              "minimum": 0,
+              "x-handling": "K"
+            },
+            "expenditure_total_paise": {
+              "type": "integer",
+              "minimum": 0,
+              "x-handling": "K"
+            },
+            "heads": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "title": "FinanceHead",
+                "required": [
+                  "head"
+                ],
+                "properties": {
+                  "head": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "x-handling": "K"
+                  },
+                  "income_paise": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "x-handling": "K"
+                  },
+                  "expenditure_paise": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "x-handling": "K"
+                  }
+                },
+                "x-handling": "K"
+              },
+              "x-handling": "K"
+            }
+          },
+          "x-handling": "K"
+        },
+        "declaration": {
+          "type": "object",
+          "additionalProperties": false,
+          "title": "SnapshotDeclaration",
+          "properties": {
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "title": "DeclarationItems",
+              "properties": {
+                "a": {
+                  "type": "boolean",
+                  "x-handling": "K"
+                },
+                "b": {
+                  "type": "boolean",
+                  "x-handling": "K"
+                },
+                "c": {
+                  "type": "boolean",
+                  "x-handling": "K"
+                },
+                "d": {
+                  "type": "boolean",
+                  "x-handling": "K"
+                },
+                "e": {
+                  "type": "boolean",
+                  "x-handling": "K"
+                },
+                "f": {
+                  "type": "boolean",
+                  "x-handling": "K"
+                }
+              },
+              "x-handling": "K"
+            },
+            "category_list": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "x-handling": "K"
+              },
+              "x-handling": "K"
+            }
+          },
+          "x-handling": "K"
+        },
+        "faculty": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "title": "SnapshotFaculty",
+            "required": [
+              "faculty_id",
+              "designation"
+            ],
+            "properties": {
+              "faculty_id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "x-handling": "T",
+                "x-token-field": "faculty_token",
+                "description": "Portal Faculty ID (1- + 9–11 digits). Reveal only via a logged official action (AU-04). Tokenised at the gateway (keyed HMAC-SHA256) before anything is stored; stored as faculty_token."
+              },
+              "designation": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "x-handling": "K"
+              },
+              "appointment_type": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "x-handling": "K"
+              },
+              "programme": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "x-handling": "K"
+              },
+              "department": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "x-handling": "K"
+              },
+              "date_of_joining": {
+                "$ref": "#/$defs/Date",
+                "x-handling": "K"
+              },
+              "highest_qualification_level": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64,
+                "x-handling": "K"
+              },
+              "relieved_date": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Date"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "x-handling": "K"
+              },
+              "is_duplicate": {
+                "type": "boolean",
+                "x-handling": "R",
+                "description": "Portal's own within-portal duplicate flag (D2); never recomputed."
+              },
+              "pan_validation": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 32,
+                "description": "Portal's PAN validation result only (D2); the PAN itself is X.",
+                "x-handling": "R"
+              },
+              "record_status": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 32,
+                "x-handling": "R"
+              }
+            },
+            "x-handling": "K"
+          },
+          "x-handling": "K"
+        },
+        "deficiency_report": {
+          "type": "object",
+          "additionalProperties": false,
+          "title": "DeficiencyReportResult",
+          "description": "Portal Deficiency Report result, imported not recomputed (D2, guard rail 8).",
+          "required": [
+            "overall"
+          ],
+          "properties": {
+            "template_year": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 16,
+              "x-handling": "R"
+            },
+            "sections": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "title": "DeficiencySection",
+                "required": [
+                  "section",
+                  "deficiency"
+                ],
+                "properties": {
+                  "section": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 200,
+                    "x-handling": "R"
+                  },
+                  "deficiency": {
+                    "type": "string",
+                    "enum": [
+                      "yes",
+                      "no"
+                    ],
+                    "x-handling": "R"
+                  }
+                },
+                "x-handling": "R"
+              },
+              "x-handling": "R"
+            },
+            "overall": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no",
+                "unknown"
+              ],
+              "x-handling": "R"
+            },
+            "principal_eligibility": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no",
+                "unknown"
+              ],
+              "description": "The only HOI-derived value SATYA keeps (HOI personal details are X).",
+              "x-handling": "R"
+            }
+          },
+          "x-handling": "R"
+        }
+      }
+    },
+    "CaseId": {
+      "title": "CaseId",
+      "type": "string",
+      "pattern": "^cas_[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "Check": {
+      "title": "Check",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "outcome",
+        "reason_code"
+      ],
+      "properties": {
+        "kind": {
+          "title": "CheckKind",
+          "type": "string",
+          "enum": [
+            "issuer_signature",
+            "uploader_signature",
+            "source_lookup",
+            "qr_consistency",
+            "expiry",
+            "format",
+            "chronology"
+          ]
+        },
+        "outcome": {
+          "$ref": "#/$defs/VerificationLabel"
+        },
+        "reason_code": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]{1,63}$"
+        },
+        "evidence": {
+          "title": "CheckEvidence",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "page"
+          ],
+          "properties": {
+            "page": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "regions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Region"
+              }
+            }
+          }
+        },
+        "source": {
+          "$ref": "#/$defs/CheckSource"
+        },
+        "checked_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "response_sha256": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "field_diff": {
+          "type": "array",
+          "description": "Drives mismatch_detected.",
+          "items": {
+            "title": "FieldDiff",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "field",
+              "submitted",
+              "source"
+            ],
+            "properties": {
+              "field": {
+                "type": "string",
+                "minLength": 1
+              },
+              "submitted": {
+                "type": [
+                  "string",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              },
+              "source": {
+                "type": [
+                  "string",
+                  "number",
+                  "boolean",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
+        "valid_from": {
+          "$ref": "#/$defs/Date"
+        },
+        "valid_to": {
+          "$ref": "#/$defs/Date"
+        },
+        "basis": {
+          "title": "ExpiryBasis",
+          "type": "string",
+          "enum": [
+            "printed",
+            "computed_from_state_rule"
+          ]
+        }
+      }
+    },
+    "CheckSource": {
+      "title": "CheckSource",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "adapter_id",
+        "mode",
+        "name"
+      ],
+      "properties": {
+        "adapter_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]{1,63}$"
+        },
+        "mode": {
+          "title": "SourceMode",
+          "type": "string",
+          "enum": [
+            "live",
+            "mock",
+            "offline",
+            "none"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      }
+    },
+    "CorrelationId": {
+      "title": "CorrelationId",
+      "type": "string",
+      "pattern": "^cor_[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "Date": {
+      "title": "Date",
+      "type": "string",
+      "format": "date"
+    },
+    "Disposition": {
+      "title": "Disposition",
+      "description": "An official's recorded decision on a flag (Portal spec §2.6.5; UI spec §4.2). No action changes regulatory status; undo is a new ledger entry.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "action",
+        "reason",
+        "by_user_ref",
+        "by_role",
+        "at",
+        "ledger_no"
+      ],
+      "properties": {
+        "action": {
+          "title": "DispositionAction",
+          "type": "string",
+          "enum": [
+            "accept",
+            "override",
+            "escalate_clarify",
+            "escalate_refer",
+            "escalate_manual"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 4000
+        },
+        "reason_template_id": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "by_user_ref": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "description": "Opaque user reference (Keycloak subject), never a name."
+        },
+        "by_role": {
+          "$ref": "#/$defs/Role"
+        },
+        "at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "ledger_no": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "DocId": {
+      "title": "DocId",
+      "type": "string",
+      "pattern": "^doc_[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "Document": {
+      "title": "Document",
+      "description": "A document in a case (Portal spec §2.6.2). classified_type comes from body text / issuer, never heading, filename or uploader label (decision #15); when it differs from declared_type a suspected_anomaly.document_misclassified flag is raised.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "doc_id",
+        "slot",
+        "declared_type",
+        "classified_type",
+        "format_type",
+        "sha256",
+        "bytes",
+        "page_count",
+        "received_at",
+        "signatures",
+        "flag_count"
+      ],
+      "properties": {
+        "doc_id": {
+          "$ref": "#/$defs/DocId"
+        },
+        "slot": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "e.g. annex2.1(i) affidavit"
+        },
+        "declared_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "classified_type": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "format_type": {
+          "title": "FormatType",
+          "type": "string",
+          "enum": [
+            "T",
+            "E",
+            "P"
+          ],
+          "description": "T = AICTE template, E = external, P = portal data (design B)."
+        },
+        "template_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 120
+        },
+        "sha256": {
+          "$ref": "#/$defs/Sha256"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "page_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "received_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "signatures": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SignatureCheck"
+          }
+        },
+        "verification": {
+          "$ref": "#/$defs/VerificationResult"
+        },
+        "flag_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "EventEnvelope": {
+      "title": "EventEnvelope",
+      "description": "Event envelope for both directions (Portal spec §2.3). Every inbound type is a proposed hook that the mock portal implements (guard rail 2). Outbound events must carry advisory: true and regulatory_effect: none (guard rail 1). Consumers ignore unknown top-level fields (§2.12).",
+      "type": "object",
+      "required": [
+        "spec",
+        "event_id",
+        "type",
+        "occurred_at",
+        "producer",
+        "subject",
+        "sequence",
+        "correlation_id",
+        "data"
+      ],
+      "properties": {
+        "spec": {
+          "type": "string",
+          "const": "satya.event/1"
+        },
+        "event_id": {
+          "$ref": "#/$defs/EventId"
+        },
+        "type": {
+          "$ref": "#/$defs/EventType"
+        },
+        "occurred_at": {
+          "$ref": "#/$defs/Timestamp"
+        },
+        "producer": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]{1,40}$",
+          "description": "e.g. mock-portal, satya"
+        },
+        "subject": {
+          "$ref": "#/$defs/Subject"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Per application, increases by 1."
+        },
+        "correlation_id": {
+          "$ref": "#/$defs/CorrelationId"
+        },
+        "data": {
+          "type": "object",
+          "description": "Type-specific payload (§2.4, §2.5). Per-type schemas arrive with their slices."
+        },
+        "advisory": {
+          "type": "boolean",
+          "const": true
+        },
+        "regulatory_effect": {
+          "type": "string",
+          "const": "none"
+        },
+        "case_id": {
+          "$ref": "#/$defs/CaseId"
+        },
+        "run_id": {
+          "$ref": "#/$defs/RunId"
+        },
+        "deep_link": {
+          "type": "string",
+          "pattern": "^/[A-Za-z0-9/_-]{1,200}$",
+          "description": "Opaque path; no personal data, no tokens."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "$ref": "#/$defs/OutboundEventType"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "advisory",
+              "regulatory_effect"
+            ]
+          }
+        }
+      ]
+    },
+    "EventId": {
+      "title": "EventId",
+      "type": "string",
+      "pattern": "^evt_[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "EventType": {
+      "title": "EventType",
+      "description": "All inbound and outbound event types.",
+      "type": "string",
+      "enum": [
+        "application.precheck_requested",
+        "application.submitted",
+        "application.reopened",
+        "committee.scrutiny_constituted",
+        "committee.rescrutiny_constituted",
+        "deficiency.posted",
+        "evc.selection_round_opened",
+        "evc.selection_recorded",
+        "evc.scheduled",
+        "evc.media_submitted",
+        "hearing.scheduled",
+        "compliance.submitted",
+        "decision.recorded",
+        "eoa.letter_issued",
+        "enrolment.uploaded",
+        "faculty.record_changed",
+        "complaint.referred",
+        "precheck.completed",
+        "case.validation_completed",
+        "case.evidence_pack_ready",
+        "evc.selection_proposal_ready",
+        "evc.checklist_ready",
+        "evc.media_check_completed",
+        "case.dossier_ready",
+        "document.status_changed",
+        "alert.raised",
+        "observation.recorded",
+        "observation.withdrawn",
+        "clarification.requested",
+        "referral.recommended",
+        "deficiency.candidates_proposed",
+        "ingest.failed"
+      ]
+    },
+    "Flag": {
+      "title": "Flag",
+      "description": "An evidence-linked finding (Portal spec §2.6.4). Every flag cites rule_id + rule_version + aph_clause + aph_edition (guard rail 6). Anomaly/forgery-type flags carry preliminary_indicator: true (PS FR2).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "flag_id",
+        "doc_id",
+        "page",
+        "regions",
+        "rule_id",
+        "rule_version",
+        "rule_text_key",
+        "aph_clause",
+        "aph_edition",
+        "extracted_value",
+        "expected_value",
+        "value_unit",
+        "extracted_source",
+        "expected_source",
+        "confidence",
+        "confidence_band",
+        "label",
+        "provenance",
+        "preliminary_indicator",
+        "severity",
+        "disposition",
+        "stage",
+        "institution_visible",
+        "evidence_sha256"
+      ],
+      "properties": {
+        "flag_id": {
+          "$ref": "#/$defs/FlagId"
+        },
+        "doc_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DocId"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "null for snapshot-level findings."
+        },
+        "page": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Region"
+          }
+        },
+        "rule_id": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9-]{1,63}$"
+        },
+        "rule_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "rule_text_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "aph_clause": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "aph_edition": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "description": "e.g. 2024-27"
+        },
+        "extracted_value": {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "expected_value": {
+          "type": [
+            "string",
+            "number",
+            "boolean",
+            "null"
+          ]
+        },
+        "value_unit": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 32
+        },
+        "delta": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "extracted_source": {
+          "title": "ExtractedSource",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "doc_label",
+            "page"
+          ],
+          "properties": {
+            "doc_label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "page": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1
+            },
+            "row": {
+              "type": [
+                "string",
+                "integer",
+                "null"
+              ]
+            }
+          }
+        },
+        "expected_source": {
+          "title": "ExpectedSource",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "label"
+          ],
+          "properties": {
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          }
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "confidence_band": {
+          "title": "ConfidenceBand",
+          "type": "string",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "label": {
+          "$ref": "#/$defs/VerificationLabel"
+        },
+        "provenance": {
+          "title": "Provenance",
+          "type": "string",
+          "enum": [
+            "satya",
+            "portal"
+          ]
+        },
+        "preliminary_indicator": {
+          "type": "boolean"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "disposition": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Disposition"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "check_ref": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "stage": {
+          "title": "Stage",
+          "type": "string",
+          "enum": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7"
+          ],
+          "description": "C2 stage ①–⑦."
+        },
+        "institution_visible": {
+          "type": "boolean"
+        },
+        "yoy": {
+          "title": "FlagYoy",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ay_a_ref",
+            "ay_b_ref",
+            "verdict"
+          ],
+          "properties": {
+            "ay_a_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "ay_b_ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "verdict": {
+              "$ref": "#/$defs/YoyVerdict"
+            }
+          }
+        },
+        "evidence_sha256": {
+          "$ref": "#/$defs/Sha256"
+        }
+      }
+    },
+    "FlagId": {
+      "title": "FlagId",
+      "type": "string",
+      "pattern": "^flg_[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "InboundEventType": {
+      "title": "InboundEventType",
+      "description": "Portal → SATYA (Portal spec §2.4).",
+      "type": "string",
+      "enum": [
+        "application.precheck_requested",
+        "application.submitted",
+        "application.reopened",
+        "committee.scrutiny_constituted",
+        "committee.rescrutiny_constituted",
+        "deficiency.posted",
+        "evc.selection_round_opened",
+        "evc.selection_recorded",
+        "evc.scheduled",
+        "evc.media_submitted",
+        "hearing.scheduled",
+        "compliance.submitted",
+        "decision.recorded",
+        "eoa.letter_issued",
+        "enrolment.uploaded",
+        "faculty.record_changed",
+        "complaint.referred"
+      ]
+    },
+    "OutboundEventType": {
+      "title": "OutboundEventType",
+      "description": "SATYA → portal (Portal spec §2.5), all advisory.",
+      "type": "string",
+      "enum": [
+        "precheck.completed",
+        "case.validation_completed",
+        "case.evidence_pack_ready",
+        "evc.selection_proposal_ready",
+        "evc.checklist_ready",
+        "evc.media_check_completed",
+        "case.dossier_ready",
+        "document.status_changed",
+        "alert.raised",
+        "observation.recorded",
+        "observation.withdrawn",
+        "clarification.requested",
+        "referral.recommended",
+        "deficiency.candidates_proposed",
+        "ingest.failed"
+      ]
+    },
+    "PermanentId": {
+      "title": "PermanentId",
+      "type": "string",
+      "pattern": "^1-[0-9]{7,11}$",
+      "description": "Portal permanent ID in printed form (design D4)."
+    },
+    "PrintedSection": {
+      "type": "object",
+      "additionalProperties": false,
+      "title": "PrintedSection",
+      "description": "Portal-computed section kept as printed, display only (D2).",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "title": "PrintedItem",
+            "required": [
+              "name",
+              "value"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200,
+                "x-handling": "R"
+              },
+              "value": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 400,
+                "x-handling": "R"
+              }
+            },
+            "x-handling": "R"
+          },
+          "x-handling": "R"
+        }
+      },
+      "x-handling": "R"
+    },
+    "ReceiptId": {
+      "title": "ReceiptId",
+      "type": "string",
+      "pattern": "^rcp_[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "Region": {
+      "title": "Region",
+      "description": "Evidence region on a page, normalised 0–1.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "x",
+        "y",
+        "w",
+        "h"
+      ],
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "w": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "h": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "RiskBand": {
+      "title": "RiskBand",
+      "description": "Risk band (decision #20). Orders review only; never a 0–100 score; never shown to the institution.",
+      "type": "string",
+      "enum": [
+        "high",
+        "medium",
+        "low"
+      ]
+    },
+    "Role": {
+      "title": "Role",
+      "description": "Keycloak realm roles (UI spec §1).",
+      "type": "string",
+      "enum": [
+        "RB",
+        "SC",
+        "EV",
+        "HC",
+        "RA",
+        "AU",
+        "INS"
+      ]
+    },
+    "RoomRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "title": "RoomRow",
+      "required": [
+        "room_id",
+        "room_type",
+        "carpet_area_m2"
+      ],
+      "properties": {
+        "room_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "x-handling": "K"
+        },
+        "room_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "x-handling": "K"
+        },
+        "carpet_area_m2": {
+          "type": "number",
+          "minimum": 0,
+          "x-handling": "K"
+        },
+        "flooring": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "description": "Completion of flooring, as printed (e.g. Ready).",
+          "x-handling": "K"
+        },
+        "walls_painting": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "x-handling": "K"
+        },
+        "electrification": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32,
+          "x-handling": "K"
+        }
+      },
+      "x-handling": "K"
+    },
+    "RunId": {
+      "title": "RunId",
+      "type": "string",
+      "pattern": "^run_[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "Severity": {
+      "title": "Severity",
+      "type": "string",
+      "enum": [
+        "info",
+        "warning",
+        "critical"
+      ]
+    },
+    "Sha256": {
+      "title": "Sha256",
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "SignatureCheck": {
+      "title": "SignatureCheck",
+      "description": "One of the two independent signature checks (Portal spec §2.8, UI spec §4.3). An image-only mark is never verified (decision #16).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "role",
+        "state",
+        "has_byte_range"
+      ],
+      "properties": {
+        "role": {
+          "title": "SignatureRole",
+          "type": "string",
+          "enum": [
+            "issuer",
+            "uploader"
+          ]
+        },
+        "state": {
+          "title": "SignatureState",
+          "type": "string",
+          "enum": [
+            "verified",
+            "image_only",
+            "chain_broken",
+            "edited_after_signing",
+            "not_digital",
+            "not_applicable",
+            "present",
+            "absent_required"
+          ]
+        },
+        "has_byte_range": {
+          "type": "boolean",
+          "description": "true only for a real CMS signature (/ByteRange)."
+        },
+        "reason_code": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9_]{1,63}$"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "signer_role": {
+          "type": "string",
+          "enum": [
+            "chairman",
+            "secretary",
+            "issuer",
+            "unknown"
+          ]
+        },
+        "trust_anchor_label": {
+          "type": "string",
+          "description": "Demo chain anchors are always 'TEST TRUST ANCHOR' (guard rail 10).",
+          "maxLength": 64
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "issuer"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "state": {
+                "enum": [
+                  "verified",
+                  "image_only",
+                  "chain_broken",
+                  "edited_after_signing",
+                  "not_digital",
+                  "not_applicable"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "role": {
+                "const": "uploader"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "state": {
+                "enum": [
+                  "present",
+                  "absent_required",
+                  "image_only"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "image_only"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "has_byte_range": {
+                "const": false
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Subject": {
+      "title": "Subject",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "application_id",
+        "ay"
+      ],
+      "properties": {
+        "application_id": {
+          "$ref": "#/$defs/ApplicationId"
+        },
+        "permanent_id": {
+          "$ref": "#/$defs/PermanentId"
+        },
+        "ay": {
+          "$ref": "#/$defs/AcademicYear"
+        }
+      }
+    },
+    "Timestamp": {
+      "title": "Timestamp",
+      "type": "string",
+      "format": "date-time",
+      "description": "RFC 3339 date-time with offset (format-checked; Pydantic AwareDatetime); stored UTC, shown IST."
+    },
+    "VerificationLabel": {
+      "title": "VerificationLabel",
+      "description": "The six PS verification labels (Portal spec §2.6.3). Document label = most severe check outcome, in x-precedence order (most severe first). `verified` also requires at least one authenticity check; a valid uploader DSC never makes a document verified.",
+      "type": "string",
+      "enum": [
+        "verified",
+        "mismatch_detected",
+        "expired",
+        "verification_pending",
+        "source_unavailable",
+        "manual_review_required"
+      ],
+      "x-precedence": [
+        "mismatch_detected",
+        "expired",
+        "manual_review_required",
+        "source_unavailable",
+        "verification_pending",
+        "verified"
+      ]
+    },
+    "VerificationResult": {
+      "title": "VerificationResult",
+      "description": "Per-document verification with all checks (Portal spec §2.7). Every mock result is shown as MOCK SOURCE (guard rail 10).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "doc_id",
+        "label",
+        "decided_by",
+        "checks"
+      ],
+      "properties": {
+        "doc_id": {
+          "$ref": "#/$defs/DocId"
+        },
+        "label": {
+          "$ref": "#/$defs/VerificationLabel"
+        },
+        "decided_by": {
+          "title": "DecidedBy",
+          "type": "string",
+          "enum": [
+            "system",
+            "official"
+          ]
+        },
+        "basis_note": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 4000,
+          "description": "Required when an official resolves the label."
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Check"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "decided_by": {
+                "const": "official"
+              }
+            },
+            "required": [
+              "decided_by"
+            ]
+          },
+          "then": {
+            "required": [
+              "basis_note"
+            ]
+          }
+        }
+      ]
+    },
+    "YoyVerdict": {
+      "title": "YoyVerdict",
+      "description": "M13 year-over-year verdict (design C4a): explained by an approved application, or a discrepancy.",
+      "type": "string",
+      "enum": [
+        "explained",
+        "discrepancy"
+      ]
+    }
+  }
+}

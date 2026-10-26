@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.satya-eoa.invalid/v1/verification-result.schema.json",
+  "title": "VerificationResult",
+  "description": "Per-document verification with all checks (Portal spec §2.7). Every mock result is shown as MOCK SOURCE (guard rail 10).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["doc_id", "label", "decided_by", "checks"],
+  "properties": {
+    "doc_id": { "$ref": "common.schema.json#/$defs/DocId" },
+    "label": { "$ref": "verification-label.schema.json" },
+    "decided_by": { "title": "DecidedBy", "type": "string", "enum": ["system", "official"] },
+    "basis_note": { "type": "string", "minLength": 10, "maxLength": 4000, "description": "Required when an official resolves the label." },
+    "checks": { "type": "array", "items": { "$ref": "#/$defs/Check" } }
+  },
+  "allOf": [
+    { "if": { "properties": { "decided_by": { "const": "official" } }, "required": ["decided_by"] }, "then": { "required": ["basis_note"] } }
+  ],
+  "$defs": {
+    "Check": {
+      "title": "Check",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "outcome", "reason_code"],
+      "properties": {
+        "kind": { "title": "CheckKind", "type": "string", "enum": ["issuer_signature", "uploader_signature", "source_lookup", "qr_consistency", "expiry", "format", "chronology"] },
+        "outcome": { "$ref": "verification-label.schema.json" },
+        "reason_code": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]{1,63}$" },
+        "evidence": {
+          "title": "CheckEvidence",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["page"],
+          "properties": {
+            "page": { "type": "integer", "minimum": 1 },
+            "regions": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/Region" } }
+          }
+        },
+        "source": { "$ref": "#/$defs/CheckSource" },
+        "checked_at": { "$ref": "common.schema.json#/$defs/Timestamp" },
+        "response_sha256": { "$ref": "common.schema.json#/$defs/Sha256" },
+        "attempts": { "type": "integer", "minimum": 0 },
+        "field_diff": {
+          "type": "array",
+          "description": "Drives mismatch_detected.",
+          "items": {
+            "title": "FieldDiff",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["field", "submitted", "source"],
+            "properties": {
+              "field": { "type": "string", "minLength": 1 },
+              "submitted": { "type": ["string", "number", "boolean", "null"] },
+              "source": { "type": ["string", "number", "boolean", "null"] }
+            }
+          }
+        },
+        "valid_from": { "$ref": "common.schema.json#/$defs/Date" },
+        "valid_to": { "$ref": "common.schema.json#/$defs/Date" },
+        "basis": { "title": "ExpiryBasis", "type": "string", "enum": ["printed", "computed_from_state_rule"] }
+      }
+    },
+    "CheckSource": {
+      "title": "CheckSource",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["adapter_id", "mode", "name"],
+      "properties": {
+        "adapter_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,63}$" },
+        "mode": { "title": "SourceMode", "type": "string", "enum": ["live", "mock", "offline", "none"] },
+        "name": { "type": "string", "minLength": 1, "maxLength": 200 }
+      }
+    }
+  }
+}
