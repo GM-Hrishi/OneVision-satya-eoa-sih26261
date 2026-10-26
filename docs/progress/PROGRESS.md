@@ -42,4 +42,4 @@ Answered by the team lead on 26 Oct 2026:
 - Keycloak's `frame-ancestors` is tightened to `'none'` and `/admin` is not routed through Caddy (no admin console at the edge).
 - Two one-shot jobs (`migrate`, `keycloak-config`) run besides the 8 services, for least-privilege migrations and secrets from `.env`.
 - Inbound OAuth client-credentials check (Portal §2.0) deferred to the Portal §5/§6 slice; slice 0 authenticates events by HMAC per `kid`.
-- Branch is `claude/pensive-rubin-eudosj` (the session's assigned push branch) instead of `slice-0-foundation`. The PR is opened from it. See docs/DECISIONS-SLICE-0.md.
+- Branch is `claude/pensive-rubin-eudosj` (the session's assigned push branch) instead of `slice-0-foundation`. The PR is opened from it. See docs/progress/DECISIONS-SLICE-0.md.

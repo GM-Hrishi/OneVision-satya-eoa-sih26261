@@ -31,7 +31,7 @@ data/synthetic/           synthetic fixtures only (see its README); cases/ = gen
 data/real-samples/        GIT-IGNORED. Never commit, upload, log or open in a cloud session
 infra/                    docker-compose.yml, caddy/Caddyfile, keycloak/realm-satya.json, postgres init, scripts/
 docs/specs/               given specs (read VERSIONS.md); docs/prompts/ = slice prompts
-docs/                     DEV-SETUP, ARCHITECTURE, STACK-VERSIONS, DECISIONS-SLICE-0, ISSUES
+docs/                     index in docs/README.md: DEV-SETUP, ARCHITECTURE, STACK-VERSIONS, ISSUES; docs/progress/ = PROGRESS*.md, DECISIONS-SLICE-*.md
 tests/                    cross-service smoke tests (need the running stack)
 .github/workflows/        CI: lint, types, tests, schema regen diff, compose config, gitleaks, real-data guard, smoke
 ```
@@ -77,14 +77,21 @@ Generated code: `packages/shared-types/ts/src/generated/` and `packages/shared-t
 Workbench API (slices 1–2): `GET /v1/cases`, `GET /v1/cases/{case_id}/affidavit-diff`, `GET /v1/cases/{case_id}/verification`, `GET /v1/cases/{case_id}/documents/{doc_id}/verification` (Keycloak access token from `satya-web` as Bearer; RB role; region scope from `/regions/*`; per-user quota). Contracts: `AffidavitDiff`, `CaseVerification`, `VerificationResult`.
 
 ## Resume protocol (short)
-- Each slice has a prompt in `docs/prompts/` (or the session request) and a progress table (`PROGRESS.md` for slice 0, `PROGRESS-SLICE-<n>.md` after). Continue from the first step not `done`/`done-with-note`; re-verify, never redo a done step blindly.
-- One commit per step (message given in the prompt), push after each commit. Update `PROGRESS.md` every step.
+- Each slice has a prompt in `docs/prompts/` (or the session request) and a progress table (`docs/progress/PROGRESS.md` for slice 0, `docs/progress/PROGRESS-SLICE-<n>.md` after). Continue from the first step not `done`/`done-with-note`; re-verify, never redo a done step blindly.
+- One commit per step (message given in the prompt), push after each commit. Update the progress table in `docs/progress/` every step.
 - Long commands run in the background with output in `.logs/<step>.log`; never block > ~8 min.
 - Blocked: record under "Blockers / questions", take the safest default, mark `done-with-note`.
-- Every non-obvious choice: one line in `docs/DECISIONS-SLICE-<n>.md`.
+- Every non-obvious choice: one line in `docs/progress/DECISIONS-SLICE-<n>.md`.
 
-## Build order for later slices (decision #40)
-M5 affidavit diff → M6 signatures/stamp chronology → M3 template-aware extraction (synthetic templates) → M13 year-over-year → M7 source adapters (mocks) → M4 APH date rules → M8 identity graph → M12 audit ledger → M11 workbench screens → mock portal → M1 router / M9 coordinates.
+## Current status
+Built on synthetic data: slice 0 foundation, slice 1 M5 affidavit diff (P-3), slice 2 M6 signatures/stamp/UDIN (P-4, P-18). All planted cases are detected on the synthetic test sets (no accuracy percentages are claimed). Everything else is planned.
+
+## Build order for later slices
+1. Intake + vault (P-19).
+2. Workbench queue, decision bar, alerts, audit (P-10, P-11, P-12).
+3. Mock portal complete (P-17).
+4. Demo polish + HTTPS tunnel.
+5. Then M3 OCR and the rest (M13, M7, M4, M8, M1/M9; decision #40 order).
 - Build **only P1 screens** (UI spec §2.8: 31 P1). Phase-2 items stay hidden (no dead navigation).
 - A slice waits only for its own spec. Stubs elsewhere point to their P-n issue (`docs/ISSUES.md`).
 - **When a spec in `docs/specs/` changes, read `VERSIONS.md` and the diff before continuing.**

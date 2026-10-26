@@ -17,7 +17,7 @@ otherwise SIG_VALID.
 The validation moment is the signing time the signer claims (CMS signingTime); there is no
 timestamp authority in the demo PKI [VERIFY: production should require a TSA token or LTV data].
 
-Which signature is whose (decision recorded in DECISIONS-SLICE-2):
+Which signature is whose (decision recorded in progress/DECISIONS-SLICE-2):
 - Affidavit (the deponent and the uploader are both the authorised signatory): real signatures are
   taken in revision order. With two or more, the first is the issuer's (the deponent signs the
   affidavit) and the last is the uploader's (the institution's DSC on the compiled file). With

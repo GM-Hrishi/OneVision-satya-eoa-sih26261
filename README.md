@@ -68,17 +68,14 @@ Then open **https://localhost** and sign in as `rb.southern.demo`: the queue lis
 ## Status
 | Slice | Scope | Status |
 |---|---|---|
-| 0 Foundation | Monorepo, compose stack with HTTPS, shared contracts, signed event gateway + hash-chained ledger, Keycloak SSO, workbench shell, mock portal test event, CI with secret scan and real-data guard | **Done** |
-| 1 M5 | Affidavit 2 normalised 24-declaration diff + reconciliation (P-3): synthetic generator, text-layer extraction, clause diff, table reconciliation, `GET /v1/cases/{id}/affidavit-diff`, RB-05 DiffView; demo script and synthetic test-set plan | **Done** (PR open) |
-| M6 | Real DSC vs image, test trust anchor, stamp chronology (P-4, P-18) | Planned |
-| M3 | Template-aware extraction on synthetic templates (P-2, P-6) | Planned |
-| M13 | Year-over-year reconciliation (P-8) | Planned |
-| M7 | Source adapters in mock mode (P-5) | Planned |
-| M4 | APH date rules incl. compliance window (P-7) | Planned |
-| M8 | Pseudonymised identity graph (P-9) | Planned |
-| M12 | Audit ledger screens + case replay (P-11) | Planned |
-| M11 | Workbench screens: queue, case, flags, alerts (P-10, P-12, P-14 band) | Planned |
-| Mock portal | Remaining screens and events (P-17) | Planned |
+| 0 Foundation | Monorepo, compose stack with HTTPS, shared contracts, signed event gateway + hash-chained ledger, Keycloak SSO, workbench shell, mock portal test event, CI with secret scan and real-data guard | Built |
+| 1 M5 | Affidavit 2 diff and reconciliation (P-3), RB-05 DiffView; all planted cases detected on synthetic test sets | Built on synthetic data |
+| 2 M6 | Real signature vs image, test trust anchor, stamp chronology, UDIN (P-4, P-18), RB-05/RB-06 badges; all planted cases detected on synthetic test sets | Built on synthetic data |
+| Intake + vault | Document intake and vault (P-19) | Planned |
+| Workbench | Queue, decision bar, alerts, audit (P-10, P-11, P-12) | Planned |
+| Mock portal | Complete screens and events (P-17) | Planned |
+| M3 | Template-aware extraction and OCR on synthetic templates (P-2, P-6) | Planned |
+| M13, M7, M4, M8 | Year-over-year (P-8), source adapters (P-5), APH date rules (P-7), identity graph (P-9) | Planned |
 | M1 / M9 | Category router, coordinates (P-1, P-13) | Planned |
 
 Build order follows decision #40 (hardest first). The backlog is in [docs/ISSUES.md](docs/ISSUES.md).
