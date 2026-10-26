@@ -31,9 +31,11 @@ Resume rule: continue from the first step whose status is not `done`/`done-with-
 | 9 | Memory limits on every service, sum ≤ 8 GB | PASS | `make mem-check`: 5.62 GiB |
 
 ## Blockers / questions
-- **LICENSE:** no LICENSE file added (prompt §2.13). The team must choose a licence (e.g. Apache-2.0 or MIT) and whether SIH rules constrain it.
-- **GitHub issues:** `gh` is installed but not authenticated in the cloud session; issues are in `docs/ISSUES.md`. Run `infra/scripts/create-issues.sh` on a laptop after `gh auth login`.
-- **Priority of M2 (P-19) and M10 (P-14):** not in decision #40's order; placed with M3 (prio-3) and M11 (prio-9). Team to confirm.
+Answered by the team lead on 26 Oct 2026:
+- **LICENSE:** hold off until the repo goes public, then use Apache-2.0 if the SIH rules allow it. No LICENSE file until then.
+- **GitHub issues:** skipped for now. Slice 1 (M5) references P-n IDs from `docs/ISSUES.md`. The team lead runs `infra/scripts/create-issues.sh` from their laptop later (after `gh auth login`).
+- **Priority of M2 (P-19) and M10 (P-14):** keep the defaults (M2 `prio-3` with M3, M10 `prio-9` with M11).
+- **Hindi review (OPEN):** the team lead will name one teammate who reads Hindi to review `apps/web/messages/hi.review.json`. Deadline: before the first demo rehearsal.
 
 ## Deviations from the prompt
 - Keycloak redirect URIs are the exact callback paths, not `https://<host>/*` (stricter). Auth.js runs under `/auth` because `/api/*` belongs to the gateway.

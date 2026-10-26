@@ -97,4 +97,4 @@ Build order follows decision #40 (hardest first). The backlog is in [docs/ISSUES
 Working on the code: start with [CLAUDE.md](CLAUDE.md) (rules and commands), then [docs/DEV-SETUP.md](docs/DEV-SETUP.md).
 
 ## Licence
-Not chosen yet (open question for the team).
+None yet. The team plans Apache-2.0 when the repository goes public, if the SIH rules allow it.

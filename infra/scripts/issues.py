@@ -69,7 +69,7 @@ def markdown() -> str:
         "Priority labels follow decision #40 (hardest first): "
         + " → ".join(f"`prio-{i + 1}` {m}" for i, m in enumerate(DATA["priority_order"]))
         + ". M2 (P-19) and M10 (P-14) are not in that list; they are placed with M3 and M11 "
-        "respectively [VERIFY with the team].",
+        "respectively (confirmed by the team, 26 Oct 2026).",
         "",
         "| Issue | Module | Phase | Priority |",
         "|---|---|---|---|",

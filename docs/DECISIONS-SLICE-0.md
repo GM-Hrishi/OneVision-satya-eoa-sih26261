@@ -108,3 +108,10 @@ One line per non-obvious choice, with the reason. Newest at the bottom of each s
 - `gh` CLI present but its token is invalid in the cloud session, so the prompt's fallback was used: `docs/ISSUES.md` + `infra/scripts/create-issues.sh`. Creating issues through other GitHub tooling was not attempted because it is an outward-facing action the prompt routes to the team's laptop.
 - One source (`docs/backlog/promises.json`) renders both the Markdown and the `gh` calls (`infra/scripts/issues.py`), so they cannot drift. The script creates labels with `--force` and skips titles that already exist.
 - P-14 carries both `phase-1` (risk band) and `phase-2` (EVC selection) labels.
+
+## Team answers (26 Oct 2026, after slice 0 review)
+- Licence: none until the repo goes public; then Apache-2.0 if the SIH rules allow it.
+- GitHub issues: skipped for now; slices reference P-n IDs from `docs/ISSUES.md`. The team lead creates them later with `gh auth login` + `infra/scripts/create-issues.sh`.
+- Priorities: defaults kept (M2/P-19 `prio-3`, M10/P-14 `prio-9`).
+- Next slice: M5 affidavit diff (P-3, prio-1), prompt supplied in a new session.
+- Hindi: the team lead names one reviewer (open item); review of `apps/web/messages/hi.review.json` before the first demo rehearsal.
