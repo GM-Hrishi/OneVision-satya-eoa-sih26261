@@ -1,0 +1,59 @@
+{
+  "_synthetic": "SYNTHETIC FIXTURE. Invented values for the SATYA-EoA demo and tests. Not a real institution, person, application or document.",
+  "case": "dt03-2026-27-m6-demo",
+  "profile": 3,
+  "variant": "demo",
+  "control": false,
+  "timeline": {
+    "application": "2026-11-20",
+    "stamp_issued": "2026-11-21T11:05:00+05:30",
+    "notarised": "2026-11-22",
+    "issuer_dsc": null,
+    "mark": "2026-11-24T10:15:00+05:30",
+    "uploader_dsc": "2026-11-24T16:30:00+05:30",
+    "uploaded": "2026-11-24T16:40:00+05:30"
+  },
+  "expected_flags": [
+    {
+      "rule_id": "SIG-IMAGE",
+      "check_ref": "m6:SIG-IMAGE:issuer",
+      "doc_id": "doc_SG34T9WEMMXMBZ8WA2JBXQX1DC",
+      "label": "manual_review_required"
+    },
+    {
+      "rule_id": "STAMP-CHRONO",
+      "check_ref": "m6:STAMP-CHRONO:chronology:mark_after_notary",
+      "doc_id": "doc_SG34T9WEMMXMBZ8WA2JBXQX1DC",
+      "label": "manual_review_required"
+    }
+  ],
+  "expected_checks": [
+    {
+      "doc_id": "doc_SG34T9WEMMXMBZ8WA2JBXQX1DC",
+      "kind": "issuer_signature",
+      "outcome": "manual_review_required",
+      "reason_code": "SIG_IMAGE_ONLY"
+    },
+    {
+      "doc_id": "doc_SG34T9WEMMXMBZ8WA2JBXQX1DC",
+      "kind": "chronology",
+      "outcome": "manual_review_required",
+      "reason_code": "CHRONO_MARK_AFTER_NOTARISATION"
+    }
+  ],
+  "expected_document_labels": {
+    "doc_SG34T9WEMMXMBZ8WA2JBXQX1DC": "manual_review_required",
+    "doc_26F46FNPJKRJY08FVMKPHHKBPV": "source_unavailable"
+  },
+  "printed": {
+    "stamp.certificate_no": "IN-TN90326112004220Q",
+    "stamp.second_party": "AICTE NEW DELHI",
+    "stamp.duty": 100,
+    "stamp.issued": "2026-11-21",
+    "notary.date": "2026-11-22",
+    "notary.valid_till": "2027-12-31",
+    "mark.date": "2026-11-24",
+    "udin": null,
+    "udin.membership_no": "990321"
+  }
+}

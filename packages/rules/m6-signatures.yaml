@@ -1,0 +1,274 @@
+# M6 signatures, stamp chronology, notary (P-4) and UDIN structure (P-18) rules.
+# Every rule cites its APH clause and edition (guard rail 6); unconfirmed citations are marked [VERIFY].
+# check_kind / reason_code / pass_code follow Portal spec §2.7–§2.8 (VerificationResult.checks[]);
+# label is the check outcome when the rule fires (Portal §2.6.3 precedence decides the document label).
+# Alert type/subtype follow Portal spec §2.9 (used by M11). institution_visible follows UI spec §1.1:
+# expired documents and own-data/format problems yes; forensic and anomaly indicators only after an
+# official escalates. Every M6 flag is a preliminary indicator that needs human verification.
+ruleset: m6-signatures
+version: "0.1.0"
+aph_edition: "2024-27"
+rules:
+  # ---- signatures (two independent checks per document: issuer and uploader, 2.3.4a) --------
+  - rule_id: SIG-DIGEST
+    version: "0.1.0"
+    text_key: signature.digest_mismatch
+    aph_clause: "2.3.4a"
+    also_cites: ["2.3.4b"]
+    check_kind: signature
+    reason_code: SIG_DIGEST_MISMATCH
+    pass_code: SIG_VALID
+    severity: critical
+    label: mismatch_detected
+    alert: { type: suspected_anomaly, subtype: signature_integrity }
+    institution_visible: false
+    preliminary_indicator: true
+    description: The bytes covered by the signature (/ByteRange) no longer match the signed digest.
+  - rule_id: SIG-MODIFIED
+    version: "0.1.0"
+    text_key: signature.modified_after_signing
+    aph_clause: "2.3.4a"
+    also_cites: ["2.3.4b", "Portal §2.8 [VERIFY V-8 confirmed: pyHanko 0.38 ModificationLevel]"]
+    check_kind: signature
+    reason_code: SIG_MODIFIED_AFTER_SIGNING
+    pass_code: SIG_VALID
+    severity: critical
+    label: mismatch_detected
+    alert: { type: suspected_anomaly, subtype: signature_integrity }
+    institution_visible: false
+    preliminary_indicator: true
+    description: A later revision changes page content or other objects beyond what a signature permits. Benign updates (validation data, document information, later signatures or form filling) are not flagged.
+  - rule_id: SIG-REVOKED
+    version: "0.1.0"
+    text_key: signature.cert_revoked
+    aph_clause: "2.3.4a"
+    also_cites: []
+    check_kind: signature
+    reason_code: SIG_CERT_REVOKED
+    pass_code: SIG_VALID
+    severity: critical
+    label: mismatch_detected
+    alert: { type: suspected_anomaly, subtype: signature_integrity }
+    institution_visible: false
+    preliminary_indicator: true
+    description: The signer certificate was revoked before the signing time (CRL of the issuing CA). A revocation dated after the signing time does not affect the signature.
+  - rule_id: SIG-CERT-EXPIRED
+    version: "0.1.0"
+    text_key: signature.cert_expired
+    aph_clause: "2.3.4a"
+    also_cites: []
+    check_kind: signature
+    reason_code: SIG_CERT_EXPIRED
+    pass_code: SIG_VALID
+    severity: warning
+    label: expired
+    alert: { type: expired, subtype: signing_cert_expired }
+    institution_visible: true
+    preliminary_indicator: true
+    description: The signer certificate was expired or not yet valid at the signing time.
+  - rule_id: SIG-UNTRUSTED
+    version: "0.1.0"
+    text_key: signature.untrusted_chain
+    aph_clause: "2.3.4a"
+    also_cites: ["decision #31"]
+    check_kind: signature
+    reason_code: SIG_UNTRUSTED_CHAIN
+    pass_code: SIG_VALID
+    severity: warning
+    label: manual_review_required
+    alert: { type: suspected_anomaly, subtype: signature_integrity }
+    institution_visible: false
+    preliminary_indicator: true
+    description: The certificate chain does not build to a configured trust anchor (self-signed or unknown CA). Production anchor is the CCA root; the demo anchor is shown as TEST TRUST ANCHOR.
+  - rule_id: SIG-IMAGE
+    version: "0.1.0"
+    text_key: signature.image_only
+    aph_clause: "2.3.4a"
+    also_cites: ["2.3.4b", "design C3", "decision #16"]
+    check_kind: signature
+    reason_code: SIG_IMAGE_ONLY
+    pass_code: SIG_VALID
+    severity: warning
+    label: manual_review_required
+    alert: { type: suspected_anomaly, subtype: signature_image_only }
+    institution_visible: false
+    preliminary_indicator: true
+    description: A printed "Digitally signed by … / Signature valid" mark with no real signature (/ByteRange) behind it. Never counts as verified.
+  - rule_id: SIG-SIGNER
+    version: "0.1.0"
+    text_key: signature.signer_not_matched
+    aph_clause: "2.3.4a"
+    also_cites: ["Annex-2.1", "decision #31"]
+    check_kind: signature
+    reason_code: SIG_SIGNER_NOT_MATCHED
+    pass_code: SIG_VALID
+    severity: warning
+    label: manual_review_required
+    alert: { type: suspected_anomaly, subtype: signature_integrity }
+    institution_visible: false
+    preliminary_indicator: true
+    description: The signature is valid but the signer (token of the certificate's name) is not the authorised Chairman/Secretary (signatory_token).
+  - rule_id: SIG-REVOCATION
+    version: "0.1.0"
+    text_key: signature.revocation_unreachable
+    aph_clause: "2.3.4a"
+    also_cites: ["Portal §2.11"]
+    check_kind: signature
+    reason_code: SIG_REVOCATION_UNREACHABLE
+    pass_code: SIG_VALID
+    severity: info
+    label: source_unavailable
+    alert: { type: pending_source, subtype: source_unavailable }
+    institution_visible: false
+    preliminary_indicator: true
+    retries: 3
+    description: The CRL of the issuing CA could not be fetched after retries (verification_pending while retrying, then source_unavailable and a manual task).
+  - rule_id: SIG-UPLOADER-MISSING
+    version: "0.1.0"
+    text_key: signature.uploader_dsc_missing
+    aph_clause: "2.3.4a"
+    also_cites: ["Annex-2.1"]
+    check_kind: none
+    reason_code: UPLOADER_DSC_MISSING
+    pass_code: SIG_VALID
+    severity: warning
+    # No document label (Portal §2.8): the flag carries manual_review_required, the document label
+    # is computed from the checks only.
+    label: manual_review_required
+    alert: { type: missing_info, subtype: uploader_dsc_missing }
+    institution_visible: true
+    preliminary_indicator: true
+    description: The compiled file carries no DSC of the institution where 2.3.4a requires one.
+  # ---- stamp, notary and signing order (Affidavit 2, design B1 row 1, D1) --------------------
+  - rule_id: STAMP-CHRONO
+    version: "0.1.0"
+    text_key: stamp.chronology
+    aph_clause: "2.3.4b"
+    also_cites: ["Affidavit-2 NOTE", "design D1 [VERIFY: the order is from executed copies, not APH text]"]
+    check_kind: chronology
+    reason_code: CHRONO_ORDER_BROKEN
+    pass_code: CHRONO_OK
+    other_codes: { mark_after_notary: CHRONO_MARK_AFTER_NOTARISATION, mark_after_notary_pass: CHRONO_MARK_OK }
+    severity: warning
+    label: manual_review_required
+    alert: { type: suspected_anomaly, subtype: stamp_chronology }
+    institution_visible: false
+    preliminary_indicator: true
+    description: Application date ≤ stamp issue ≤ notarisation ≤ DSC (if any) ≤ upload; a printed signature mark on the sworn copy dated after the notarisation is a review case.
+  - rule_id: STAMP-PARTY
+    version: "0.1.0"
+    text_key: stamp.second_party
+    aph_clause: "Annex-2.1(i)"
+    also_cites: ["2.3.4b", "design B1 row 1 [VERIFY: 'Second Party = AICTE' is from executed copies, not APH text]"]
+    check_kind: format
+    reason_code: STAMP_PARTY_NOT_COUNCIL
+    pass_code: STAMP_PARTY_OK
+    severity: warning
+    label: mismatch_detected
+    alert: { type: suspected_anomaly, subtype: stamp_chronology }
+    institution_visible: true
+    preliminary_indicator: true
+    description: The e-stamp certificate's Second Party is not the Council (executed copies print "AICTE NEW DELHI").
+  - rule_id: STAMP-DUTY
+    version: "0.1.0"
+    text_key: stamp.duty_low
+    aph_clause: "2.3.4b"
+    also_cites: ["Annex-2.1(i)"]
+    check_kind: format
+    reason_code: STAMP_DUTY_BELOW_100
+    pass_code: STAMP_DUTY_OK
+    severity: warning
+    label: mismatch_detected
+    alert: { type: suspected_anomaly, subtype: stamp_chronology }
+    institution_visible: true
+    preliminary_indicator: true
+    description: The stamp duty printed on the stamp is below Rs 100.
+  - rule_id: STAMP-INSTRUMENT
+    version: "0.1.0"
+    text_key: stamp.not_e_stamp
+    aph_clause: "Annex-2.1(i)"
+    also_cites: ["2.3.4b"]
+    check_kind: format
+    reason_code: STAMP_NOT_E_STAMP
+    pass_code: STAMP_E_STAMP
+    severity: info
+    label: manual_review_required
+    alert: { type: suspected_anomaly, subtype: stamp_chronology }
+    institution_visible: true
+    preliminary_indicator: true
+    description: The affidavit is on physical non-judicial paper (or no stamp page is readable); Annexure-2.1(i) specifies e-stamp, and physical paper cannot be verified online.
+  - rule_id: STAMP-REUSE
+    version: "0.1.0"
+    text_key: stamp.certificate_reused
+    aph_clause: "2.3.4b"
+    also_cites: ["Annex-2.1(i)", "[VERIFY: no APH clause names reuse; one instrument per affidavit]"]
+    check_kind: format
+    reason_code: STAMP_NO_REUSED
+    pass_code: STAMP_NO_UNIQUE
+    severity: critical
+    label: manual_review_required
+    alert: { type: suspected_anomaly, subtype: stamp_chronology }
+    institution_visible: false
+    preliminary_indicator: true
+    description: The e-stamp certificate number already appears on another application or academic year in the register (within the synthetic corpus).
+  - rule_id: NOTARY-EXPIRY
+    version: "0.1.0"
+    text_key: notary.seal_expired
+    aph_clause: "Annex-2.1(i)"
+    also_cites: ["design B1 row 1 [VERIFY: seal expiry rule from executed copies]"]
+    check_kind: expiry
+    reason_code: NOTARY_SEAL_EXPIRED
+    pass_code: NOTARY_SEAL_VALID
+    severity: warning
+    label: expired
+    alert: { type: expired, subtype: document_expired }
+    institution_visible: true
+    preliminary_indicator: true
+    description: The notary seal's printed validity ended before the notarisation date.
+  # ---- P-18 UDIN structure on the audited statement of accounts (design B1 row 7, D4) ----------
+  # Portal §2.9 has no UDIN alert subtype: structure findings use missing_info.field_missing (a
+  # well-formed UDIN is missing) and reuse uses suspected_anomaly.yoy_discrepancy [VERIFY with M11].
+  - rule_id: UDIN-STRUCT
+    version: "0.1.0"
+    text_key: udin.structure
+    aph_clause: "Annex-2.1(vii)"
+    also_cites: ["design B1 row 7 [VERIFY: UDIN is not named in the APH; structure from one non-AICTE audit]"]
+    check_kind: format
+    reason_code: UDIN_MALFORMED
+    pass_code: UDIN_STRUCTURE_OK
+    other_codes: { year: UDIN_YEAR_BEFORE_FY_END, year_pass: UDIN_YEAR_OK }
+    severity: warning
+    label: manual_review_required
+    alert: { type: missing_info, subtype: field_missing }
+    institution_visible: true
+    preliminary_indicator: true
+    max_year_gap: 1
+    description: The printed UDIN is not 18 characters of YY + 6-digit membership no. + 6 letters + 4 digits, or its YY lies before the end of the financial year audited (or more than one year after it).
+  - rule_id: UDIN-MEMBER
+    version: "0.1.0"
+    text_key: udin.membership_mismatch
+    aph_clause: "Annex-2.1(vii)"
+    also_cites: ["design B1 row 7 [VERIFY]"]
+    check_kind: format
+    reason_code: UDIN_MEMBER_MISMATCH
+    pass_code: UDIN_MEMBER_OK
+    severity: warning
+    label: manual_review_required
+    alert: { type: missing_info, subtype: field_missing }
+    institution_visible: false
+    preliminary_indicator: true
+    description: Characters 3–8 of the UDIN are not the membership number printed beside the auditor's name.
+  - rule_id: UDIN-REUSE
+    version: "0.1.0"
+    text_key: udin.reused
+    aph_clause: "Annex-2.1(vii)"
+    also_cites: ["design B1 row 7 (one UDIN per FY) [VERIFY]", "M13 YOY-UDIN-REUSE"]
+    check_kind: format
+    reason_code: UDIN_REUSED
+    pass_code: UDIN_UNIQUE
+    severity: warning
+    label: manual_review_required
+    alert: { type: suspected_anomaly, subtype: yoy_discrepancy }
+    institution_visible: false
+    preliminary_indicator: true
+    description: The UDIN already appears on another filing (another institution, or another financial year) in the register (within the synthetic corpus).

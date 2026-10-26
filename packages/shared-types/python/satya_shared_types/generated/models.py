@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from datetime import date
-from enum import StrEnum
+from enum import Enum, StrEnum
 from typing import Annotated, Any, Literal
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, RootModel
@@ -173,6 +173,16 @@ class ApplicationReportCell(RootModel[str | None]):
 
 class RoomIdDuplicate(RootModel[str]):
     root: Annotated[str, Field(max_length=64, min_length=1)]
+
+
+class DscKind(Enum):
+    """
+    Where dsc_date comes from: a real CMS signature or a printed mark (image only).
+    """
+
+    signature = "signature"
+    image_mark = "image_mark"
+    NoneType_None = None
 
 
 class Section(StrEnum):
@@ -553,6 +563,59 @@ class CaseId(RootModel[str]):
     root: Annotated[str, Field(pattern="^cas_[0-9A-HJKMNP-TV-Z]{26}$", title="CaseId")]
 
 
+class LabelCounts(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    verified: Annotated[int, Field(ge=0)]
+    mismatch_detected: Annotated[int, Field(ge=0)]
+    expired: Annotated[int, Field(ge=0)]
+    verification_pending: Annotated[int, Field(ge=0)]
+    source_unavailable: Annotated[int, Field(ge=0)]
+    manual_review_required: Annotated[int, Field(ge=0)]
+
+
+class FormatType(StrEnum):
+    """
+    T = AICTE template, E = external, P = portal data (design B).
+    """
+
+    T = "T"
+    E = "E"
+    P = "P"
+
+
+class AdapterMode(StrEnum):
+    """
+    Same values as CheckSource.mode; every mock result is shown as MOCK SOURCE.
+    """
+
+    live = "live"
+    mock = "mock"
+    offline = "offline"
+    none = "none"
+
+
+class VerificationSource(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    channel: Annotated[str, Field(max_length=120, min_length=1)]
+    """
+    e.g. 'pdf-signature' (offline chain check), 'icai-udin', 'tn-fire-licence'.
+    """
+    adapter_mode: AdapterMode
+    """
+    Same values as CheckSource.mode; every mock result is shown as MOCK SOURCE.
+    """
+
+
+class VerificationAction(StrEnum):
+    recheck = "recheck"
+    route_manual = "route_manual"
+    retry = "retry"
+
+
 class CategoryName(RootModel[str]):
     root: Annotated[str, Field(max_length=200, min_length=1, title="CategoryName")]
     """
@@ -630,16 +693,6 @@ class DispositionAction(StrEnum):
 
 class DocId(RootModel[str]):
     root: Annotated[str, Field(pattern="^doc_[0-9A-HJKMNP-TV-Z]{26}$", title="DocId")]
-
-
-class FormatType(StrEnum):
-    """
-    T = AICTE template, E = external, P = portal data (design B).
-    """
-
-    T = "T"
-    E = "E"
-    P = "P"
 
 
 class EventId(RootModel[str]):
@@ -1078,11 +1131,11 @@ class AffidavitSworn(BaseModel):
     """
     issuer_sig: SignatureCheck | None
     """
-    Filled by M6 (P-4); null until then.
+    Filled by M6 (P-4); null when M6 could not read it.
     """
     uploader_sig: SignatureCheck | None
     """
-    Filled by M6 (P-4); null until then.
+    Filled by M6 (P-4); null when M6 could not read it.
     """
     category_list_found: list[CategoryName] | None
     """
@@ -1175,7 +1228,7 @@ class AffidavitTable(BaseModel):
 
 class AffidavitStamp(BaseModel):
     """
-    Filled by M6 (P-4); null until then.
+    Filled by M6 (P-4) from the stamp page; null when no stamp page is found.
     """
 
     model_config = ConfigDict(
@@ -1189,11 +1242,17 @@ class AffidavitStamp(BaseModel):
     Stamp duty in paise (Portal §2 conventions).
     """
     state: VerificationLabel
+    article: Annotated[str | None, Field(max_length=120)] = None
+    """
+    Description of document on the stamp, e.g. 'Article 4 Affidavit'.
+    """
+    issue_date: Date | None = None
+    page: Annotated[int | None, Field(ge=1)] = None
 
 
 class AffidavitChronology(BaseModel):
     """
-    Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload. Filled by M6 (P-4); null until then.
+    Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload (design B1 row 1, D1). Filled by M6 (P-4).
     """
 
     model_config = ConfigDict(
@@ -1206,6 +1265,15 @@ class AffidavitChronology(BaseModel):
     upload_date: Date | None
     order_ok: bool | None
     notary_expiry: Date | None = None
+    dsc_kind: DscKind | None = None
+    """
+    Where dsc_date comes from: a real CMS signature or a printed mark (image only).
+    """
+    mark_after_notary: bool | None = None
+    """
+    A printed signature mark dated after the notarisation (design D1 review case); null when there is no mark.
+    """
+    notary_expiry_ok: bool | None = None
 
 
 class Alert(BaseModel):
@@ -1559,6 +1627,18 @@ class Check(BaseModel):
     valid_from: Date | None = None
     valid_to: Date | None = None
     basis: Annotated[ExpiryBasis | None, Field(title="ExpiryBasis")] = None
+    check_ref: Annotated[str | None, Field(max_length=128)] = None
+    """
+    Links the check to the flag it raised (Flag.check_ref), e.g. m6:STAMP-CHRONO:chronology:order.
+    """
+    signed_at: Timestamp | None = None
+    """
+    Signature checks: signing time claimed in the CMS signature (the validation moment).
+    """
+    trust_anchor_label: Annotated[str | None, Field(max_length=64)] = None
+    """
+    Signature checks: the anchor the chain built to; demo chains are always 'TEST TRUST ANCHOR' (guard rail 10).
+    """
 
 
 class Disposition(BaseModel):
@@ -1715,17 +1795,79 @@ class AffidavitDiff(BaseModel):
     tables: list[AffidavitTable]
     stamp: AffidavitStamp | None
     """
-    Filled by M6 (P-4); null until then.
+    Filled by M6 (P-4) from the stamp page; null when no stamp page is found.
     """
     chronology: AffidavitChronology | None
     """
-    Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload. Filled by M6 (P-4); null until then.
+    Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload (design B1 row 1, D1). Filled by M6 (P-4).
     """
     pending: list[PendingSection]
     """
     DiffView sections whose checks belong to a later module, so the UI can say so instead of showing an empty panel.
     """
     flags: list[Flag]
+
+
+class CaseVerificationDocument(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    doc_id: DocId
+    slot: Annotated[str, Field(max_length=120, min_length=1)]
+    title: Annotated[str, Field(max_length=200, min_length=1)]
+    format_type: FormatType
+    """
+    T = AICTE template, E = external, P = portal data (design B).
+    """
+    state_code: Annotated[str | None, Field(pattern="^[A-Z]{2}$")]
+    issuer_profile: Annotated[str | None, Field(max_length=120)]
+    """
+    Annexure-14 issuer profile id (M3/M4, P-6); null until that slice.
+    """
+    source: Annotated[VerificationSource, Field(title="VerificationSource")]
+    label: VerificationLabel | Literal["not_applicable"]
+    """
+    Document label = most severe check outcome (Portal §2.6.3); not_applicable only for self-issued documents (UI §6 enum).
+    """
+    issuer_sig: SignatureCheck | None
+    uploader_sig: SignatureCheck | None
+    checked_at: Timestamp
+    response_ref: Annotated[str | None, Field(max_length=200)]
+    """
+    Hash or receipt of the source response; null when no source answered.
+    """
+    actions: list[VerificationAction]
+    """
+    Actions the official may take (UI §7.2); the controls arrive with M11 (P-10).
+    """
+    flag_count: Annotated[int, Field(ge=0)]
+    checks: list[Check] | None = None
+    """
+    The document's VerificationResult.checks[] (Portal §2.7), for the panel's detail view.
+    """
+    flags: list[Flag] | None = None
+    """
+    Findings raised on this document (Portal §2.6.4); additive to UI §6.4 so RB-06 can show findings no other P1 screen shows yet (e.g. UDIN).
+    """
+
+
+class CaseVerification(BaseModel):
+    """
+    RB-06 Verification panel data for one case (UI spec §6.4, §7.2): one row per document with exactly one of the six labels (or not_applicable), the two independent signature badges (§4.3) and the source checked. Advisory only; a valid uploader signature never makes a document verified (Portal §2.6.3). Demo chains are always shown as TEST TRUST ANCHOR and mock sources as MOCK SOURCE (guard rail 10).
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    case_id: CaseId
+    advisory: Literal[True]
+    trust_anchor_label: Annotated[str, Field(max_length=64, min_length=1)]
+    """
+    Label of the configured trust anchor: 'TEST TRUST ANCHOR' in the demo, the CCA root in production.
+    """
+    last_full_run_at: Timestamp
+    label_counts: Annotated[LabelCounts, Field(title="LabelCounts")]
+    documents: list[CaseVerificationDocument]
 
 
 class Document(BaseModel):

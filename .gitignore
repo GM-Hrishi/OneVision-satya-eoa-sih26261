@@ -8,6 +8,8 @@ data/real-samples/
 !.env.example
 *.pem
 *.key
+# Public certificates of the synthetic test PKI (TEST TRUST ANCHOR; no private keys, see data/synthetic/README.md)
+!data/synthetic/pki/satya-test-*.pem
 infra/caddy/data/
 infra/caddy/config/
 

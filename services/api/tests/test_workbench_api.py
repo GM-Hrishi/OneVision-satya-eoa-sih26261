@@ -1,4 +1,5 @@
-"""Workbench API (S1.8): GET /v1/cases and GET /v1/cases/{id}/affidavit-diff.
+"""Workbench API: GET /v1/cases, GET /v1/cases/{id}/affidavit-diff (S1.8, M6 sections S2.8),
+GET /v1/cases/{id}/verification and GET /v1/cases/{id}/documents/{doc_id}/verification (S2.8).
 
 Tokens are signed with a throwaway RSA key standing in for Keycloak; cases are the committed
 synthetic demo cases. Synthetic data only.
@@ -127,7 +128,7 @@ def test_case_list_is_scoped_to_the_officials_region(wb: TestClient) -> None:
     body = wb.get("/v1/cases", headers=auth(token())).json()
     assert {i["case_id"] for i in body["items"]} == {DIT03, DCE05}
     flags = {i["case_id"]: i["open_flags"] for i in body["items"]}
-    assert flags == {DIT03: 5, DCE05: 0}
+    assert flags == {DIT03: 7, DCE05: 0}  # M5 (5) + M6 (2: image-only mark, mark after notary)
     other = wb.get("/v1/cases", headers=auth(token(groups=["/regions/northern"]))).json()
     assert other["items"] == []
     national = wb.get("/v1/cases", headers=auth(token(groups=["/regions/national"]))).json()
@@ -141,9 +142,19 @@ def test_affidavit_diff_matches_the_contract_and_the_planted_findings(wb: TestCl
     diff = response.json()
     assert [e.message for e in validator("AffidavitDiff").iter_errors(diff)] == []
     truth = json.loads((CASES / "dit03-2026-27" / "truth.json").read_text("utf-8"))
-    assert sorted(f["check_ref"] for f in diff["flags"]) == sorted(
-        f["check_ref"] for f in truth["expected_flags"]
-    )
+    truth_m6 = json.loads((CASES / "dit03-2026-27" / "truth-m6.json").read_text("utf-8"))
+    affidavit = diff["doc_id"]
+    expected = [f["check_ref"] for f in truth["expected_flags"]] + [
+        f["check_ref"] for f in truth_m6["expected_flags"] if f["doc_id"] == affidavit
+    ]
+    assert sorted(f["check_ref"] for f in diff["flags"]) == sorted(expected)
+    # M6 sections are filled and no longer pending (UI §6.3)
+    assert {p["section"] for p in diff["pending"]} <= {"ocr"}
+    assert diff["sworn"]["issuer_sig"]["state"] == "image_only"
+    assert diff["sworn"]["uploader_sig"]["trust_anchor_label"] == "TEST TRUST ANCHOR"
+    assert diff["stamp"]["second_party"] == "AICTE NEW DELHI" and diff["stamp"]["duty"] == 10000
+    assert diff["chronology"]["mark_after_notary"] is True
+    assert truth_m6["printed"]["stamp.certificate_no"] not in response.text  # masked
     assert diff["advisory"] is True
     assert "DEMO-DEED-0301" not in response.text
 
@@ -170,7 +181,90 @@ def test_per_user_quota() -> None:
         assert codes == [200, 200, 429]
 
 
-def test_meta_lists_the_m5_ruleset(wb: TestClient) -> None:
+def test_meta_lists_the_rulesets(wb: TestClient) -> None:
     body = wb.get("/v1/meta").json()
-    assert body["ruleset_versions"] == ["m5-affidavit@0.1.0"]
+    assert body["ruleset_versions"] == ["m5-affidavit@0.1.0", "m6-signatures@0.1.0"]
     assert body["template_profiles"] == ["aff2-portal-2024-27"]
+
+
+# ---- S2.8: verification endpoints -------------------------------------------------------------
+def _case_files(directory: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    case = json.loads((CASES / directory / "case.json").read_text("utf-8"))
+    truth = json.loads((CASES / directory / "truth-m6.json").read_text("utf-8"))
+    return case, truth
+
+
+@pytest.mark.parametrize("path", ["verification", "documents/{doc}/verification"])
+def test_verification_endpoints_apply_auth_role_and_region(wb: TestClient, path: str) -> None:
+    case, _ = _case_files("dit03-2026-27")
+    url = f"/v1/cases/{DIT03}/" + path.format(doc=case["documents"][0]["doc_id"])
+    assert wb.get(url).json()["code"] == "AUTH_REQUIRED"
+    assert wb.get(url, headers=auth(token(roles=["INS"]))).status_code == 403
+    response = wb.get(url, headers=auth(token(groups=["/regions/northern"])))
+    assert response.status_code == 403 and response.json()["code"] == "SCOPE_DENIED"
+    assert wb.get(url, headers=auth(token())).status_code == 200
+
+
+def test_case_verification_matches_ui_6_4_and_the_demo_story(wb: TestClient) -> None:
+    response = wb.get(f"/v1/cases/{DIT03}/verification", headers=auth(token()))
+    assert response.status_code == 200
+    assert response.headers["cache-control"] == "no-store"
+    body = response.json()
+    assert [e.message for e in validator("CaseVerification").iter_errors(body)] == []
+    assert body["advisory"] is True and body["trust_anchor_label"] == "TEST TRUST ANCHOR"
+    case, truth = _case_files("dit03-2026-27")
+    rows = {d["doc_id"]: d for d in body["documents"]}
+    assert {k: v["label"] for k, v in rows.items()} == truth["expected_document_labels"]
+    affidavit = rows[case["documents"][0]["doc_id"]]
+    assert affidavit["issuer_sig"]["state"] == "image_only"  # F5
+    assert affidavit["uploader_sig"]["state"] == "present"  # F6, never makes it verified
+    assert affidavit["label"] == "manual_review_required"
+    accounts = rows[case["documents"][1]["doc_id"]]
+    assert accounts["label"] == "source_unavailable"  # F10
+    assert accounts["source"] == {"channel": "icai-udin", "adapter_mode": "none"}
+    assert "route_manual" in accounts["actions"]
+    assert body["label_counts"]["manual_review_required"] == 1
+    assert body["label_counts"]["source_unavailable"] == 1
+
+
+def test_clean_case_verification(wb: TestClient) -> None:
+    body = wb.get(f"/v1/cases/{DCE05}/verification", headers=auth(token())).json()
+    labels = sorted(d["label"] for d in body["documents"])
+    assert labels == ["source_unavailable", "verified"]
+    assert all(d["flag_count"] == 0 for d in body["documents"])
+
+
+def test_document_verification_matches_portal_2_7(wb: TestClient) -> None:
+    case, truth = _case_files("dit03-2026-27")
+    doc_id = case["documents"][0]["doc_id"]
+    response = wb.get(f"/v1/cases/{DIT03}/documents/{doc_id}/verification", headers=auth(token()))
+    body = response.json()
+    assert [e.message for e in validator("VerificationResult").iter_errors(body)] == []
+    assert body["doc_id"] == doc_id and body["decided_by"] == "system"
+    kinds = [c["kind"] for c in body["checks"]]
+    assert kinds.count("issuer_signature") == 1 and kinds.count("uploader_signature") == 1
+    expected = {(c["kind"], c["reason_code"]) for c in truth["expected_checks"]}
+    assert expected <= {(c["kind"], c["reason_code"]) for c in body["checks"]}
+
+
+@pytest.mark.parametrize(
+    "doc_id", ["doc_00000000000000000000000000", "not-a-doc", "doc_QRQ9XKV1GHAT0J10S45FKAMK5R"]
+)
+def test_unknown_document_is_404(wb: TestClient, doc_id: str) -> None:
+    response = wb.get(f"/v1/cases/{DIT03}/documents/{doc_id}/verification", headers=auth(token()))
+    assert response.status_code == 404 and response.json()["code"] == "NOT_FOUND"
+
+
+def test_document_of_another_case_is_404(wb: TestClient) -> None:
+    other, _ = _case_files("dce05-2026-27")
+    doc_id = other["documents"][0]["doc_id"]
+    response = wb.get(f"/v1/cases/{DIT03}/documents/{doc_id}/verification", headers=auth(token()))
+    assert response.status_code == 404
+
+
+def test_verification_counts_against_the_user_quota() -> None:
+    for client in _client(user_rate_limit="2/minute"):
+        headers = auth(token())
+        url = f"/v1/cases/{DCE05}/verification"
+        codes = [client.get(url, headers=headers).status_code for _ in range(3)]
+        assert codes == [200, 200, 429]

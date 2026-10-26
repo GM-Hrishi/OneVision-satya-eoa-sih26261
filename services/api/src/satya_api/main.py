@@ -2,6 +2,9 @@
 
 Slice 0 endpoints: GET /v1/health, GET /v1/health/live, GET /v1/meta, POST /v1/portal-events.
 Slice 1 (Workbench API, OIDC bearer): GET /v1/cases, GET /v1/cases/{case_id}/affidavit-diff (M5).
+Slice 2: GET /v1/cases/{case_id}/verification (UI §6.4),
+GET /v1/cases/{case_id}/documents/{doc_id}/verification (Portal §2.7) and the M6 sections of the
+affidavit diff (same auth, role, region and quota rules).
 """
 
 import asyncio
@@ -24,7 +27,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from satya_affidavit.engine import ENGINE_VERSION as M5_ENGINE_VERSION
 from satya_affidavit.rules import load_ruleset
 from satya_api.auth import Principal, TokenVerifier, http_jwks_fetcher
-from satya_api.cases import CASE_ID, CaseError, CaseRepository, FixtureCaseRepository
+from satya_api.cases import CASE_ID, DOC_ID, CaseError, CaseRepository, FixtureCaseRepository
 from satya_api.config import (
     API_VERSION,
     SERVICE_VERSION,
@@ -44,6 +47,8 @@ from satya_api.problems import ProblemError, problem_response
 from satya_api.ratelimit import RateLimiter
 from satya_api.signature import HEADER, verify
 from satya_api.store import EventStore, InboundEvent, PostgresStore
+from satya_forensics.engine import ENGINE_VERSION as M6_ENGINE_VERSION
+from satya_forensics.rules import load_ruleset as load_m6_ruleset
 from satya_shared_types import constants, validator
 
 log = logging.getLogger("satya.api")
@@ -233,8 +238,11 @@ def create_app(
             "supported_ays": list(SUPPORTED_AYS),
             "aph_editions": ["2024-27"],
             "template_profiles": ["aff2-portal-2024-27"],
-            "ruleset_versions": [load_ruleset().ref],
-            "engines": {"m5-affidavit-diff": M5_ENGINE_VERSION},
+            "ruleset_versions": [load_ruleset().ref, load_m6_ruleset().ref],
+            "engines": {
+                "m5-affidavit-diff": M5_ENGINE_VERSION,
+                "m6-signatures": M6_ENGINE_VERSION,
+            },
             "adapters": [],
             "adapters_note": (
                 "No source adapters in slice 0. TN Form D and TN fire licence adapters arrive "
@@ -362,8 +370,7 @@ def create_app(
             if not principal.can_see_region(summary.regional_office):
                 continue
             try:
-                diff = await repo.affidavit_diff(summary.case_id)
-                open_flags: int | None = len(diff["flags"])
+                open_flags: int | None = await repo.open_flags(summary.case_id)
             except CaseError:
                 log.exception("case unusable", extra={"case_id": summary.case_id})
                 open_flags = None
@@ -383,8 +390,8 @@ def create_app(
         body = {"items": items, "totals": {"submitted": len(items)}, "advisory": True}
         return JSONResponse(body, headers={"Cache-Control": "no-store"})
 
-    @app.get("/v1/cases/{case_id}/affidavit-diff")
-    async def affidavit_diff(case_id: str, request: Request) -> JSONResponse:
+    async def scoped_case(request: Request, case_id: str) -> tuple[Principal, CaseRepository]:
+        """Bearer + RB role + quota, then the case must exist and be in the official's region."""
         principal = await official(request)
         if not CASE_ID.fullmatch(case_id):
             raise ProblemError(404, "NOT_FOUND")
@@ -393,16 +400,61 @@ def create_app(
         if summary is None:
             raise ProblemError(404, "NOT_FOUND")
         in_scope(request, principal, summary.regional_office, case_id)
+        return principal, repo
+
+    def unusable(request: Request, case_id: str) -> ProblemError:
+        log.exception("case unusable", extra={"trace_id": trace(request), "case_id": case_id})
+        return ProblemError(500, "INTERNAL_ERROR")
+
+    @app.get("/v1/cases/{case_id}/affidavit-diff")
+    async def affidavit_diff(case_id: str, request: Request) -> JSONResponse:
+        principal, repo = await scoped_case(request, case_id)
         try:
             diff = await repo.affidavit_diff(case_id)
         except CaseError:
-            log.exception("case unusable", extra={"trace_id": trace(request), "case_id": case_id})
-            raise ProblemError(500, "INTERNAL_ERROR") from None
+            raise unusable(request, case_id) from None
         log.info(
             "affidavit diff served",
             extra={"trace_id": trace(request), "sub": principal.subject, "case_id": case_id},
         )
         return JSONResponse(diff, headers={"Cache-Control": "no-store"})
+
+    @app.get("/v1/cases/{case_id}/verification")
+    async def case_verification(case_id: str, request: Request) -> JSONResponse:
+        """RB-06 data (UI spec §6.4): one label per document, two signature badges."""
+        principal, repo = await scoped_case(request, case_id)
+        try:
+            body = await repo.verification(case_id)
+        except CaseError:
+            raise unusable(request, case_id) from None
+        log.info(
+            "case verification served",
+            extra={"trace_id": trace(request), "sub": principal.subject, "case_id": case_id},
+        )
+        return JSONResponse(body, headers={"Cache-Control": "no-store"})
+
+    @app.get("/v1/cases/{case_id}/documents/{doc_id}/verification")
+    async def document_verification(case_id: str, doc_id: str, request: Request) -> JSONResponse:
+        """VerificationResult of one document (Portal spec §2.7)."""
+        principal, repo = await scoped_case(request, case_id)
+        if not DOC_ID.fullmatch(doc_id):
+            raise ProblemError(404, "NOT_FOUND")
+        try:
+            body = await repo.document_verification(case_id, doc_id)
+        except CaseError:
+            raise unusable(request, case_id) from None
+        if body is None:
+            raise ProblemError(404, "NOT_FOUND")
+        log.info(
+            "document verification served",
+            extra={
+                "trace_id": trace(request),
+                "sub": principal.subject,
+                "case_id": case_id,
+                "doc_id": doc_id,
+            },
+        )
+        return JSONResponse(body, headers={"Cache-Control": "no-store"})
 
     return app
 

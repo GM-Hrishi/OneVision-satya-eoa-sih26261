@@ -9,7 +9,7 @@ dependencies = []
 package = false
 
 [tool.uv.workspace]
-members = ["services/api", "services/worker", "packages/shared-types/python", "packages/affidavit"]
+members = ["services/api", "services/worker", "packages/shared-types/python", "packages/affidavit", "packages/forensics"]
 
 [dependency-groups]
 dev = [
@@ -34,7 +34,7 @@ select = ["E", "F", "I", "B", "UP", "S", "N", "SIM", "RUF"]
 ignore = ["S101"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["satya_shared_types", "satya_api", "satya_worker", "satya_affidavit"]
+known-first-party = ["satya_shared_types", "satya_api", "satya_worker", "satya_affidavit", "satya_forensics"]
 
 [tool.ruff.lint.per-file-ignores]
 "**/tests/**" = ["S105", "S106", "S311"]
@@ -46,6 +46,7 @@ known-first-party = ["satya_shared_types", "satya_api", "satya_worker", "satya_a
 "packages/affidavit/tests/**" = ["RUF001"]
 # Seeded random is the point of a reproducible synthetic generator.
 "packages/affidavit/src/satya_affidavit/synth/**" = ["RUF001", "S311"]
+"packages/forensics/src/satya_forensics/synth/**" = ["RUF001", "S311"]
 
 [tool.mypy]
 python_version = "3.12"
@@ -57,6 +58,11 @@ exclude = ["migrations/", "generated/"]
 # Celery ships no type hints; its decorators would otherwise make every task untyped.
 module = ["satya_worker.*"]
 disallow_untyped_decorators = false
+
+[[tool.mypy.overrides]]
+# pyHanko and pyhanko-certvalidator are only partly annotated.
+module = ["satya_forensics.*"]
+disallow_untyped_calls = false
 
 [tool.pytest.ini_options]
 markers = ["integration: needs the running compose stack (make up)"]

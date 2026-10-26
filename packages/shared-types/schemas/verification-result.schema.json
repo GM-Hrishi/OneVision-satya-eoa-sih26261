@@ -57,7 +57,10 @@
         },
         "valid_from": { "$ref": "common.schema.json#/$defs/Date" },
         "valid_to": { "$ref": "common.schema.json#/$defs/Date" },
-        "basis": { "title": "ExpiryBasis", "type": "string", "enum": ["printed", "computed_from_state_rule"] }
+        "basis": { "title": "ExpiryBasis", "type": "string", "enum": ["printed", "computed_from_state_rule"] },
+        "check_ref": { "type": "string", "maxLength": 128, "description": "Links the check to the flag it raised (Flag.check_ref), e.g. m6:STAMP-CHRONO:chronology:order." },
+        "signed_at": { "$ref": "common.schema.json#/$defs/Timestamp", "description": "Signature checks: signing time claimed in the CMS signature (the validation moment)." },
+        "trust_anchor_label": { "type": "string", "maxLength": 64, "description": "Signature checks: the anchor the chain built to; demo chains are always 'TEST TRUST ANCHOR' (guard rail 10)." }
       }
     },
     "CheckSource": {

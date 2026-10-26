@@ -1,0 +1,53 @@
+/* SignatureBadge (UI spec §4.3): outlined caps chip, Public Sans 800, 10.5px, 1.5px border, white
+   fill. Verified/present green or chrome blue, image-only violet (as MANUAL REVIEW REQUIRED), failed
+   red, absent red dashed. Tokens only. */
+.wrap {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  max-width: 100%;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0 var(--space-1);
+  border: 1.5px solid currentColor;
+  background: var(--color-surface);
+  font-size: 0.65625rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.badge[data-tone="verified"] {
+  color: var(--color-label-verified);
+}
+
+.badge[data-tone="present"] {
+  color: var(--color-chrome);
+}
+
+.badge[data-tone="image"] {
+  color: var(--color-label-manual-review);
+}
+
+.badge[data-tone="broken"] {
+  color: var(--color-label-mismatch);
+}
+
+.badge[data-tone="absent"] {
+  color: var(--color-label-mismatch);
+  border-style: dashed;
+}
+
+.badge[data-tone="neutral"] {
+  color: var(--color-label-source-unavailable);
+}
+
+.detail {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}

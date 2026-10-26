@@ -1,0 +1,83 @@
+{
+  "case_id": "cas_01JD3M5A00000000000000DT03",
+  "advisory": false,
+  "trust_anchor_label": "TEST TRUST ANCHOR",
+  "last_full_run_at": "2026-11-25T10:00:00+05:30",
+  "label_counts": {
+    "verified": 0,
+    "mismatch_detected": 0,
+    "expired": 0,
+    "verification_pending": 0,
+    "source_unavailable": 1,
+    "manual_review_required": 1
+  },
+  "documents": [
+    {
+      "doc_id": "doc_01JB7Q9A000000000000000005",
+      "slot": "annex2.1(i) affidavit",
+      "title": "Affidavit 2 (sworn copy)",
+      "format_type": "T",
+      "state_code": "TN",
+      "issuer_profile": null,
+      "source": {
+        "channel": "pdf-signature",
+        "adapter_mode": "offline"
+      },
+      "label": "approved",
+      "issuer_sig": {
+        "role": "issuer",
+        "state": "image_only",
+        "has_byte_range": false,
+        "reason_code": "SIG_IMAGE_ONLY",
+        "page": 4
+      },
+      "uploader_sig": {
+        "role": "uploader",
+        "state": "present",
+        "has_byte_range": true,
+        "reason_code": "SIG_VALID",
+        "signer_role": "chairman",
+        "trust_anchor_label": "TEST TRUST ANCHOR"
+      },
+      "checked_at": "2026-11-25T10:00:00+05:30",
+      "response_ref": null,
+      "actions": [
+        "recheck",
+        "route_manual"
+      ],
+      "flag_count": 2
+    },
+    {
+      "doc_id": "doc_01JB7Q9A000000000000000006",
+      "slot": "annex2.1(vii) audited accounts",
+      "title": "Audited statement of accounts FY 2025-26",
+      "format_type": "E",
+      "state_code": "TN",
+      "issuer_profile": null,
+      "source": {
+        "channel": "icai-udin",
+        "adapter_mode": "none"
+      },
+      "label": "source_unavailable",
+      "issuer_sig": {
+        "role": "issuer",
+        "state": "not_digital",
+        "has_byte_range": false
+      },
+      "uploader_sig": {
+        "role": "uploader",
+        "state": "present",
+        "has_byte_range": true,
+        "reason_code": "SIG_VALID",
+        "signer_role": "chairman",
+        "trust_anchor_label": "TEST TRUST ANCHOR"
+      },
+      "checked_at": "2026-11-25T10:00:00+05:30",
+      "response_ref": null,
+      "actions": [
+        "route_manual"
+      ],
+      "flag_count": 0
+    }
+  ]
+}

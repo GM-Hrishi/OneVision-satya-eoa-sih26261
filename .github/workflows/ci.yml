@@ -46,14 +46,16 @@ jobs:
       - run: uv sync --all-packages --frozen
       - run: uv run ruff check .
       - run: uv run ruff format --check .
-      - run: uv run mypy services/api/src services/worker/src packages/shared-types/python/satya_shared_types packages/affidavit/src
+      - run: uv run mypy services/api/src services/worker/src packages/shared-types/python/satya_shared_types packages/affidavit/src packages/forensics/src
       - run: uv run pytest packages/shared-types/python
       - run: uv run pytest services/api
       - run: uv run pytest services/worker
       - name: M5 affidavit diff tests + metrics over the synthetic test set (printed in the summary)
         run: uv run pytest packages/affidavit
-      - name: Synthetic demo cases match a fresh generation
-        run: uv run python -m satya_affidavit.synth --check
+      - name: M6 signatures, stamp chronology, UDIN tests + metrics on dev and held-out seeds (printed in the summary)
+        run: uv run pytest packages/forensics
+      - name: Synthetic demo cases, registers and test PKI match a fresh generation
+        run: uv run python -m satya_forensics.synth --check
       - name: Postgres-backed API tests (pgvector container, real migrations)
         run: bash infra/scripts/test-db.sh
 

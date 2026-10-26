@@ -101,6 +101,21 @@ class GeneratedCase:
     snapshot: dict[str, Any]
     pdf: bytes
     truth: dict[str, Any]
+    # Page of every keyed element and the printed signature mark box (used by the M6 generator).
+    positions: dict[str, int] = field(default_factory=dict)
+    mark_box: tuple[int, float, float, float, float] | None = None
+
+
+@dataclass(frozen=True)
+class Hooks:
+    """Extension points for other modules' generators (M6 adds stamp fields and a printed mark).
+
+    `case` runs on the case metadata before the print model is built; `model` runs on the print
+    model after the M5 plants and before rendering. Neither may touch what M5 compares.
+    """
+
+    case: Callable[[dict[str, Any], dict[str, Any]], None] | None = None
+    model: Callable[[PrintModel], None] | None = None
 
 
 def _all_decls(model: PrintModel) -> list[PrintDecl]:
@@ -310,7 +325,13 @@ def _printed(model: PrintModel) -> dict[str, Any]:
     return printed
 
 
-def generate(profile: int, variant: str, ay: str = "2026-27", demo: bool = False) -> GeneratedCase:
+def generate(
+    profile: int,
+    variant: str,
+    ay: str = "2026-27",
+    demo: bool = False,
+    hooks: Hooks | None = None,
+) -> GeneratedCase:
     """One synthetic sworn affidavit + its case, snapshot and ground truth."""
     rng = random.Random(f"satya-m5-{profile}-{variant}-{ay}")
     inst: Institution = institution(profile, ay)
@@ -319,6 +340,8 @@ def generate(profile: int, variant: str, ay: str = "2026-27", demo: bool = False
     truth_flags: list[TruthFlag] = []
     for snap_mutate in plan.snapshot:
         truth_flags += snap_mutate(snapshot)
+    if hooks and hooks.case:
+        hooks.case(case, snapshot)
     template = load_template(case["affidavit_draft"]["template_id"])
     draft = render_draft(template, draft_header(case, snapshot), case["category_set"], snapshot)
     if variant in CONTROL_STYLES:
@@ -328,6 +351,8 @@ def generate(profile: int, variant: str, ay: str = "2026-27", demo: bool = False
     model = build_print_model(draft, case, style)
     for print_mutate in plan.printed:
         truth_flags += print_mutate(model, draft, style)
+    if hooks and hooks.model:
+        hooks.model(model)
     pdf, positions = render(model, style)
     ruleset = load_ruleset()
     expected = []
@@ -361,4 +386,12 @@ def generate(profile: int, variant: str, ay: str = "2026-27", demo: bool = False
         "expected_flags": expected,
         "printed": _printed(model),
     }
-    return GeneratedCase(slug=slug, case=case, snapshot=snapshot, pdf=pdf, truth=truth)
+    return GeneratedCase(
+        slug=slug,
+        case=case,
+        snapshot=snapshot,
+        pdf=pdf,
+        truth=truth,
+        positions=positions,
+        mark_box=model.mark_box,
+    )

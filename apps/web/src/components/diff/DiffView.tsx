@@ -10,16 +10,20 @@ import type {
   SwornDeclaration,
 } from "@satya/shared-types";
 import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 import type { ReactNode } from "react";
+import { SignatureBadge } from "@/components/signature/SignatureBadge";
 import styles from "./DiffView.module.css";
 
 type T = Awaited<ReturnType<typeof getTranslations<"diff">>>;
-type Tone = "mismatch" | "manual" | "ok" | "neutral";
+export type Tone = "mismatch" | "manual" | "ok" | "neutral";
 
 const VALUE_PREVIEW = 160;
+// Demo chains always end at the synthetic root, shown as TEST TRUST ANCHOR (guard rail 10).
+const TRUST_ANCHOR = "TEST TRUST ANCHOR";
 const SEVERITY_ORDER = { critical: 0, warning: 1, info: 2 } as const;
 
-function Label({ tone, children }: { tone: Tone; children: ReactNode }) {
+export function Label({ tone, children }: { tone: Tone; children: ReactNode }) {
   return (
     <span className={styles.label} data-tone={tone}>
       {children}
@@ -27,7 +31,7 @@ function Label({ tone, children }: { tone: Tone; children: ReactNode }) {
   );
 }
 
-function labelTone(label: Flag["label"]): Tone {
+export function labelTone(label: Flag["label"]): Tone {
   if (label === "mismatch_detected" || label === "expired") return "mismatch";
   if (label === "manual_review_required") return "manual";
   if (label === "verified") return "ok";
@@ -63,11 +67,12 @@ function declLabel(t: T, block: string, no: number): string {
   return t("declCore", { no });
 }
 
-export async function DiffView({ diff, showAll, allHref, changedHref }: {
+export async function DiffView({ diff, showAll, allHref, changedHref, verificationHref }: {
   diff: AffidavitDiff;
   showAll: boolean;
   allHref: string;
   changedHref: string;
+  verificationHref?: string;
 }) {
   const t = await getTranslations("diff");
   const tr = await getTranslations("rules");
@@ -119,8 +124,23 @@ export async function DiffView({ diff, showAll, allHref, changedHref }: {
                 </dd>
                 <dt>{t("sha256")}</dt>
                 <dd className={styles.mono}>{diff.sworn.sha256}</dd>
-                <dt>{t("signatures")}</dt>
-                <dd>{pending.has("signatures") ? t("signaturesPending") : t("none")}</dd>
+                {pending.has("signatures") ? (
+                  <>
+                    <dt>{t("signatures")}</dt>
+                    <dd>{t("signaturesPending")}</dd>
+                  </>
+                ) : (
+                  <>
+                    <dt>{t("issuerSignature")}</dt>
+                    <dd>
+                      <SignatureBadge sig={diff.sworn.issuer_sig} anchor={TRUST_ANCHOR} />
+                    </dd>
+                    <dt>{t("uploaderSignature")}</dt>
+                    <dd>
+                      <SignatureBadge sig={diff.sworn.uploader_sig} anchor={TRUST_ANCHOR} />
+                    </dd>
+                  </>
+                )}
               </dl>
             </div>
           </div>
@@ -169,7 +189,16 @@ export async function DiffView({ diff, showAll, allHref, changedHref }: {
 
         <section className={styles.section} aria-labelledby="diff-stamp">
           <h2 id="diff-stamp">{t("stampHeading")}</h2>
-          {diff.stamp === null && pending.has("stamp") ? <p>{t("stampPending")}</p> : null}
+          {pending.has("stamp") ? (
+            <p>{t("stampPending")}</p>
+          ) : (
+            <StampAndOrder diff={diff} t={t} />
+          )}
+          {verificationHref ? (
+            <p className={styles.note}>
+              <Link href={verificationHref}>{t("openVerification")}</Link>
+            </p>
+          ) : null}
         </section>
       </div>
 
@@ -188,6 +217,101 @@ export async function DiffView({ diff, showAll, allHref, changedHref }: {
         )}
       </aside>
     </div>
+  );
+}
+
+/** Stamp page fields, notary seal and the signing order (UI spec §7.1 item 5; M6, P-4). */
+function StampAndOrder({ diff, t }: { diff: AffidavitDiff; t: T }) {
+  const stamp = diff.stamp;
+  const chrono = diff.chronology;
+  const steps = chrono
+    ? ([
+        ["application", chrono.application_date],
+        ["stamp", chrono.stamp_date],
+        ["notarisation", chrono.notary_date],
+        ["dsc", chrono.dsc_date ?? null],
+        ["upload", chrono.upload_date],
+      ] as const)
+    : [];
+  return (
+    <>
+      <h3>{t("stampDetails")}</h3>
+      {stamp ? (
+        <dl className={styles.facts}>
+          <dt>{t("stampChecks")}</dt>
+          <dd>
+            <Label tone={labelTone(stamp.state)}>{t(`labels.${stamp.state}`)}</Label>
+            <span className={styles.expectedValue}>{t("stampStateNote")}</span>
+          </dd>
+          <dt>{t("stampInstrument")}</dt>
+          <dd>{t(`instrument.${stamp.instrument}` as never)}</dd>
+          <dt>{t("certificateNo")}</dt>
+          <dd>
+            <Cell value={stamp.certificate_no} t={t} />
+          </dd>
+          <dt>{t("stampIssued")}</dt>
+          <dd>{stamp.issue_date ?? t("notStated")}</dd>
+          <dt>{t("article")}</dt>
+          <dd>{stamp.article ?? t("notStated")}</dd>
+          <dt>{t("secondParty")}</dt>
+          <dd>{stamp.second_party ?? t("notStated")}</dd>
+          <dt>{t("duty")}</dt>
+          <dd>{stamp.duty == null ? t("notStated") : t("dutyValue", { amount: stamp.duty / 100 })}</dd>
+        </dl>
+      ) : (
+        <p>{t("noStamp")}</p>
+      )}
+      <h3>{t("orderHeading")}</h3>
+      {chrono ? (
+        <>
+          <p className={styles.note}>{t("orderRule")}</p>
+          <div className={styles.tableWrap}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th scope="col">{t("orderStep")}</th>
+                  <th scope="col">{t("orderDate")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {steps.map(([step, value]) => (
+                  <tr key={step}>
+                    <th scope="row">
+                      {t(`step.${step}`)}
+                      {step === "dsc" && chrono.dsc_kind ? (
+                        <span className={styles.expectedValue}>{t(`dscKind.${chrono.dsc_kind}`)}</span>
+                      ) : null}
+                    </th>
+                    <td className={styles.mono}>{value ?? t("notStated")}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p>
+            {chrono.order_ok === null ? (
+              <Label tone="neutral">{t("orderUnknown")}</Label>
+            ) : chrono.order_ok ? (
+              <Label tone="ok">{t("orderOk")}</Label>
+            ) : (
+              <Label tone="manual">{t("orderBroken")}</Label>
+            )}{" "}
+            {chrono.mark_after_notary === true ? <Label tone="manual">{t("markAfter")}</Label> : null}
+            {chrono.mark_after_notary === false ? <Label tone="ok">{t("markOk")}</Label> : null}
+          </p>
+          <dl className={styles.facts}>
+            <dt>{t("notarySeal")}</dt>
+            <dd>
+              {chrono.notary_expiry ?? t("notStated")}{" "}
+              {chrono.notary_expiry_ok === true ? <Label tone="ok">{t("sealOk")}</Label> : null}
+              {chrono.notary_expiry_ok === false ? <Label tone="mismatch">{t("sealExpired")}</Label> : null}
+            </dd>
+          </dl>
+        </>
+      ) : (
+        <p>{t("notStated")}</p>
+      )}
+    </>
   );
 }
 
@@ -407,7 +531,7 @@ function ReconTable({ table, t }: { table: AffidavitTable; t: T }) {
   );
 }
 
-function FlagCard({ flag, t, title }: { flag: Flag; t: T; title: string }) {
+export function FlagCard({ flag, t, title }: { flag: Flag; t: T; title: string }) {
   const extracted = preview(flag.extracted_value);
   const expected = preview(flag.expected_value);
   const headingId = `flag-${flag.flag_id}`;

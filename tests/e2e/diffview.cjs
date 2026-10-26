@@ -1,4 +1,4 @@
-// Slice 1 acceptance in a real browser on default settings: RB-05 Affidavit DiffView for the
+// Slice 1 (+ slice 2 M6 sections) acceptance in a real browser on default settings: RB-05 Affidavit DiffView for the
 // synthetic demo cases, reached from the queue after Keycloak sign-in as rb.southern.demo.
 // Usage: node tests/e2e/diffview.cjs   (needs `make up`; Caddy's local CA trusted, see DEV-SETUP)
 const { chromium } = require("playwright");
@@ -40,7 +40,7 @@ async function login(page, username, start = `${BASE}/`) {
   await page.waitForSelector("#case-list", { timeout: 30000 });
   const queue = await page.textContent("main");
   check(queue.includes("1-90000004217") && queue.includes("1-90000005105"), "queue lists both demo cases");
-  check(queue.includes("5 findings") && queue.includes("No findings"), "queue shows finding counts (5 and none)");
+  check(queue.includes("7 findings") && queue.includes("No findings"), "queue shows finding counts (7 = 5 M5 + 2 M6, and none)");
   await page.getByRole("link", { name: "Open the affidavit diff for application 1-90000004217" }).click();
   await page.waitForURL(`${BASE}/case/${DIT03}/affidavit`, { timeout: 30000 });
   check(true, "queue link opens RB-05 for DIT 03");
@@ -52,14 +52,20 @@ async function login(page, username, start = `${BASE}/`) {
   check((await page.locator('nav[aria-label="Breadcrumb"] a[href="/rb-queue"]').count()) === 1, "breadcrumb links back to the queue");
   const main = await page.textContent("main");
   check(main.includes("CATEGORY LINE MISSING"), "structure check: CATEGORY LINE MISSING");
-  check(main.includes("Findings (5)"), "flag rail lists 5 findings");
+  check(main.includes("Findings (7)"), "flag rail lists 7 findings (5 M5 + 2 M6)");
   check((await page.locator("del", { hasText: "contiguous and undisputed," }).count()) === 1, "clause diff strikes 'contiguous and undisputed,' in declaration 9");
   check(main.includes("3.50") && main.includes("4.50") && main.includes("11.50") && main.includes("12.50"), "land table: 3.50 vs 4.50, computed 11.50 vs 12.50");
   check(main.includes("I-201") && main.includes("DUPLICATE ROOM ID"), "duplicate room ID I-201 shown");
-  check((main.match(/Preliminary indicator\. Needs human verification\./g) || []).length === 5, "every flag carries the preliminary-indicator line");
+  check((main.match(/Preliminary indicator\. Needs human verification\./g) || []).length === 7, "every flag carries the preliminary-indicator line");
   check(main.includes("MISMATCH DETECTED") && main.includes("MANUAL REVIEW REQUIRED"), "labels shown as text");
   check(!main.includes("DEMO-DEED-0301") && main.includes("masked, ends in"), "deed numbers masked, with screen-reader text");
-  check(main.includes("checked by M6 (P-4)"), "stamp and signing order says it waits for M6");
+  check(!main.includes("checked by M6 (P-4)") && !main.includes("arrive with M6"), "no M6 placeholder left");
+  check(main.includes("IMAGE ONLY, NOT A REAL SIGNATURE") && main.includes("UPLOADER SIGNATURE PRESENT"), "header badges: issuer IMAGE ONLY, uploader PRESENT (F5, F6)");
+  check(main.includes("Chain to TEST TRUST ANCHOR ok"), "uploader chain shown as TEST TRUST ANCHOR");
+  check(main.includes("AICTE NEW DELHI") && main.includes("Rs 100"), "stamp: Second Party and Rs 100 duty");
+  check(main.includes("PRINTED MARK DATED AFTER NOTARISATION") && main.includes("IN ORDER"), "signing order: in order, printed mark after notarisation flagged");
+  check(main.includes("VALID ON THE NOTARISATION DATE"), "notary seal valid on the notarisation date");
+  check(main.includes("Printed signature mark without a real signature"), "SIG-IMAGE flag in the rail");
   const buttons = await page.locator("main button").allTextContents();
   check(!buttons.some((b) => /approve|reject|clear/i.test(b)), "no approve, reject or clear control on the page");
   await page.screenshot({ path: path.join(shots, "rb05-dit03.png"), fullPage: true });
@@ -75,6 +81,7 @@ async function login(page, username, start = `${BASE}/`) {
   await page.waitForSelector("#diff-flags");
   const clean = await page.textContent("main");
   check(clean.includes("No findings.") && clean.includes("PRESENT") && clean.includes("Every declaration matches"), "clean control DCE 05 shows no findings");
+  check(clean.includes("ISSUER SIGNATURE VERIFIED") && clean.includes("real signature (/ByteRange)"), "clean control: issuer signature verified, DSC date from a real signature");
   await page.screenshot({ path: path.join(shots, "rb05-dce05.png"), fullPage: true });
 
   const nf = await page.goto(`${BASE}/case/cas_01JD3M5A00000000000000ZZ99/affidavit`);

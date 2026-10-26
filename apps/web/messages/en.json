@@ -33,7 +33,8 @@
     "sitemap": "Sitemap",
     "signin": "Sign in",
     "roleHome": "Home",
-    "affidavit": "Affidavit diff"
+    "affidavit": "Affidavit diff",
+    "verification": "Verification"
   },
   "roles": {
     "RB": "Regulation Bureau",
@@ -82,7 +83,9 @@
     "findings": "{count, plural, =0 {No findings} one {# finding} other {# findings}}",
     "findingsUnavailable": "Not available",
     "openDiff": "Affidavit diff",
-    "openAria": "Open the affidavit diff for application {aid}"
+    "openAria": "Open the affidavit diff for application {aid}",
+    "openVerification": "Verification",
+    "openVerificationAria": "Open the verification panel for application {aid}"
   },
   "signin": {
     "title": "Sign in",
@@ -341,7 +344,49 @@
     "dispositionPending": "No disposition recorded yet. Officials record decisions with the decision bar (M11, P-10).",
     "dispositionRecorded": "Disposition recorded.",
     "ruleVersion": "{id} v{version}",
-    "clauseEdition": "{clause} (APH {edition})"
+    "clauseEdition": "{clause} (APH {edition})",
+    "issuerSignature": "Issuer signature",
+    "uploaderSignature": "Uploader signature",
+    "stampDetails": "Stamp",
+    "instrument": {
+      "e-stamp": "e-Stamp certificate",
+      "physical": "Physical non-judicial stamp paper"
+    },
+    "certificateNo": "Certificate no.",
+    "stampIssued": "Issued on",
+    "article": "Description of document",
+    "secondParty": "Second Party",
+    "duty": "Stamp duty",
+    "dutyValue": "Rs {amount}",
+    "stampChecks": "Stamp checks",
+    "stampStateNote": "Format checks on the stamp page. The e-stamp lookup itself (mock source) arrives with M7 (P-5).",
+    "noStamp": "No stamp page was found in the text layer.",
+    "orderHeading": "Signing order",
+    "orderStep": "Step",
+    "orderDate": "Date",
+    "step": {
+      "application": "Application date",
+      "stamp": "Stamp issued",
+      "notarisation": "Notarised",
+      "dsc": "Deponent signature",
+      "upload": "Uploaded"
+    },
+    "dscKind": {
+      "signature": "real signature (/ByteRange)",
+      "image_mark": "printed mark, image only"
+    },
+    "orderOk": "IN ORDER",
+    "orderBroken": "OUT OF ORDER",
+    "orderUnknown": "NOT ENOUGH DATES",
+    "orderRule": "Expected: application date ≤ stamp issued ≤ notarised ≤ deponent signature ≤ uploaded.",
+    "markAfter": "PRINTED MARK DATED AFTER NOTARISATION",
+    "markOk": "PRINTED MARK NOT AFTER NOTARISATION",
+    "notarySeal": "Notary seal valid till",
+    "sealOk": "VALID ON THE NOTARISATION DATE",
+    "sealExpired": "EXPIRED BEFORE NOTARISATION",
+    "notStated": "Not stated",
+    "openVerification": "Open the verification panel",
+    "stampInstrument": "Instrument"
   },
   "rules": {
     "affidavit": {
@@ -354,6 +399,161 @@
       "land_row_differs": "Land table entry differs from the Application Report",
       "room_differs": "Room table entry differs from the Application Report",
       "room_id_duplicated": "Room ID used in more than one room table"
+    },
+    "signature": {
+      "digest_mismatch": "Signed bytes no longer match the signature",
+      "modified_after_signing": "Document changed after it was signed",
+      "cert_revoked": "Signing certificate revoked before signing",
+      "cert_expired": "Signing certificate not valid at the signing time",
+      "untrusted_chain": "Signature does not chain to the trust anchor",
+      "image_only": "Printed signature mark without a real signature",
+      "signer_not_matched": "Signer is not the authorised Chairman or Secretary",
+      "revocation_unreachable": "Revocation list of the signing CA unreachable",
+      "uploader_dsc_missing": "Institution's signature missing on the uploaded file"
+    },
+    "stamp": {
+      "chronology": "Signing order: dates out of order, or a printed mark dated after notarisation",
+      "second_party": "Second Party on the e-stamp is not the Council",
+      "duty_low": "Stamp duty below Rs 100",
+      "not_e_stamp": "Not on an e-stamp certificate",
+      "certificate_reused": "E-stamp certificate number used on another filing"
+    },
+    "notary": {
+      "seal_expired": "Notary seal expired before the notarisation date"
+    },
+    "udin": {
+      "structure": "UDIN structure or year does not fit",
+      "membership_mismatch": "Membership number in the UDIN differs from the printed one",
+      "reused": "UDIN already used on another filing"
     }
+  },
+  "signature": {
+    "issuer": {
+      "verified": "ISSUER SIGNATURE VERIFIED",
+      "image_only": "IMAGE ONLY, NOT A REAL SIGNATURE",
+      "chain_broken": "CHAIN BROKEN / EDITED AFTER SIGNING",
+      "edited_after_signing": "CHAIN BROKEN / EDITED AFTER SIGNING",
+      "not_digital": "NOT DIGITAL (WET SEAL)",
+      "not_applicable": "N/A (SOURCE LOOKUP)"
+    },
+    "uploader": {
+      "present": "UPLOADER SIGNATURE PRESENT",
+      "absent_required": "ABSENT, REQUIRED",
+      "image_only": "IMAGE ONLY"
+    },
+    "chainOk": "Chain to {anchor} ok",
+    "signerRole": {
+      "chairman": "signer role Chairman",
+      "secretary": "signer role Secretary",
+      "issuer": "signer role issuer",
+      "unknown": "signer role not stated"
+    },
+    "onPage": "page {page}",
+    "notChecked": "Not checked"
+  },
+  "verification": {
+    "title": "Verification",
+    "description": "Document verification for case …{case}: one label per document and two independent signature checks. Advisory, synthetic data.",
+    "heading": "Verification",
+    "loading": "Loading the verification panel",
+    "tabsLabel": "Case views",
+    "countsHeading": "Labels across documents",
+    "countsNote": "Every document shows exactly one of the six labels, always as text.",
+    "tableHeading": "Documents",
+    "colDocument": "Document",
+    "colIssuer": "Issuer profile",
+    "colSource": "Source checked",
+    "colResult": "Result",
+    "colIssuerSig": "Issuer signature",
+    "colUploaderSig": "Uploader signature",
+    "colChecked": "Checked at",
+    "colFindings": "Findings",
+    "issuerProfilePending": "Not profiled yet (Annexure-14 issuer profiles arrive with M3/M4, P-6)",
+    "source": {
+      "pdf-signature": "PDF signatures, offline chain check",
+      "icai-udin": "ICAI UDIN: no automated channel",
+      "other": "Source {channel}"
+    },
+    "mode": {
+      "live": "LIVE",
+      "mock": "MOCK SOURCE",
+      "offline": "OFFLINE",
+      "none": "NO CHANNEL"
+    },
+    "notApplicable": "NOT APPLICABLE",
+    "findings": "{count, plural, =0 {None} one {# finding} other {# findings}}",
+    "actionsNote": "Re-check, route to manual verification and retry arrive with M11 (P-10). Suggested here: {actions}.",
+    "action": {
+      "recheck": "re-check",
+      "route_manual": "route to manual verification",
+      "retry": "retry"
+    },
+    "detailsHeading": "Checks and findings per document",
+    "checksSummary": "{title}: {count, plural, one {# check} other {# checks}}, {flags, plural, =0 {no findings} one {# finding} other {# findings}}",
+    "colCheck": "Check",
+    "colOutcome": "Outcome",
+    "colReason": "Reason",
+    "colEvidence": "Evidence",
+    "kind": {
+      "issuer_signature": "Issuer signature",
+      "uploader_signature": "Uploader signature",
+      "source_lookup": "Source lookup",
+      "qr_consistency": "QR consistency",
+      "expiry": "Validity",
+      "format": "Format",
+      "chronology": "Signing order"
+    },
+    "reason": {
+      "SIG_VALID": "Real signature, intact, unchanged after signing, chains to the trust anchor, valid and not revoked at the signing time",
+      "SIG_DIGEST_MISMATCH": "The signed bytes no longer match the signature",
+      "SIG_MODIFIED_AFTER_SIGNING": "Content was changed after signing, beyond what a signature permits",
+      "SIG_CERT_REVOKED": "The signing certificate was revoked before the signing time",
+      "SIG_CERT_EXPIRED": "The signing certificate was expired or not yet valid at the signing time",
+      "SIG_UNTRUSTED_CHAIN": "The certificate does not chain to the trust anchor",
+      "SIG_IMAGE_ONLY": "A printed \"digitally signed\" mark with no real signature behind it",
+      "SIG_SIGNER_NOT_MATCHED": "Valid signature, but not by the authorised Chairman or Secretary",
+      "SIG_REVOCATION_UNREACHABLE": "The revocation list could not be fetched after retries",
+      "SIG_NOT_DIGITAL": "No digital signature by the issuer",
+      "UPLOADER_DSC_MISSING": "No institution signature on the uploaded file",
+      "CHRONO_OK": "Dates in order",
+      "CHRONO_ORDER_BROKEN": "Dates out of order",
+      "CHRONO_MARK_OK": "Printed mark not dated after notarisation",
+      "CHRONO_MARK_AFTER_NOTARISATION": "Printed mark dated after notarisation",
+      "STAMP_E_STAMP": "e-Stamp certificate",
+      "STAMP_NOT_E_STAMP": "Not an e-stamp certificate",
+      "STAMP_PARTY_OK": "Second Party is the Council",
+      "STAMP_PARTY_NOT_COUNCIL": "Second Party is not the Council",
+      "STAMP_DUTY_OK": "Stamp duty at least Rs 100",
+      "STAMP_DUTY_BELOW_100": "Stamp duty below Rs 100",
+      "STAMP_NO_UNIQUE": "Certificate number not seen on another filing",
+      "STAMP_NO_REUSED": "Certificate number already on another filing",
+      "NOTARY_SEAL_VALID": "Notary seal valid on the notarisation date",
+      "NOTARY_SEAL_EXPIRED": "Notary seal expired before notarisation",
+      "UDIN_STRUCTURE_OK": "UDIN has 18 characters in the expected structure",
+      "UDIN_MALFORMED": "UDIN is not in the expected structure",
+      "UDIN_YEAR_OK": "UDIN year fits the financial year audited",
+      "UDIN_YEAR_BEFORE_FY_END": "UDIN year does not fit the financial year audited",
+      "UDIN_MEMBER_OK": "Membership number in the UDIN matches the printed one",
+      "UDIN_MEMBER_MISMATCH": "Membership number in the UDIN differs from the printed one",
+      "UDIN_UNIQUE": "UDIN not seen on another filing",
+      "UDIN_REUSED": "UDIN already on another filing",
+      "SRC_NO_CHANNEL": "No automated channel to the issuing source; a manual verification task is needed",
+      "SRC_NO_IDENTIFIER": "No identifier printed to look up; a manual verification task is needed"
+    },
+    "evidencePage": "page {page}",
+    "noEvidence": "Whole document",
+    "legendHeading": "How signatures map to the six labels",
+    "legend": {
+      "verified": "Real signature (/ByteRange) that chains to the {anchor}: VERIFIED",
+      "mismatch": "Chain broken, edited after signing or certificate revoked: MISMATCH DETECTED",
+      "expired": "Certificate expired or not yet valid at signing: EXPIRED",
+      "manual": "Image only, untrusted chain, or signer not the authorised Chairman or Secretary: MANUAL REVIEW REQUIRED",
+      "unavailable": "Revocation list unreachable after retries: SOURCE UNAVAILABLE (manual task)",
+      "absent": "Required uploader signature absent: a finding, not a label"
+    },
+    "legendUploader": "A valid uploader signature never makes a document verified. Only the issuer's signature or an official source can.",
+    "legendAnchor": "{anchor} is the synthetic demo root. In production the chain must build to the CCA root.",
+    "lastRun": "Last full run: {at}",
+    "noDocuments": "No documents to verify in this case."
   }
 }

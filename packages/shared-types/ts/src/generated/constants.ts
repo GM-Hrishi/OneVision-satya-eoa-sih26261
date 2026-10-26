@@ -347,6 +347,7 @@ export const SCHEMA_TITLES = [
   "AffidavitDiff",
   "Alert",
   "ApplicationSnapshot",
+  "CaseVerification",
   "Disposition",
   "Document",
   "EventEnvelope",

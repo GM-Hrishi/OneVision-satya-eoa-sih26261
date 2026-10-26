@@ -1,4 +1,8 @@
-"""Demo cases (committed under data/synthetic/cases/) and the bulk M5 test corpus."""
+"""The bulk M5 test corpus.
+
+The committed demo cases (data/synthetic/cases/) are written by `python -m satya_forensics.synth`
+since slice 2, because the sworn copy they serve is signed (M6) and M5 must read the same bytes.
+"""
 
 import json
 from collections.abc import Iterator
@@ -9,11 +13,6 @@ from satya_affidavit.ids import sha256_hex, stable_id
 from satya_affidavit.synth.institutions import PROFILES
 from satya_affidavit.synth.variants import VARIANTS, GeneratedCase, generate
 
-# (directory, profile, variant, demo)
-DEMO_CASES: tuple[tuple[str, int, str, bool], ...] = (
-    ("dit03-2026-27", 3, "demo", True),
-    ("dce05-2026-27", 5, "clean", False),
-)
 SWORN_FILE = "affidavit-sworn.pdf"
 
 
@@ -47,34 +46,6 @@ def case_files(generated: GeneratedCase) -> dict[str, bytes]:
         "truth.json": _json(generated.truth),
         SWORN_FILE: generated.pdf,
     }
-
-
-def _demo() -> Iterator[tuple[str, dict[str, bytes]]]:
-    for directory, profile, variant, demo in DEMO_CASES:
-        yield directory, case_files(generate(profile, "clean" if demo else variant, demo=demo))
-
-
-def write_demo_cases(root: Path | None = None) -> list[Path]:
-    root = root or default_root()
-    written = []
-    for directory, files in _demo():
-        target = root / directory
-        target.mkdir(parents=True, exist_ok=True)
-        for name, data in files.items():
-            (target / name).write_bytes(data)
-            written.append(target / name)
-    return written
-
-
-def check_demo_cases(root: Path | None = None) -> list[str]:
-    root = root or default_root()
-    stale = []
-    for directory, files in _demo():
-        for name, data in files.items():
-            path = root / directory / name
-            if not path.is_file() or path.read_bytes() != data:
-                stale.append(str(path))
-    return stale
 
 
 def bulk_cases() -> Iterator[GeneratedCase]:

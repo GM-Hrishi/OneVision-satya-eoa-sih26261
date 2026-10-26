@@ -1,0 +1,127 @@
+{
+  "_synthetic": "SYNTHETIC register of earlier filings for the M6 reuse checks.",
+  "stamps": [
+    {
+      "certificate_no": "IN-TN90325112004220Q",
+      "application_id": "1-90000004217",
+      "ay": "2025-26"
+    },
+    {
+      "certificate_no": "IN-TN90525111604222Q",
+      "application_id": "1-90000005105",
+      "ay": "2025-26"
+    },
+    {
+      "certificate_no": "IN-TN90725111904224Q",
+      "application_id": "1-90000007107",
+      "ay": "2025-26"
+    },
+    {
+      "certificate_no": "IN-TN90925110904226Q",
+      "application_id": "1-90000009109",
+      "ay": "2025-26"
+    },
+    {
+      "certificate_no": "IN-TN91125111604228Q",
+      "application_id": "1-90000011111",
+      "ay": "2025-26"
+    },
+    {
+      "certificate_no": "IN-TN91325111204230Q",
+      "application_id": "1-90000013113",
+      "ay": "2025-26"
+    },
+    {
+      "certificate_no": "IN-TN91525110904232Q",
+      "application_id": "1-90000015115",
+      "ay": "2025-26"
+    },
+    {
+      "certificate_no": "IN-TN91725111004234Q",
+      "application_id": "1-90000017117",
+      "ay": "2025-26"
+    }
+  ],
+  "udins": [
+    {
+      "udin": "25990321MKXEMQ6122",
+      "permanent_id": "1-9000317",
+      "fy": "2024-25"
+    },
+    {
+      "udin": "26990321AWBQVM5605",
+      "permanent_id": "1-9009903",
+      "fy": "2025-26"
+    },
+    {
+      "udin": "25990535SVPNDZ5037",
+      "permanent_id": "1-9000305",
+      "fy": "2024-25"
+    },
+    {
+      "udin": "26990535RHPMFU2276",
+      "permanent_id": "1-9009905",
+      "fy": "2025-26"
+    },
+    {
+      "udin": "25990749LDKKLU9251",
+      "permanent_id": "1-9000307",
+      "fy": "2024-25"
+    },
+    {
+      "udin": "26990749GJKLLQ4861",
+      "permanent_id": "1-9009907",
+      "fy": "2025-26"
+    },
+    {
+      "udin": "25990963REVMBN9264",
+      "permanent_id": "1-9000309",
+      "fy": "2024-25"
+    },
+    {
+      "udin": "26990963KBDCCD4036",
+      "permanent_id": "1-9009909",
+      "fy": "2025-26"
+    },
+    {
+      "udin": "25991177UPXJPW1700",
+      "permanent_id": "1-9000311",
+      "fy": "2024-25"
+    },
+    {
+      "udin": "26991177YZRLCV6975",
+      "permanent_id": "1-9009911",
+      "fy": "2025-26"
+    },
+    {
+      "udin": "25991391JCLJUH2945",
+      "permanent_id": "1-9000313",
+      "fy": "2024-25"
+    },
+    {
+      "udin": "26991391AFYMXB2253",
+      "permanent_id": "1-9009913",
+      "fy": "2025-26"
+    },
+    {
+      "udin": "25991505MJCYRJ5541",
+      "permanent_id": "1-9000315",
+      "fy": "2024-25"
+    },
+    {
+      "udin": "26991505GGJGKC9600",
+      "permanent_id": "1-9009915",
+      "fy": "2025-26"
+    },
+    {
+      "udin": "25991719VWQNMG8045",
+      "permanent_id": "1-9000317",
+      "fy": "2024-25"
+    },
+    {
+      "udin": "26991719RMCKXZ1870",
+      "permanent_id": "1-9009917",
+      "fy": "2025-26"
+    }
+  ]
+}

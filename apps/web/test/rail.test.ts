@@ -26,6 +26,10 @@ describe("breadcrumbs", () => {
       { labelKey: "queue", href: "/rb-queue" },
       { labelKey: "affidavit" },
     ]);
+    expect(crumbsFor("/case/cas_01JD3M5A00000000000000DT03/verification")).toEqual([
+      { labelKey: "queue", href: "/rb-queue" },
+      { labelKey: "verification" },
+    ]);
     expect(crumbsFor("/help")).toEqual([{ labelKey: "help" }]);
     expect(crumbsFor("/nowhere")).toEqual([]);
   });

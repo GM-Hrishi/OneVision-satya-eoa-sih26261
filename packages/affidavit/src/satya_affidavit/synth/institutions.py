@@ -202,7 +202,7 @@ def institution(profile: int, ay: str = "2026-27") -> Institution:
             "institution_type": "Private-Self Financing",
             "status": "Submitted",
             "application_date": application_date.isoformat(),
-            "submission_date": (application_date + timedelta(days=3)).isoformat(),
+            "submission_date": (application_date + timedelta(days=4)).isoformat(),
             "regional_office": "Southern",
             "overall_deficiency": "no",
         },
@@ -278,8 +278,12 @@ def institution(profile: int, ay: str = "2026-27") -> Institution:
             "certificate_no": f"IN-TN9{profile:02d}{application_date:%y%m%d}{4217 + profile:05d}Q"[
                 :20
             ],
-            "issued": (application_date + timedelta(days=2)).isoformat(),
-            "notarised": (application_date + timedelta(days=4)).isoformat(),
+            "instrument": "e-stamp",
+            "article": "Article 4 Affidavit",
+            "second_party": "AICTE NEW DELHI",
+            "duty": 100,
+            "issued": (application_date + timedelta(days=1)).isoformat(),
+            "notarised": (application_date + timedelta(days=2)).isoformat(),
             "notary_reg_no": f"DEMO-NOT-{profile:04d}",
             "notary_valid_till": f"{start_year + 1}-12-31",
         },

@@ -6,7 +6,6 @@ from typing import Any
 import pdfplumber
 import pytest
 
-from satya_affidavit.synth.corpus import check_demo_cases
 from satya_affidavit.synth.institutions import DEV_PROFILES, HELD_OUT_PROFILES, PROFILES
 from satya_affidavit.synth.variants import CONTROL_STYLES, PLANTED, VARIANTS, generate
 from satya_shared_types import validator
@@ -63,7 +62,3 @@ def test_demo_case_plants_the_four_demo_findings() -> None:
         "m5:LAND-AREA-RECON:land:total",
         "m5:ROOM-ID-DUP:room_id:I-201",
     }
-
-
-def test_committed_demo_cases_match_a_fresh_generation() -> None:
-    assert check_demo_cases() == [], "run `make synth` and commit data/synthetic/cases"

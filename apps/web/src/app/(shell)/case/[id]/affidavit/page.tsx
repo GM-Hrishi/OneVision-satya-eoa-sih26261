@@ -3,6 +3,7 @@
 // here approves, rejects or clears anything (guard rail 1).
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { CaseTabs } from "@/components/case/CaseTabs";
 import { DiffView } from "@/components/diff/DiffView";
 import styles from "@/components/diff/DiffView.module.css";
 import { PageHeader } from "@/components/ui/PageHeader";
@@ -44,8 +45,15 @@ export default async function AffidavitDiffPage({ params, searchParams }: Props)
           })}
         </p>
         <p className={styles.advisory}>{t("advisory")}</p>
+        <CaseTabs caseId={id} current="affidavit" />
       </PageHeader>
-      <DiffView diff={diff} showAll={showAll} allHref={`${base}?all=1`} changedHref={base} />
+      <DiffView
+        diff={diff}
+        showAll={showAll}
+        allHref={`${base}?all=1`}
+        changedHref={base}
+        verificationHref={`/case/${id}/verification`}
+      />
     </>
   );
 }

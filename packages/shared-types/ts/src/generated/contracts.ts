@@ -191,6 +191,7 @@ export type AlertSubtype =
 export type TriState = "yes" | "no" | "unknown";
 export type LatitudeHemisphere = "N" | "S";
 export type LongitudeHemisphere = "E" | "W";
+export type VerificationAction = "recheck" | "route_manual" | "retry";
 export type CheckKind =
   | "issuer_signature"
   | "uploader_signature"
@@ -201,6 +202,10 @@ export type CheckKind =
   | "chronology";
 export type SourceMode = "live" | "mock" | "offline" | "none";
 export type ExpiryBasis = "printed" | "computed_from_state_rule";
+/**
+ * RFC 3339 date-time with offset (format-checked; Pydantic AwareDatetime); stored UTC, shown IST.
+ */
+export type Timestamp1 = string;
 /**
  * This interface was referenced by `SatyaContracts`'s JSON-Schema
  * via the `definition` "CorrelationId".
@@ -339,11 +344,11 @@ export interface AffidavitDiff {
   structure: AffidavitStructure;
   tables: AffidavitTable[];
   /**
-   * Filled by M6 (P-4); null until then.
+   * Filled by M6 (P-4) from the stamp page; null when no stamp page is found.
    */
   stamp: AffidavitStamp | null;
   /**
-   * Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload. Filled by M6 (P-4); null until then.
+   * Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload (design B1 row 1, D1). Filled by M6 (P-4).
    */
   chronology: AffidavitChronology | null;
   /**
@@ -402,11 +407,11 @@ export interface AffidavitSworn {
    */
   ocr_mean_confidence: number | null;
   /**
-   * Filled by M6 (P-4); null until then.
+   * Filled by M6 (P-4); null when M6 could not read it.
    */
   issuer_sig: SignatureCheck | null;
   /**
-   * Filled by M6 (P-4); null until then.
+   * Filled by M6 (P-4); null when M6 could not read it.
    */
   uploader_sig: SignatureCheck | null;
   /**
@@ -576,6 +581,12 @@ export interface AffidavitStamp {
    */
   duty: number | null;
   state: VerificationLabel;
+  /**
+   * Description of document on the stamp, e.g. 'Article 4 Affidavit'.
+   */
+  article?: string | null;
+  issue_date?: Date | null;
+  page?: number | null;
 }
 export interface AffidavitChronology {
   application_date: Date | null;
@@ -585,6 +596,15 @@ export interface AffidavitChronology {
   upload_date: Date | null;
   order_ok: boolean | null;
   notary_expiry?: Date | null;
+  /**
+   * Where dsc_date comes from: a real CMS signature or a printed mark (image only).
+   */
+  dsc_kind?: "signature" | "image_mark" | null;
+  /**
+   * A printed signature mark dated after the notarisation (design D1 review case); null when there is no mark.
+   */
+  mark_after_notary?: boolean | null;
+  notary_expiry_ok?: boolean | null;
 }
 export interface PendingSection {
   section: "stamp" | "chronology" | "signatures" | "ocr";
@@ -915,6 +935,80 @@ export interface DeficiencySection {
   deficiency: "yes" | "no";
 }
 /**
+ * RB-06 Verification panel data for one case (UI spec §6.4, §7.2): one row per document with exactly one of the six labels (or not_applicable), the two independent signature badges (§4.3) and the source checked. Advisory only; a valid uploader signature never makes a document verified (Portal §2.6.3). Demo chains are always shown as TEST TRUST ANCHOR and mock sources as MOCK SOURCE (guard rail 10).
+ *
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "CaseVerification".
+ */
+export interface CaseVerification {
+  case_id: CaseId;
+  advisory: true;
+  /**
+   * Label of the configured trust anchor: 'TEST TRUST ANCHOR' in the demo, the CCA root in production.
+   */
+  trust_anchor_label: string;
+  last_full_run_at: Timestamp;
+  label_counts: LabelCounts;
+  documents: CaseVerificationDocument[];
+}
+export interface LabelCounts {
+  verified: number;
+  mismatch_detected: number;
+  expired: number;
+  verification_pending: number;
+  source_unavailable: number;
+  manual_review_required: number;
+}
+export interface CaseVerificationDocument {
+  doc_id: DocId;
+  slot: string;
+  title: string;
+  /**
+   * T = AICTE template, E = external, P = portal data (design B).
+   */
+  format_type: "T" | "E" | "P";
+  state_code: string | null;
+  /**
+   * Annexure-14 issuer profile id (M3/M4, P-6); null until that slice.
+   */
+  issuer_profile: string | null;
+  source: VerificationSource;
+  /**
+   * Document label = most severe check outcome (Portal §2.6.3); not_applicable only for self-issued documents (UI §6 enum).
+   */
+  label: VerificationLabel | "not_applicable";
+  issuer_sig: SignatureCheck | null;
+  uploader_sig: SignatureCheck | null;
+  checked_at: Timestamp;
+  /**
+   * Hash or receipt of the source response; null when no source answered.
+   */
+  response_ref: string | null;
+  /**
+   * Actions the official may take (UI §7.2); the controls arrive with M11 (P-10).
+   */
+  actions: VerificationAction[];
+  flag_count: number;
+  /**
+   * The document's VerificationResult.checks[] (Portal §2.7), for the panel's detail view.
+   */
+  checks?: Check[];
+  /**
+   * Findings raised on this document (Portal §2.6.4); additive to UI §6.4 so RB-06 can show findings no other P1 screen shows yet (e.g. UDIN).
+   */
+  flags?: Flag[];
+}
+export interface VerificationSource {
+  /**
+   * e.g. 'pdf-signature' (offline chain check), 'icai-udin', 'tn-fire-licence'.
+   */
+  channel: string;
+  /**
+   * Same values as CheckSource.mode; every mock result is shown as MOCK SOURCE.
+   */
+  adapter_mode: "live" | "mock" | "offline" | "none";
+}
+/**
  * This interface was referenced by `SatyaContracts`'s JSON-Schema
  * via the `definition` "Check".
  */
@@ -934,6 +1028,15 @@ export interface Check {
   valid_from?: Date;
   valid_to?: Date;
   basis?: ExpiryBasis;
+  /**
+   * Links the check to the flag it raised (Flag.check_ref), e.g. m6:STAMP-CHRONO:chronology:order.
+   */
+  check_ref?: string;
+  signed_at?: Timestamp1;
+  /**
+   * Signature checks: the anchor the chain built to; demo chains are always 'TEST TRUST ANCHOR' (guard rail 10).
+   */
+  trust_anchor_label?: string;
 }
 export interface CheckEvidence {
   page: number;

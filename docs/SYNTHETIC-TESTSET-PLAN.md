@@ -1,7 +1,7 @@
 # Synthetic test-set plan (Phase 1 rules)
-Version 1.0 (slice 1, 26 Oct 2026). Synthetic data only. Specs: design v2.2.1 (B1, C3, C4, C4a, D1–D5), Portal spec v0.2.1 (§2.6 schemas, §2.7–2.9), UI spec v0.7.1 (§6). Problem statement "Prototype Demonstration and Evaluation" asks for extraction accuracy, validation accuracy, anomaly-detection performance, source-verification rate, discrepancy-identification reliability and alert timeliness; this plan says how each Phase-1 rule is measured.
+Version 1.1 (slice 2, 26 Oct 2026; v1.0 slice 1). Synthetic data only. Specs: design v2.2.1 (B1, C3, C4, C4a, D1–D5), Portal spec v0.2.1 (§2.6 schemas, §2.7–2.9), UI spec v0.7.1 (§6). Problem statement "Prototype Demonstration and Evaluation" asks for extraction accuracy, validation accuracy, anomaly-detection performance, source-verification rate, discrepancy-identification reliability and alert timeliness; this plan says how each Phase-1 rule is measured.
 
-**Status of the rules below:** M5 (P-3) is built in slice 1 and its rule IDs are final. Every other rule ID is the planned ID; its slice may refine the ID or split a rule, and must update this file in the same PR.
+**Status of the rules below:** M5 (P-3, slice 1) and M6 / P-18 (slice 2) are built and their rule IDs are final. Every other rule ID is the planned ID; its slice may refine the ID or split a rule, and must update this file in the same PR.
 
 ## 1. Principles
 1. **Every rule gets at least one planted anomaly and at least one clean control.** A clean control is a document or snapshot that *looks* like the anomaly but is legitimate (re-typeset copy, valid strike-through choice, benign incremental PDF update, explained change). Controls measure false flags.
@@ -78,25 +78,33 @@ Doc slot `annex2.1(i) affidavit`; expected draft = template `aff2-portal-2024-27
 
 Notes: a dropped or added declaration is reported once (no extra `AFF-DECL-CHANGED` for renumbering). A changed deed area produces the row flag and the total flag; both are in the truth.
 
-### 5.2 M6 signatures, stamp chronology, notary (P-4) and UDIN structure (P-18) — slice 2
-`check.kind` and `reason_code` per Portal §2.8. Signed fixtures use the SATYA test root ("TEST TRUST ANCHOR").
+### 5.2 M6 signatures, stamp chronology, notary (P-4) and UDIN structure (P-18) — built in slice 2
+Rule IDs below are **final** (`packages/rules/m6-signatures.yaml`). Doc slots: `annex2.1(i) affidavit` (signed sworn copy with e-stamp page and notary block) and `annex2.1(vii) audited accounts` (one-page statement with the auditor block). `check.kind` / `reason_code` per Portal §2.7–§2.8; `check_ref` = `m6:<rule_id>:<key>`. Signed fixtures come from the synthetic test PKI (`satya_forensics.pki`: root "SATYA TEST TRUST ANCHOR", shown as TEST TRUST ANCHOR; Ed25519 keys derived from public seeds, never stored). Truth: `truth-m6.json` (`expected_flags`, `expected_checks`, `expected_document_labels`, `printed`). Every M6 flag: `provenance: satya`, `stage: "2"`, `preliminary_indicator: true`, `aph_edition: "2024-27"`.
 
-| Rule ID | APH clause | Planted anomaly | Clean control | Ground truth | Metrics |
-|---|---|---|---|---|---|
-| `SIG-DIGEST` | 2.3.4a | byte flipped inside the signed /ByteRange | correctly signed file | `issuer_signature` → `mismatch_detected` / `SIG_DIGEST_MISMATCH`; alert `suspected_anomaly.signature_integrity` | P, R, FFR, label accuracy |
-| `SIG-MODIFIED` | 2.3.4a | page content added in an incremental update after signing | benign incremental update (annotation / DSS) | `mismatch_detected` / `SIG_MODIFIED_AFTER_SIGNING` | P, R, FFR |
-| `SIG-REVOKED` | 2.3.4a | test cert revoked in the test CRL before signing time | revoked after signing time | `mismatch_detected` / `SIG_CERT_REVOKED` | P, R, FFR |
-| `SIG-CERT-EXPIRED` | 2.3.4a | signed outside the cert validity | signed one day before expiry | `expired` / `SIG_CERT_EXPIRED`; alert `expired.signing_cert_expired` | P, R, FFR |
-| `SIG-UNTRUSTED` | 2.3.4a | self-signed / unknown CA | chain to the test anchor | `manual_review_required` / `SIG_UNTRUSTED_CHAIN` | P, R, FFR |
-| `SIG-IMAGE` | 2.3.4a; design C3 | printed "Digitally signed by … / Signature valid" mark with no /ByteRange | real signature with a visible appearance | `manual_review_required` / `SIG_IMAGE_ONLY`; alert `suspected_anomaly.signature_image_only` | P, R, FFR |
-| `SIG-SIGNER` | 2.3.4a; Annex-2.1 | valid signature, signer token ≠ `signatory_token` | signer token = `signatory_token` | `manual_review_required` / `SIG_SIGNER_NOT_MATCHED` | P, R, FFR |
-| `SIG-REVOCATION` | 2.3.4a | test OCSP/CRL endpoint down | endpoint up | `verification_pending` → `source_unavailable` / `SIG_REVOCATION_UNREACHABLE` | P, R, FFR |
-| `SIG-UPLOADER-MISSING` | 2.3.4a | compiled file without the institution's DSC | uploader DSC present | no label; flag `missing_info.uploader_dsc_missing` / `UPLOADER_DSC_MISSING` | P, R, FFR |
-| `STAMP-CHRONO` | 2.3.4b; design D1 | stamp issued after notarisation; DSC mark two days after notarisation on the same page | all five dates the same day; MM/DD vs DD/MM ambiguous date resolved per template year | `chronology` → `manual_review_required`; alert `suspected_anomaly.stamp_chronology` | P, R, FFR, date extraction accuracy |
-| `STAMP-PARTY` | Annex-2.1(i); 2.3.4b | duty ₹50; Second Party not the Council | duty ₹100, Second Party as required | `format` → `mismatch_detected` | P, R, FFR, extraction accuracy (certificate no., duty, party) |
-| `STAMP-INSTRUMENT` | Annex-2.1(i) | physical non-judicial paper (no e-stamp certificate) | e-stamp certificate | `manual_review_required` | P, R, FFR |
-| `NOTARY-EXPIRY` | Annex-2.1(i) | notary seal expiry before the notarisation date | expiry on the notarisation date | `expired` | P, R, FFR, expiry-date extraction accuracy |
-| `UDIN-STRUCT` | Annex-2.1(vii) [VERIFY: UDIN not named in APH]; design B1 row 7 | 17 characters; chars 3–8 ≠ printed membership no.; YY before the FY end | valid UDIN; FRN printed 6+1 and 7+1 (leading zero) | `format` → `manual_review_required` | P, R, FFR, extraction accuracy |
+| Rule ID | `check_ref` key → check (outcome / reason_code) | APH clause | Planted variant(s) | Clean / noisy control(s) | Alert (§2.9) | Inst. visible |
+|---|---|---|---|---|---|---|
+| `SIG-DIGEST` | `issuer`, `uploader` → `*_signature` mismatch_detected / `SIG_DIGEST_MISMATCH` | 2.3.4a | `sig_digest`: one byte changed inside the signed byte range (document title) | all controls | `suspected_anomaly.signature_integrity` | no |
+| `SIG-MODIFIED` | `issuer` → mismatch_detected / `SIG_MODIFIED_AFTER_SIGNING` | 2.3.4a | `sig_modified`: page content added in an incremental update after the deponent signed, then the uploader signed | `clean_benign_dss` (DSS after signing), `clean_benign_info` (Info update between signatures); a later signature is `FORM_FILLING` | `suspected_anomaly.signature_integrity` | no |
+| `SIG-REVOKED` | `issuer` → mismatch_detected / `SIG_CERT_REVOKED` | 2.3.4a | `sig_revoked`: on the test CRL 10 days before signing | `clean_revoked_late`: revoked 10 days after signing | `suspected_anomaly.signature_integrity` | no |
+| `SIG-CERT-EXPIRED` | `issuer` → expired / `SIG_CERT_EXPIRED` | 2.3.4a | `sig_expired` (ended 3 days before), `sig_not_yet_valid` (starts 3 days after) | `clean_cert_edge`: expires one day after signing | `expired.signing_cert_expired` | yes |
+| `SIG-UNTRUSTED` | `issuer` → manual_review_required / `SIG_UNTRUSTED_CHAIN` | 2.3.4a | `sig_untrusted`: self-signed certificate outside the trust store | chain to the test anchor | `suspected_anomaly.signature_integrity` | no |
+| `SIG-IMAGE` | `issuer` → manual_review_required / `SIG_IMAGE_ONLY` | 2.3.4a; design C3 | `sig_image_only`: printed "Digitally signed by … / Signature valid" mark, no /ByteRange | `clean_visible_sig`: the same text under a real signature's visible widget | `suspected_anomaly.signature_image_only` | no |
+| `SIG-SIGNER` | `issuer` → manual_review_required / `SIG_SIGNER_NOT_MATCHED` | 2.3.4a; Annex-2.1 | `sig_signer`: valid chain, signer token ≠ `signatory_token` | `clean_odd_metadata`: signer name in capitals with extra spaces, Title Secretary, blank reason, non-ASCII location | `suspected_anomaly.signature_integrity` | no |
+| `SIG-REVOCATION` | `issuer` → source_unavailable / `SIG_REVOCATION_UNREACHABLE` (`attempts: 3`) | 2.3.4a | `sig_revocation_down`: CRL distribution point never answers | CRL endpoint up | `pending_source.source_unavailable` | no |
+| `SIG-UPLOADER-MISSING` | `uploader` → no check, no label; flag only / `UPLOADER_DSC_MISSING` | 2.3.4a | `uploader_missing`: no uploader DSC on the compiled file | uploader DSC present | `missing_info.uploader_dsc_missing` | yes |
+| `STAMP-CHRONO` | `chronology:order` → chronology manual_review_required / `CHRONO_ORDER_BROKEN`; `chronology:mark_after_notary` → `CHRONO_MARK_AFTER_NOTARISATION` | 2.3.4b; Affidavit-2 NOTE; design D1 [VERIFY] | `chrono_stamp_after_notary`, `chrono_dsc_before_notary`, `chrono_mark_after_notary` (image mark two days after notarisation; also `SIG-IMAGE`) | `clean_same_day` (all five dates one day), `clean_ambiguous_dates` (days ≤ 12: only MM/DD keeps the order) | `suspected_anomaly.stamp_chronology` | no |
+| `STAMP-PARTY` | `stamp:second_party` → format mismatch_detected / `STAMP_PARTY_NOT_COUNCIL` | Annex-2.1(i); design B1 row 1 [VERIFY] | `stamp_party`: Second Party a trust office | "AICTE NEW DELHI" | `suspected_anomaly.stamp_chronology` | yes |
+| `STAMP-DUTY` | `stamp:duty` → format mismatch_detected / `STAMP_DUTY_BELOW_100` | 2.3.4b; Annex-2.1(i) | `stamp_duty`: Rs 50 | Rs 100 | `suspected_anomaly.stamp_chronology` | yes |
+| `STAMP-INSTRUMENT` | `stamp:instrument` → format manual_review_required / `STAMP_NOT_E_STAMP` | Annex-2.1(i) | `stamp_physical`: physical non-judicial paper | e-stamp certificate | `suspected_anomaly.stamp_chronology` | yes |
+| `STAMP-REUSE` | `stamp:certificate_no` → format manual_review_required / `STAMP_NO_REUSED` | 2.3.4b [VERIFY] | `stamp_reused`: the institution's 2025-26 certificate number again | new number; the case itself in the register | `suspected_anomaly.stamp_chronology` | no |
+| `NOTARY-EXPIRY` | `notary:seal_expiry` → expiry expired / `NOTARY_SEAL_EXPIRED` (`basis: printed`) | Annex-2.1(i); design B1 row 1 [VERIFY] | `notary_expired`: seal valid till 10 days before notarisation | seal valid past the notarisation | `expired.document_expired` | yes |
+| `UDIN-STRUCT` | `udin:format` → format manual_review_required / `UDIN_MALFORMED`; `udin:year` → `UDIN_YEAR_BEFORE_FY_END` | Annex-2.1(vii); design B1 row 7 [VERIFY: UDIN not named in APH] | `udin_length` (17 characters), `udin_year` (YY before the FY ended) | valid UDIN; `clean_udin_spaced` (UDIN printed in four groups, FRN 7+1 with a leading zero) | `missing_info.field_missing` [VERIFY] | yes |
+| `UDIN-MEMBER` | `udin:membership_no` → format manual_review_required / `UDIN_MEMBER_MISMATCH` | Annex-2.1(vii) [VERIFY] | `udin_member`: chars 3–8 ≠ printed membership no. | membership no. equal (zero-padded) | `missing_info.field_missing` [VERIFY] | no |
+| `UDIN-REUSE` | `udin:reuse` → format manual_review_required / `UDIN_REUSED` | Annex-2.1(vii) [VERIFY] | `udin_reused`: UDIN of a sister filing by the same partner in the same FY | UDIN not in the register | `suspected_anomaly.yoy_discrepancy` [VERIFY] | no |
+
+Document labels (Portal §2.6.3): most severe check outcome; `verified` needs a passing issuer signature or source lookup, so a valid uploader DSC never makes a document verified. The audited statement always carries a `source_lookup` check `source_unavailable` (`icai-udin`, mode `none`: no ICAI channel; `SRC_NO_IDENTIFIER` when no UDIN is printed), so its label is `source_unavailable` unless a UDIN rule fires (`manual_review_required`).
+
+**Corpus (M6):** 8 profiles (dev 03, 05, 07, 11; held-out 09, 13, 15, 17) × 32 variants (22 planted + 10 noisy-but-clean controls = 31 %) = 256 cases, each with a signed affidavit and an audited statement. Each case's M5 content is clean (M5 raises 0 flags on all of them). `make eval-m6` prints per-rule precision, recall, FFR, document label accuracy and extraction accuracy (stamp fields, notary dates, mark date, UDIN + membership no.) for both seed sets; `uv run pytest packages/forensics` prints the same tables.
 
 ### 5.3 M7 source verification (P-5) — slice 5
 Adapters run in mock mode; every truth item expects `source.mode: "mock"` and the UI tag MOCK SOURCE.
@@ -187,7 +195,9 @@ Faculty appear only as tokens (`fac_tok_…`). The portal's `is_duplicate` and `
 | `BAND` | M10 (P-14) | ≥ 1 critical flag | clean case | band agreement; a band always lists its contributing flags; never shown to INS |
 | `ALERT-MAP` | M11 (P-12), Portal §2.9 | every truth flag | — | type/subtype mapping accuracy = 1.0; alert timeliness p50/p95 |
 
-## 6. Running the M5 set now
+## 6. Running the M5 and M6 sets now
 - `uv run pytest packages/affidavit -k metrics -s` generates the 104 affidavits into a temp directory, runs M5, compares with `truth.json` and prints a per-rule table (precision, recall, FFR, extraction accuracy) for the dev and held-out seeds.
 - `make synth` regenerates the committed demo cases under `data/synthetic/cases/`; the test suite fails if the committed PDFs differ from a fresh generation.
+- `make eval-m6` (or `uv run pytest packages/forensics -k metrics`) generates the 256 M6 cases in memory, runs M6 with the test trust anchor, the mock CRL endpoint and the synthetic register, and prints the per-rule table for dev and held-out seeds.
+- `make synth` (now `python -m satya_forensics.synth`) regenerates the committed demo cases, `data/synthetic/registry/prior-filings.json` and the public test PKI; the test suite fails if they differ from a fresh generation.
 - Later modules add their own `-k metrics` test and a row block to the summary printed in the PR handoff.

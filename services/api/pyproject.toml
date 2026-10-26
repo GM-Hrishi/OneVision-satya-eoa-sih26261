@@ -13,6 +13,7 @@ dependencies = [
     "python-ulid==4.0.1",
     "redis==6.4.0",
     "satya-affidavit",
+    "satya-forensics",
     "satya-shared-types",
     "sqlalchemy[asyncio]==2.1.6",
     "uvicorn[standard]==0.54.0",
@@ -21,6 +22,7 @@ dependencies = [
 [tool.uv.sources]
 satya-shared-types = { workspace = true }
 satya-affidavit = { workspace = true }
+satya-forensics = { workspace = true }
 
 [build-system]
 requires = ["hatchling==1.32.4"]

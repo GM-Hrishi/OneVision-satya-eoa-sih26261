@@ -327,3 +327,8 @@
   white-space: nowrap;
   border: 0;
 }
+
+/* Long status chips inside a fact list (stamp, notary) wrap at narrow widths instead of widening the page. */
+.facts .label {
+  white-space: normal;
+}

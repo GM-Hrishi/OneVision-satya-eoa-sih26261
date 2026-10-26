@@ -27,8 +27,9 @@ export interface Crumb {
 
 /** Breadcrumb trail for a path: fixed routes from CRUMBS, case routes by pattern. */
 export function crumbsFor(pathname: string): Crumb[] {
-  if (/^\/case\/[^/]+\/affidavit$/.test(pathname)) {
-    return [{ labelKey: "queue", href: "/rb-queue" }, { labelKey: "affidavit" }];
+  const caseView = /^\/case\/[^/]+\/(affidavit|verification)$/.exec(pathname);
+  if (caseView?.[1]) {
+    return [{ labelKey: "queue", href: "/rb-queue" }, { labelKey: caseView[1] }];
   }
   const keys = CRUMBS[pathname] ?? [];
   return keys.map((labelKey) => ({ labelKey }));

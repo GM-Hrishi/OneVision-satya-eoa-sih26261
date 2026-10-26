@@ -29,7 +29,7 @@ lint: ## ESLint + ruff
 
 typecheck: ## tsc + mypy
 	pnpm -r typecheck
-	uv run mypy services/api/src services/worker/src packages/shared-types/python/satya_shared_types packages/affidavit/src
+	uv run mypy services/api/src services/worker/src packages/shared-types/python/satya_shared_types packages/affidavit/src packages/forensics/src
 
 test: ## Unit tests (no running stack needed)
 	pnpm -r test
@@ -37,15 +37,22 @@ test: ## Unit tests (no running stack needed)
 	uv run pytest services/api
 	uv run pytest services/worker
 	uv run pytest packages/affidavit
+	uv run pytest packages/forensics
 
-synth: ## Regenerate the synthetic demo cases (data/synthetic/cases: affidavit PDFs, snapshots, truth)
-	uv run python -m satya_affidavit.synth
+synth: ## Regenerate the synthetic demo cases, registers and public test PKI (data/synthetic)
+	uv run python -m satya_forensics.synth
 
 eval-m5: ## M5 metrics (precision, recall, false-flag rate, extraction) over the 104 synthetic affidavits
 	uv run python -m satya_affidavit.eval
 
-synth-check: ## Fail if the committed synthetic demo cases differ from a fresh generation
-	uv run python -m satya_affidavit.synth --check
+pki: ## Write the public half of the synthetic test PKI (TEST TRUST ANCHOR root, sub-CA, empty CRL) to .logs/pki
+	uv run python -m satya_forensics.pki --out .logs/pki
+
+eval-m6: ## M6/P-18 metrics (precision, recall, false-flag rate, label accuracy) on dev + held-out seeds
+	uv run python -m satya_forensics.eval
+
+synth-check: ## Fail if the committed synthetic files (cases, registers, test PKI) differ from a fresh generation
+	uv run python -m satya_forensics.synth --check
 
 secrets: ## Generate .env from .env.example with random values (keeps an existing .env)
 	@bash infra/scripts/gen-secrets.sh
@@ -86,13 +93,14 @@ smoke: ## Cross-service smoke tests against the running stack
 	uv run python tests/oidc_login_check.py rb.southern.demo RB
 	$(COMPOSE) --profile test run --rm --build worker-test
 
-e2e: ## Browser acceptance (Playwright/Chromium): workbench sign-in + shell, mock portal signed events, RB-05 DiffView
+e2e: ## Browser acceptance (Playwright/Chromium): workbench sign-in + shell, mock portal signed events, RB-05 DiffView, RB-06 Verification
 	NODE_PATH=$$(npm root -g) node tests/e2e/workbench.cjs
 	NODE_PATH=$$(npm root -g) node tests/e2e/mock-portal.cjs
 	NODE_PATH=$$(npm root -g) node tests/e2e/diffview.cjs
+	NODE_PATH=$$(npm root -g) node tests/e2e/verification.cjs
 	$(COMPOSE) exec -T api python -m satya_api.ledger_verify
 
 test-db: ## Postgres-backed API tests in a throwaway pgvector container
 	bash infra/scripts/test-db.sh
 
-.PHONY: synth synth-check eval-m5 guard secret-scan help install secrets up down ps logs reset mem-check config ledger-verify trust-ca smoke e2e test-db gen-types check-types-diff lint typecheck test
+.PHONY: pki eval-m6 synth synth-check eval-m5 guard secret-scan help install secrets up down ps logs reset mem-check config ledger-verify trust-ca smoke e2e test-db gen-types check-types-diff lint typecheck test

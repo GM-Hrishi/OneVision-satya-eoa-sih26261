@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.satya-eoa.invalid/v1/case-verification.schema.json",
+  "title": "CaseVerification",
+  "description": "RB-06 Verification panel data for one case (UI spec §6.4, §7.2): one row per document with exactly one of the six labels (or not_applicable), the two independent signature badges (§4.3) and the source checked. Advisory only; a valid uploader signature never makes a document verified (Portal §2.6.3). Demo chains are always shown as TEST TRUST ANCHOR and mock sources as MOCK SOURCE (guard rail 10).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["case_id", "advisory", "trust_anchor_label", "last_full_run_at", "label_counts", "documents"],
+  "properties": {
+    "case_id": { "$ref": "common.schema.json#/$defs/CaseId" },
+    "advisory": { "const": true },
+    "trust_anchor_label": { "type": "string", "minLength": 1, "maxLength": 64, "description": "Label of the configured trust anchor: 'TEST TRUST ANCHOR' in the demo, the CCA root in production." },
+    "last_full_run_at": { "$ref": "common.schema.json#/$defs/Timestamp" },
+    "label_counts": {
+      "title": "LabelCounts",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verified", "mismatch_detected", "expired", "verification_pending", "source_unavailable", "manual_review_required"],
+      "properties": {
+        "verified": { "type": "integer", "minimum": 0 },
+        "mismatch_detected": { "type": "integer", "minimum": 0 },
+        "expired": { "type": "integer", "minimum": 0 },
+        "verification_pending": { "type": "integer", "minimum": 0 },
+        "source_unavailable": { "type": "integer", "minimum": 0 },
+        "manual_review_required": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "title": "CaseVerificationDocument",
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["doc_id", "slot", "title", "format_type", "state_code", "issuer_profile", "source", "label", "issuer_sig", "uploader_sig", "checked_at", "response_ref", "actions", "flag_count"],
+        "properties": {
+          "doc_id": { "$ref": "common.schema.json#/$defs/DocId" },
+          "slot": { "type": "string", "minLength": 1, "maxLength": 120 },
+          "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+          "format_type": { "type": "string", "enum": ["T", "E", "P"], "description": "T = AICTE template, E = external, P = portal data (design B)." },
+          "state_code": { "type": ["string", "null"], "pattern": "^[A-Z]{2}$" },
+          "issuer_profile": { "type": ["string", "null"], "maxLength": 120, "description": "Annexure-14 issuer profile id (M3/M4, P-6); null until that slice." },
+          "source": {
+            "title": "VerificationSource",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["channel", "adapter_mode"],
+            "properties": {
+              "channel": { "type": "string", "minLength": 1, "maxLength": 120, "description": "e.g. 'pdf-signature' (offline chain check), 'icai-udin', 'tn-fire-licence'." },
+              "adapter_mode": { "type": "string", "enum": ["live", "mock", "offline", "none"], "description": "Same values as CheckSource.mode; every mock result is shown as MOCK SOURCE." }
+            }
+          },
+          "label": {
+            "anyOf": [
+              { "$ref": "verification-label.schema.json" },
+              { "const": "not_applicable" }
+            ],
+            "description": "Document label = most severe check outcome (Portal §2.6.3); not_applicable only for self-issued documents (UI §6 enum)."
+          },
+          "issuer_sig": { "anyOf": [{ "$ref": "document.schema.json#/$defs/SignatureCheck" }, { "type": "null" }] },
+          "uploader_sig": { "anyOf": [{ "$ref": "document.schema.json#/$defs/SignatureCheck" }, { "type": "null" }] },
+          "checked_at": { "$ref": "common.schema.json#/$defs/Timestamp" },
+          "response_ref": { "type": ["string", "null"], "maxLength": 200, "description": "Hash or receipt of the source response; null when no source answered." },
+          "actions": {
+            "type": "array",
+            "items": { "title": "VerificationAction", "type": "string", "enum": ["recheck", "route_manual", "retry"] },
+            "description": "Actions the official may take (UI §7.2); the controls arrive with M11 (P-10)."
+          },
+          "flag_count": { "type": "integer", "minimum": 0 },
+          "checks": { "type": "array", "items": { "$ref": "verification-result.schema.json#/$defs/Check" }, "description": "The document's VerificationResult.checks[] (Portal §2.7), for the panel's detail view." },
+          "flags": { "type": "array", "items": { "$ref": "flag.schema.json" }, "description": "Findings raised on this document (Portal §2.6.4); additive to UI §6.4 so RB-06 can show findings no other P1 screen shows yet (e.g. UDIN)." }
+        }
+      }
+    }
+  }
+}

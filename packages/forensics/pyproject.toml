@@ -1,0 +1,24 @@
+[project]
+name = "satya-forensics"
+version = "0.1.0"
+description = "SATYA-EoA M6: PDF signatures, stamp chronology, notary and UDIN structure checks (P-4, P-18). Advisory; synthetic data only."
+requires-python = ">=3.12"
+dependencies = [
+    "pyhanko==0.38.0",
+    "cryptography==50.0.2",
+    "pdfplumber==0.11.10",
+    "pyyaml==6.0.3",
+    "satya-affidavit",
+    "satya-shared-types",
+]
+
+[tool.uv.sources]
+satya-shared-types = { workspace = true }
+satya-affidavit = { workspace = true }
+
+[build-system]
+requires = ["hatchling==1.32.4"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/satya_forensics"]

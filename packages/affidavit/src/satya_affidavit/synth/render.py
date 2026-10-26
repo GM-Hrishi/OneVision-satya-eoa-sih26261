@@ -10,7 +10,7 @@ Every page says SYNTHETIC; nothing here imitates a real portal, logo or signatur
 
 import io
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, datetime
 from typing import Any
 
 from reportlab.lib.pagesizes import A4
@@ -89,6 +89,11 @@ class PrintModel:
     verification: str
     stamp: dict[str, str] | None
     notary: list[str]
+    stamp_title: str = "SYNTHETIC E-STAMP CERTIFICATE (MOCK)"
+    # Printed "Digitally signed by …" mark (no /ByteRange): lines drawn in a box after the notary
+    # block (M6 SIG-IMAGE). `mark_box` is filled by render(): (page, x0, y0, x1, y1) in points.
+    dsc_mark: list[str] = field(default_factory=list)
+    mark_box: tuple[int, float, float, float, float] | None = None
 
     def renumber(self) -> None:
         for i, d in enumerate(self.core, start=1):
@@ -180,17 +185,7 @@ def build_print_model(draft: Draft, case: dict[str, Any], style: Style) -> Print
     sworn_on = (
         date.fromisoformat(stamp_meta["notarised"]) if stamp_meta else draft.header.application_date
     )
-    stamp = None
-    if stamp_meta:
-        stamp = {
-            "Certificate No.": stamp_meta["certificate_no"],
-            "Certificate Issued Date": format_date(date.fromisoformat(stamp_meta["issued"]), order),
-            "Description of Document": "Article 4 Affidavit",
-            "Purchased by": draft.header.trust_name,
-            "First Party": draft.header.trust_name,
-            "Second Party": "AICTE NEW DELHI",
-            "Stamp Duty Amount (Rs.)": "100 (One Hundred only)",
-        }
+    stamp, stamp_title = _stamp_fields(stamp_meta, draft) if stamp_meta else (None, "")
     notary = []
     if stamp_meta:
         notary = [
@@ -225,7 +220,45 @@ def build_print_model(draft: Draft, case: dict[str, Any], style: Style) -> Print
         verification=verification,
         stamp=stamp,
         notary=notary,
+        stamp_title=stamp_title or "SYNTHETIC E-STAMP CERTIFICATE (MOCK)",
     )
+
+
+def shcil_datetime(value: str) -> str:
+    """SHCIL-style certificate date: ISO date or date-time -> '22-Nov-2026 11:05 AM'."""
+    when = datetime.fromisoformat(value if "T" in value else f"{value}T11:05:00")
+    return when.strftime("%d-%b-%Y %I:%M %p")
+
+
+def _stamp_fields(meta: dict[str, Any], draft: Draft) -> tuple[dict[str, str], str]:
+    """The stamp page fields (design B1 row 1). Physical paper carries no certificate number."""
+    trust = draft.header.trust_name
+    duty = int(meta.get("duty", 100))
+    words = {100: "One Hundred", 50: "Fifty", 20: "Twenty", 500: "Five Hundred"}.get(duty, "")
+    if meta.get("instrument", "e-stamp") == "physical":
+        fields = {
+            "Serial No.": meta["certificate_no"],
+            "Denomination": f"Rs. {duty} ({words} only)",
+            "Date of Sale": shcil_datetime(meta["issued"]),
+            "Sold to": trust,
+            "Purpose": meta.get("article", "Article 4 Affidavit"),
+            "Stamp Vendor": f"Demo Stamp Vendor (licence {meta['notary_reg_no']}-SV)",
+        }
+        return fields, "SYNTHETIC NON-JUDICIAL STAMP PAPER (MOCK)"
+    fields = {
+        "Certificate No.": meta["certificate_no"],
+        "Certificate Issued Date": shcil_datetime(meta["issued"]),
+        "Account Reference": "DEMOACC (SYNTHETIC)",
+        "Unique Doc. Reference": f"SUBIN-DEMO-{meta['certificate_no'][-6:]}",
+        "Purchased by": trust,
+        "Description of Document": meta.get("article", "Article 4 Affidavit"),
+        "Consideration Price (Rs.)": "0 (Zero)",
+        "First Party": trust,
+        "Second Party": meta.get("second_party", "AICTE NEW DELHI"),
+        "Stamp Duty Paid By": trust,
+        "Stamp Duty Amount (Rs.)": f"{duty} ({words} only)",
+    }
+    return fields, "SYNTHETIC E-STAMP CERTIFICATE (MOCK)"
 
 
 # ---- layout -----------------------------------------------------------------------------------
@@ -408,8 +441,8 @@ class _Writer:
         self.y -= self.lead * 0.8
 
 
-def _stamp_page(w: _Writer, stamp: dict[str, str]) -> None:
-    w.line_text("SYNTHETIC E-STAMP CERTIFICATE (MOCK)", font=BOLD, center=True)
+def _stamp_page(w: _Writer, stamp: dict[str, str], title: str) -> None:
+    w.line_text(title, font=BOLD, center=True)
     w.line_text(
         "For tests only. Not a real stamp instrument and not valid for any purpose.", center=True
     )
@@ -428,7 +461,7 @@ def render(model: PrintModel, style: Style) -> tuple[bytes, dict[str, int]]:
     """PDF bytes + the page of every keyed element (decl:<n>, land:<row>, <table>:<room>, …)."""
     w = _Writer(style)
     if model.stamp:
-        _stamp_page(w, model.stamp)
+        _stamp_page(w, model.stamp, model.stamp_title)
     w.mark("heading")
     w.line_text(model.heading, font=BOLD, center=True)
     w.mark("header:ay")
@@ -493,7 +526,27 @@ def render(model: PrintModel, style: Style) -> tuple[bytes, dict[str, int]]:
     w.line_text("(Signature not reproduced: synthetic test document.)")
     for line in model.notary:
         w.line_text(line)
+    if model.dsc_mark:
+        _dsc_mark(w, model)
     return _emit(w, model.aid), w.positions
+
+
+def _dsc_mark(w: _Writer, model: PrintModel) -> None:
+    """A printed signature mark: text in a ruled box, as a flattened stamp image would carry."""
+    size = w.size - 1.5
+    lead = size * 1.35
+    height = lead * len(model.dsc_mark) + 8
+    w.gap(0.5)
+    w.ensure(height + w.lead)
+    x0 = w.right - 230.0
+    top = w.y
+    ops = w.pages[-1]
+    for i, line in enumerate(model.dsc_mark):
+        ops.append(("text", x0 + 6, top - 4 - size * 0.85 - i * lead, line, FONT, size, False))
+    ops.append(("rect", x0, top - height, 230.0, height, 0.8))
+    w.mark("dsc_mark")
+    model.mark_box = (w.page, x0, top - height, x0 + 230.0, top)
+    w.y = top - height - w.lead
 
 
 def _emit(w: _Writer, aid: str) -> bytes:

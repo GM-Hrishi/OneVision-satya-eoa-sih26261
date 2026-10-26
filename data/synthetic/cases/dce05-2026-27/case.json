@@ -26,19 +26,37 @@
   },
   "stamp": {
     "certificate_no": "IN-TN90526111604222Q",
-    "issued": "2026-11-18",
-    "notarised": "2026-11-20",
+    "instrument": "e-stamp",
+    "article": "Article 4 Affidavit",
+    "second_party": "AICTE NEW DELHI",
+    "duty": 100,
+    "issued": "2026-11-17T11:05",
+    "notarised": "2026-11-18",
     "notary_reg_no": "DEMO-NOT-0005",
     "notary_valid_till": "2027-12-31"
   },
   "documents": [
     {
-      "doc_id": "doc_3JYF85JHD5W7W7CANFFPNCSDAC",
+      "doc_id": "doc_4614YH6SZR73CNM7JW3FRJZ9DP",
       "slot": "annex2.1(i) affidavit",
       "declared_type": "affidavit-2",
+      "title": "Affidavit 2 (sworn copy)",
+      "format_type": "T",
       "file": "affidavit-sworn.pdf",
-      "sha256": "77aa2274106b911ee5ab1c9252f85bfd9963908d13126e52c9c148fc5de45e94",
-      "bytes": 72611
+      "sha256": "ca79c52661a13baa8a344d797190231fb124c50f8d31f0d0175a07d83ff047c7",
+      "bytes": 88195,
+      "uploaded_at": "2026-11-19T16:40:00+05:30"
+    },
+    {
+      "doc_id": "doc_QVTBGQ49NA3RVJB2KZMWH66SV7",
+      "slot": "annex2.1(vii) audited accounts",
+      "declared_type": "audited-accounts",
+      "title": "Audited statement of accounts FY 2025-26",
+      "format_type": "E",
+      "file": "audited-accounts.pdf",
+      "sha256": "e4ad01d524e4cc4cc7e39e1d5f809db1e67c10ed00d3df9063501130b21b8b07",
+      "bytes": 11738,
+      "uploaded_at": "2026-11-19T16:40:00+05:30"
     }
   ]
 }

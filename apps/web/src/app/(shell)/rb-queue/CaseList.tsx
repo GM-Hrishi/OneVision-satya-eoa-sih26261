@@ -1,5 +1,5 @@
 // Interim case list for the validation queue: the cases the gateway holds for this official's region,
-// each linking to its RB-05 affidavit diff. The risk-banded queue (RB-02) arrives with M11 (P-10, P-12).
+// each linking to its RB-05 affidavit diff and RB-06 verification panel. The risk-banded queue (RB-02) arrives with M11 (P-10, P-12).
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import styles from "@/components/diff/DiffView.module.css";
@@ -51,6 +51,13 @@ export async function CaseList({ items }: { items: CaseRow[] }) {
                 <td>
                   <Link href={`/case/${c.case_id}/affidavit`} aria-label={t("openAria", { aid: c.application_id })}>
                     {t("openDiff")}
+                  </Link>
+                  {" · "}
+                  <Link
+                    href={`/case/${c.case_id}/verification`}
+                    aria-label={t("openVerificationAria", { aid: c.application_id })}
+                  >
+                    {t("openVerification")}
                   </Link>
                 </td>
               </tr>

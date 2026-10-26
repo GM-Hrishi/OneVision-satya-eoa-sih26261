@@ -53,13 +53,13 @@ Exact versions pinned on 26 Oct 2026, checked against the registries (Docker Hub
 | python-ulid | 4.0.1 | api |
 | jsonschema · rfc3339-validator | 4.26.0 · 0.1.4 | shared-types validation |
 | celery[redis] (kombu) | 5.6.3 (5.6.2) | worker |
-| pdfplumber (pdfminer.six, pypdfium2) | 0.11.10 (20260107, 5.14.0) | affidavit (M5 text-layer extraction), api |
+| pdfplumber (pdfminer.six, pypdfium2) | 0.11.10 (20260107, 5.14.0) | affidavit (M5 text-layer extraction), forensics (M6 stamp/notary/mark/UDIN text), api |
 | pyyaml | 6.0.3 | affidavit (template profiles, rules) |
-| pyjwt[crypto] (cryptography) | 2.15.1 (50.0.2) | api (Workbench API bearer tokens, RS256 + JWKS) |
+| pyjwt[crypto] (cryptography) | 2.15.1 (50.0.2) | api (Workbench API bearer tokens, RS256 + JWKS); cryptography also forensics (test PKI, chain, CRL) |
 | reportlab | 5.0.1 | synthetic PDF generator only (dev group; never in a runtime image). 5.1.0 skipped: released 4 days before the slice |
 | types-pyyaml | 6.0.12.20260906 | mypy |
 | pikepdf | 10.17.0 | worker (for M6) |
-| pyhanko | 0.38.0 | worker (for M6) |
+| pyhanko (pyhanko-certvalidator, asn1crypto) | 0.38.0 (0.33.0, 1.5.1) | forensics (M6 signature validation + modification analysis; synthetic signing in `synth/`), api. MIT |
 | datamodel-code-generator (black, isort) | 0.86.0 (26.10.1, 8.0.1) | shared-types generator |
 | ruff · mypy | 0.17.2 · 2.4.0 | lint, types |
 | pytest · pytest-asyncio | 9.1.1 · 1.4.1 | tests |

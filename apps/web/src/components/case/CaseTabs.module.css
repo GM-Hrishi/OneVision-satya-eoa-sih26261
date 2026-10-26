@@ -1,0 +1,35 @@
+.tabs {
+  margin-top: var(--space-3);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.tabs ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tab {
+  display: inline-block;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid transparent;
+  border-bottom: 0;
+  color: var(--color-accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.tab:hover {
+  text-decoration: underline;
+}
+
+.tab[aria-current="page"] {
+  border-color: var(--color-rule);
+  background: var(--color-surface);
+  color: var(--color-text);
+  margin-bottom: -1px;
+}

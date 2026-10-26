@@ -12,6 +12,7 @@ members = [
     "satya-affidavit",
     "satya-api",
     "satya-eoa-workspace",
+    "satya-forensics",
     "satya-shared-types",
     "satya-worker",
 ]
@@ -2703,6 +2704,7 @@ dependencies = [
     { name = "python-ulid" },
     { name = "redis" },
     { name = "satya-affidavit" },
+    { name = "satya-forensics" },
     { name = "satya-shared-types" },
     { name = "sqlalchemy", extra = ["asyncio"] },
     { name = "uvicorn", extra = ["standard"] },
@@ -2719,6 +2721,7 @@ requires-dist = [
     { name = "python-ulid", specifier = "==4.0.1" },
     { name = "redis", specifier = "==6.4.0" },
     { name = "satya-affidavit", editable = "packages/affidavit" },
+    { name = "satya-forensics", editable = "packages/forensics" },
     { name = "satya-shared-types", editable = "packages/shared-types/python" },
     { name = "sqlalchemy", extras = ["asyncio"], specifier = "==2.1.6" },
     { name = "uvicorn", extras = ["standard"], specifier = "==0.54.0" },
@@ -2753,6 +2756,29 @@ dev = [
     { name = "reportlab", specifier = "==5.0.1" },
     { name = "ruff", specifier = "==0.17.2" },
     { name = "types-pyyaml", specifier = "==6.0.12.20260906" },
+]
+
+[[package]]
+name = "satya-forensics"
+version = "0.1.0"
+source = { editable = "packages/forensics" }
+dependencies = [
+    { name = "cryptography" },
+    { name = "pdfplumber" },
+    { name = "pyhanko" },
+    { name = "pyyaml" },
+    { name = "satya-affidavit" },
+    { name = "satya-shared-types" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "cryptography", specifier = "==50.0.2" },
+    { name = "pdfplumber", specifier = "==0.11.10" },
+    { name = "pyhanko", specifier = "==0.38.0" },
+    { name = "pyyaml", specifier = "==6.0.3" },
+    { name = "satya-affidavit", editable = "packages/affidavit" },
+    { name = "satya-shared-types", editable = "packages/shared-types/python" },
 ]
 
 [[package]]

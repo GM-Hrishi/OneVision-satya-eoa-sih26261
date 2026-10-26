@@ -82,11 +82,35 @@ flowchart LR
 - Slice 1 reads the committed synthetic cases. The ingest path (`application.submitted` → M2 fetch + hash → worker → stored result) replaces `FixtureCaseRepository` with P-19/P-17.
 - The web server holds the official's 5-minute access token in the encrypted session cookie and calls the API over the internal network; on expiry it sends the official through a silent SSO renewal.
 
+## M6 signatures, stamp chronology, UDIN path (slice 2)
+```mermaid
+flowchart LR
+  B[Browser] --> WEB5[web: /case/:id/affidavit<br/>RB-05 badges + stamp/signing order]
+  B --> WEB6[web: /case/:id/verification<br/>RB-06 Verification panel]
+  WEB5 --> API5[api: GET /v1/cases/:id/affidavit-diff<br/>M5 diff merged with M6 sections]
+  WEB6 --> API6[api: GET /v1/cases/:id/verification<br/>GET …/documents/:doc/verification]
+  API5 --> REPO[FixtureCaseRepository<br/>every document SHA-256 checked]
+  API6 --> REPO
+  REPO --> M6[satya_forensics.engine.run<br/>cached by document hashes]
+  PKI[data/synthetic/pki<br/>TEST TRUST ANCHOR + sub-CA + CRL] --> M6
+  REG[data/synthetic/registry<br/>prior filings + current cases] --> M6
+  M6 --> SIG[signatures: pyHanko validate_pdf_signature,<br/>chain, CRL with retries, signer token,<br/>printed-mark finder, issuer/uploader roles]
+  M6 --> ST[stamp: e-stamp page, notary block,<br/>signing order]
+  M6 --> UD[udin: structure, year, membership, reuse;<br/>ICAI lookup = source_unavailable]
+  R6[packages/rules<br/>m6-signatures.yaml] --> OUT6[VerificationResult per document,<br/>SignatureCheck badges, Flags,<br/>stamp + chronology sections]
+  SIG --> OUT6
+  ST --> OUT6
+  UD --> OUT6
+```
+- `packages/forensics` (satya_forensics) is a pure library like M5: the same bytes, snapshot, register and CRLs give the same JSON. Its `synth/` subpackage (reportlab, pyHanko signing) is test/demo tooling and is never imported by the engine.
+- Document label = most severe check outcome (Portal §2.6.3); `verified` needs a passing issuer signature or source lookup, so a valid uploader DSC never makes a document verified.
+- M7 (P-5) adds `source_lookup` checks (SHCIL e-stamp, TN Form D, TN fire) to the same `VerificationResult` and RB-06 rows; the ICAI UDIN lookup stays `source_unavailable` until an access route exists.
+
 ## Where later slices attach
 | Module | Attaches at |
 |---|---|
 | M2 vault (P-19) | gateway after step 2: fetch `documents[]`, hash check, tokenise T fields, encrypt at rest |
-| M3/M6/M4/M7/M8/M13/M9/M10 (M5 engine exists as a library) | Celery tasks in `services/worker` (queue on Valkey), results as `Flag` / `VerificationResult` |
+| M3/M4/M7/M8/M13/M9/M10 (M5 and M6 engines exist as libraries) | Celery tasks in `services/worker` (queue on Valkey), results as `Flag` / `VerificationResult` |
 | M12 (P-11) | extend `ledger` to every SATYA output; AU screens read it |
 | M11 (P-10, P-12) | workbench routes under `apps/web/src/app/(shell)/…`, rail items added in `src/lib/rail.ts` |
 | Mock portal (P-17) | MP-01..MP-06 screens, remaining inbound events, "Open in SATYA" deep link |

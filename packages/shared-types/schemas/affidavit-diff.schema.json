@@ -242,7 +242,7 @@
               "type": "null"
             }
           ],
-          "description": "Filled by M6 (P-4); null until then."
+          "description": "Filled by M6 (P-4); null when M6 could not read it."
         },
         "uploader_sig": {
           "anyOf": [
@@ -253,7 +253,7 @@
               "type": "null"
             }
           ],
-          "description": "Filled by M6 (P-4); null until then."
+          "description": "Filled by M6 (P-4); null when M6 could not read it."
         },
         "category_list_found": {
           "type": [
@@ -772,6 +772,31 @@
             },
             "state": {
               "$ref": "verification-label.schema.json"
+            },
+            "article": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120,
+              "description": "Description of document on the stamp, e.g. 'Article 4 Affidavit'."
+            },
+            "issue_date": {
+              "anyOf": [
+                {
+                  "$ref": "common.schema.json#/$defs/Date"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "page": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1
             }
           }
         },
@@ -779,7 +804,7 @@
           "type": "null"
         }
       ],
-      "description": "Filled by M6 (P-4); null until then."
+      "description": "Filled by M6 (P-4) from the stamp page; null when no stamp page is found."
     },
     "chronology": {
       "anyOf": [
@@ -860,6 +885,31 @@
                   "type": "null"
                 }
               ]
+            },
+            "dsc_kind": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "signature",
+                "image_mark",
+                null
+              ],
+              "description": "Where dsc_date comes from: a real CMS signature or a printed mark (image only)."
+            },
+            "mark_after_notary": {
+              "type": [
+                "boolean",
+                "null"
+              ],
+              "description": "A printed signature mark dated after the notarisation (design D1 review case); null when there is no mark."
+            },
+            "notary_expiry_ok": {
+              "type": [
+                "boolean",
+                "null"
+              ]
             }
           }
         },
@@ -867,7 +917,7 @@
           "type": "null"
         }
       ],
-      "description": "Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload. Filled by M6 (P-4); null until then."
+      "description": "Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload (design B1 row 1, D1). Filled by M6 (P-4)."
     },
     "pending": {
       "type": "array",
