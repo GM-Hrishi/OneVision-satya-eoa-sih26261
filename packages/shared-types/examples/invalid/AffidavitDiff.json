@@ -1,0 +1,220 @@
+{
+  "case": {
+    "case_id": "cas_01JD3M5A00000000000000DT03",
+    "application_id": "1-90000004217",
+    "permanent_id": "1-9000317",
+    "ay": "2026-27",
+    "regional_office": "Southern",
+    "institution_name": "Demo Institute of Technology 03",
+    "route": "self_disclosure",
+    "stage": "2",
+    "category_set": [
+      "EoA Only"
+    ]
+  },
+  "doc_id": "doc_01JB7Q9A000000000000000001",
+  "engine_version": "0.1.0",
+  "ruleset_version": "m5-affidavit@0.1.0",
+  "advisory": false,
+  "expected": {
+    "template_id": "aff2-portal-2024-27",
+    "template_year": "2024-27",
+    "aid": "1-90000004217",
+    "category_list": [
+      "EoA Only"
+    ],
+    "declarations": [
+      {
+        "no": 1,
+        "block": "core",
+        "text": "The information furnished in the online application is true and nothing has been concealed.",
+        "printed_no": 1
+      }
+    ]
+  },
+  "sworn": {
+    "page_count": 7,
+    "sha256": "3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+    "template_match": true,
+    "template_detected": "aff2-portal-2024-27",
+    "text_source": "text_layer",
+    "ocr_mean_confidence": null,
+    "issuer_sig": null,
+    "uploader_sig": null,
+    "category_list_found": null,
+    "declarations": [
+      {
+        "no": 1,
+        "text": "The information furnished in the online application is true and nothing has been concealed.",
+        "page": 2,
+        "region": {
+          "x": 0.1,
+          "y": 0.4,
+          "w": 0.8,
+          "h": 0.05
+        },
+        "ocr_confidence": null,
+        "printed_no": 1,
+        "block": "core"
+      }
+    ]
+  },
+  "normalisation": {
+    "whitespace": true,
+    "strike_through_resolved": 2,
+    "names_substituted": true,
+    "hyphens_rejoined": 3,
+    "date_order": "MM/DD/YYYY",
+    "date_order_fallbacks": 0
+  },
+  "options": [
+    {
+      "decl_no": 5,
+      "group": "land_tenure",
+      "choices": [
+        "owned",
+        "leased"
+      ],
+      "selected": [
+        "owned"
+      ]
+    }
+  ],
+  "ops": [
+    {
+      "op": "equal",
+      "decl_no": 1,
+      "sworn_no": 1,
+      "similarity": 1.0,
+      "spans": [
+        {
+          "kind": "equal",
+          "text": "The information furnished in the online application is true and nothing has been concealed."
+        }
+      ]
+    }
+  ],
+  "structure": {
+    "category_line": {
+      "expected": [
+        "EoA Only"
+      ],
+      "found": [],
+      "state": "absent",
+      "page": 2,
+      "flag_id": "flg_01JB7Q9A000000000000000422"
+    },
+    "core": {
+      "expected": 19,
+      "found": 19
+    },
+    "existing_institute": {
+      "expected": 5,
+      "found": 5
+    },
+    "extra_blocks": []
+  },
+  "tables": [
+    {
+      "table": "land",
+      "columns": [
+        "holder",
+        "document_no",
+        "registration_date",
+        "plot_no",
+        "village_district",
+        "area_acre"
+      ],
+      "rows": [
+        {
+          "key": "1",
+          "state": "matched",
+          "page": 5,
+          "region": null,
+          "sworn_cells": [
+            "masked",
+            "•••0001",
+            "2009-06-15",
+            "DEMO-PLOT-11",
+            "Demo Town 03 / Demo District 07",
+            "8.00"
+          ],
+          "application_report_cells": [
+            "masked",
+            "•••0001",
+            "2009-06-15",
+            "DEMO-PLOT-11",
+            "Demo Town 03 / Demo District 07",
+            "8.00"
+          ],
+          "cell_match": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "delta": null,
+          "flag_ids": []
+        }
+      ],
+      "total_rows": 1,
+      "computed_total_acres": 8.0,
+      "expected_total_acres": 8.0,
+      "room_id_duplicates": []
+    }
+  ],
+  "stamp": null,
+  "chronology": null,
+  "pending": [
+    {
+      "section": "stamp",
+      "module": "M6",
+      "promise": "P-4"
+    }
+  ],
+  "flags": [
+    {
+      "flag_id": "flg_01JB7Q9A000000000000000422",
+      "doc_id": "doc_01JB7Q9A000000000000000001",
+      "page": 2,
+      "regions": [
+        {
+          "x": 0.08,
+          "y": 0.41,
+          "w": 0.84,
+          "h": 0.12
+        }
+      ],
+      "rule_id": "AFF-CAT-LINE",
+      "rule_version": "0.1.0",
+      "rule_text_key": "affidavit.category_line_missing",
+      "aph_clause": "Affidavit-2 NOTE",
+      "aph_edition": "2024-27",
+      "extracted_value": null,
+      "expected_value": "EoA Only",
+      "value_unit": null,
+      "delta": null,
+      "extracted_source": {
+        "doc_label": "Affidavit 2 (sworn copy)",
+        "page": 2,
+        "row": null
+      },
+      "expected_source": {
+        "label": "Portal affidavit draft: category list"
+      },
+      "confidence": 0.93,
+      "confidence_band": "high",
+      "label": "mismatch_detected",
+      "provenance": "satya",
+      "preliminary_indicator": true,
+      "severity": "critical",
+      "disposition": null,
+      "stage": "2",
+      "institution_visible": true,
+      "evidence_sha256": "3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f3f",
+      "check_ref": "m5:AFF-CAT-LINE:category_line"
+    }
+  ]
+}

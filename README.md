@@ -63,13 +63,13 @@ make secrets     # random secrets into .env (git-ignored)
 make up          # build, start all services, wait until healthy
 make trust-ca    # export the local HTTPS root CA once, then trust it (DEV-SETUP)
 ```
-Then open **https://localhost** and sign in as `rb.southern.demo` (password: `grep DEMO_USER_PASSWORD .env`). The mock portal is at **https://portal.localhost**: press *Send test event* and watch the signed event get a receipt.
+Then open **https://localhost** and sign in as `rb.southern.demo`: the queue lists two synthetic cases; open *Affidavit diff* for `1-90000004217` to see RB-05 (`docs/DEMO-SCRIPT.md` has the full demo) (password: `grep DEMO_USER_PASSWORD .env`). The mock portal is at **https://portal.localhost**: press *Send test event* and watch the signed event get a receipt.
 
 ## Status
 | Slice | Scope | Status |
 |---|---|---|
 | 0 Foundation | Monorepo, compose stack with HTTPS, shared contracts, signed event gateway + hash-chained ledger, Keycloak SSO, workbench shell, mock portal test event, CI with secret scan and real-data guard | **Done** |
-| M5 | Affidavit 2 normalised 24-declaration diff + reconciliation (P-3) | Planned |
+| 1 M5 | Affidavit 2 normalised 24-declaration diff + reconciliation (P-3): synthetic generator, text-layer extraction, clause diff, table reconciliation, `GET /v1/cases/{id}/affidavit-diff`, RB-05 DiffView; demo script and synthetic test-set plan | **Done** (PR open) |
 | M6 | Real DSC vs image, test trust anchor, stamp chronology (P-4, P-18) | Planned |
 | M3 | Template-aware extraction on synthetic templates (P-2, P-6) | Planned |
 | M13 | Year-over-year reconciliation (P-8) | Planned |
@@ -88,6 +88,7 @@ Build order follows decision #40 (hardest first). The backlog is in [docs/ISSUES
 |---|---|
 | `apps/web` | SATYA workbench (Next.js) |
 | `apps/mock-portal` | Approval Portal (Mock, for demo) |
+| `packages/affidavit` | M5 affidavit diff engine + synthetic Affidavit 2 generator (`satya_affidavit`) |
 | `services/api` | FastAPI gateway |
 | `services/worker` | Celery worker on Valkey |
 | `packages/shared-types` | JSON Schema contracts → TypeScript + Pydantic |

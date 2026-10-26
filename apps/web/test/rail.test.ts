@@ -18,3 +18,15 @@ describe("rail", () => {
     }
   });
 });
+
+describe("breadcrumbs", () => {
+  it("gives case pages a trail back to the queue", async () => {
+    const { crumbsFor } = await import("../src/lib/rail");
+    expect(crumbsFor("/case/cas_01JD3M5A00000000000000DT03/affidavit")).toEqual([
+      { labelKey: "queue", href: "/rb-queue" },
+      { labelKey: "affidavit" },
+    ]);
+    expect(crumbsFor("/help")).toEqual([{ labelKey: "help" }]);
+    expect(crumbsFor("/nowhere")).toEqual([]);
+  });
+});

@@ -22,6 +22,175 @@ class AcademicYear(RootModel[str]):
     """
 
 
+class CaseRoute(StrEnum):
+    """
+    Table 2.3 route (UI spec §6).
+    """
+
+    self_disclosure = "self_disclosure"
+    scrutiny = "scrutiny"
+    scrutiny_evc = "scrutiny_evc"
+    scrutiny_only = "scrutiny_only"
+
+
+class CaseStage(StrEnum):
+    """
+    C2 stage ①–⑦.
+    """
+
+    field_1 = "1"
+    field_2 = "2"
+    field_3 = "3"
+    field_4 = "4"
+    field_5 = "5"
+    field_6 = "6"
+    field_7 = "7"
+
+
+class TextSource(StrEnum):
+    """
+    Slice 1 reads the text layer only; OCR arrives with M3 (P-2).
+    """
+
+    text_layer = "text_layer"
+    ocr = "ocr"
+
+
+class DateOrder(StrEnum):
+    """
+    Date order of the template year (design D4).
+    """
+
+    MM_DD_YYYY = "MM/DD/YYYY"
+    DD_MM_YYYY = "DD/MM/YYYY"
+
+
+class AffidavitNormalisation(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    whitespace: bool
+    strike_through_resolved: Annotated[int, Field(ge=0)]
+    """
+    Struck-through spans removed before comparing.
+    """
+    names_substituted: bool
+    hyphens_rejoined: Annotated[int, Field(ge=0)]
+    date_order: DateOrder
+    """
+    Date order of the template year (design D4).
+    """
+    date_order_fallbacks: Annotated[int | None, Field(ge=0)] = None
+    """
+    Dates whose month was impossible in the template order and parsed the other way.
+    """
+
+
+class Choice(RootModel[str]):
+    root: Annotated[str, Field(max_length=120, min_length=1)]
+
+
+class SelectedItem(RootModel[str]):
+    root: Annotated[str, Field(max_length=120, min_length=1)]
+
+
+class DeclarationOption(BaseModel):
+    """
+    A strike-through option group in a declaration and the choice the deponent left standing.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    decl_no: Annotated[int, Field(ge=1)]
+    group: Annotated[str, Field(max_length=64, min_length=1)]
+    choices: list[Choice]
+    selected: list[SelectedItem]
+
+
+class DiffOpKind(StrEnum):
+    equal = "equal"
+    added = "added"
+    removed = "removed"
+    changed = "changed"
+
+
+class DiffSpanKind(StrEnum):
+    equal = "equal"
+    insert = "insert"
+    delete = "delete"
+
+
+class DiffSpan(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    kind: Annotated[DiffSpanKind, Field(title="DiffSpanKind")]
+    text: Annotated[str, Field(max_length=4000)]
+
+
+class CategoryLineState(StrEnum):
+    present = "present"
+    missing = "missing"
+    extra = "extra"
+    different = "different"
+
+
+class ExtraBlock(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    heading: Annotated[str, Field(max_length=400, min_length=1)]
+    page: Annotated[int, Field(ge=1)]
+
+
+class AffidavitTableName(StrEnum):
+    land = "land"
+    room_admin = "room_admin"
+    room_amenities = "room_amenities"
+    room_instructional = "room_instructional"
+    room_common = "room_common"
+
+
+class Column(RootModel[str]):
+    root: Annotated[str, Field(max_length=64, min_length=1)]
+
+
+class TableRowState(StrEnum):
+    matched = "matched"
+    differs = "differs"
+    missing_in_sworn = "missing_in_sworn"
+    extra_in_sworn = "extra_in_sworn"
+
+
+class SwornCell(RootModel[str | None]):
+    root: Annotated[str | None, Field(max_length=400)]
+
+
+class ApplicationReportCell(RootModel[str | None]):
+    root: Annotated[str | None, Field(max_length=400)]
+
+
+class RoomIdDuplicate(RootModel[str]):
+    root: Annotated[str, Field(max_length=64, min_length=1)]
+
+
+class Section(StrEnum):
+    stamp = "stamp"
+    chronology = "chronology"
+    signatures = "signatures"
+    ocr = "ocr"
+
+
+class PendingSection(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    section: Section
+    module: Annotated[str, Field(pattern="^M[0-9]{1,2}$")]
+    promise: Annotated[str, Field(pattern="^P-[0-9]{1,2}$")]
+
+
 class AlertId(RootModel[str]):
     root: Annotated[str, Field(pattern="^alr_[0-9A-HJKMNP-TV-Z]{26}$", title="AlertId")]
 
@@ -372,8 +541,23 @@ class DeficiencyReportResult(BaseModel):
     """
 
 
+class BlockCount(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    expected: Annotated[int, Field(ge=0)]
+    found: Annotated[int, Field(ge=0)]
+
+
 class CaseId(RootModel[str]):
     root: Annotated[str, Field(pattern="^cas_[0-9A-HJKMNP-TV-Z]{26}$", title="CaseId")]
+
+
+class CategoryName(RootModel[str]):
+    root: Annotated[str, Field(max_length=200, min_length=1, title="CategoryName")]
+    """
+    An application category as printed in the affidavit's numbered category line, e.g. EoA Only.
+    """
 
 
 class CheckKind(StrEnum):
@@ -424,6 +608,16 @@ class CorrelationId(RootModel[str]):
 
 class Date(RootModel[date]):
     root: Annotated[date, Field(title="Date")]
+
+
+class DeclarationBlock(StrEnum):
+    """
+    core = 19 core declarations; existing_institute = 5 'Existing Institute' declarations; extra = a block the 2024-27 draft does not print (e.g. a 2023-24-style Increase-in-Intake block).
+    """
+
+    core = "core"
+    existing_institute = "existing_institute"
+    extra = "extra"
 
 
 class DispositionAction(StrEnum):
@@ -787,6 +981,231 @@ class YoyVerdict(StrEnum):
 
     explained = "explained"
     discrepancy = "discrepancy"
+
+
+class AffidavitCase(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    case_id: CaseId
+    application_id: ApplicationId
+    permanent_id: PermanentId | None = None
+    ay: AcademicYear
+    regional_office: Annotated[str, Field(max_length=64, min_length=1)]
+    institution_name: Annotated[str | None, Field(max_length=200, min_length=1)] = None
+    route: Annotated[CaseRoute, Field(title="CaseRoute")]
+    """
+    Table 2.3 route (UI spec §6).
+    """
+    stage: Annotated[CaseStage, Field(title="CaseStage")]
+    """
+    C2 stage ①–⑦.
+    """
+    category_set: list[CategoryName]
+
+
+class ExpectedDeclaration(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    no: Annotated[int, Field(ge=1)]
+    """
+    Canonical position 1–24 (core 1–19, existing institute 20–24).
+    """
+    printed_no: Annotated[int, Field(ge=1)]
+    """
+    Number as printed in the draft; numbering restarts in the existing-institute block (design B1 row 1).
+    """
+    block: DeclarationBlock
+    text: Annotated[str, Field(max_length=4000, min_length=1)]
+
+
+class AffidavitExpected(BaseModel):
+    """
+    Portal-generated Affidavit 2 for this AID and AY.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    template_id: Annotated[str, Field(max_length=120, min_length=1)]
+    template_year: Annotated[str, Field(max_length=16, min_length=1)]
+    """
+    APH edition the template belongs to, e.g. 2024-27.
+    """
+    aid: ApplicationId
+    category_list: list[CategoryName]
+    declarations: list[ExpectedDeclaration]
+
+
+class SwornDeclaration(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    no: Annotated[int, Field(ge=1)]
+    """
+    Position in the sworn copy, counted across blocks.
+    """
+    printed_no: Annotated[int | None, Field(ge=1)]
+    """
+    Number as printed in the sworn copy.
+    """
+    block: DeclarationBlock
+    text: Annotated[str, Field(max_length=4000, min_length=1)]
+    page: Annotated[int, Field(ge=1)]
+    region: Region
+    ocr_confidence: Annotated[float | None, Field(ge=0.0, le=1.0)]
+
+
+class AffidavitSworn(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    page_count: Annotated[int, Field(ge=0)]
+    sha256: Sha256
+    template_match: bool
+    """
+    The sworn copy's heading and AY line identify the expected template.
+    """
+    template_detected: Annotated[str | None, Field(max_length=120)] = None
+    text_source: Annotated[TextSource, Field(title="TextSource")]
+    """
+    Slice 1 reads the text layer only; OCR arrives with M3 (P-2).
+    """
+    ocr_mean_confidence: Annotated[float | None, Field(ge=0.0, le=1.0)]
+    """
+    null for a text layer.
+    """
+    issuer_sig: SignatureCheck | None
+    """
+    Filled by M6 (P-4); null until then.
+    """
+    uploader_sig: SignatureCheck | None
+    """
+    Filled by M6 (P-4); null until then.
+    """
+    category_list_found: list[CategoryName] | None
+    """
+    null when no category line was found.
+    """
+    declarations: list[SwornDeclaration]
+
+
+class DiffOp(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    op: Annotated[DiffOpKind, Field(title="DiffOpKind")]
+    decl_no: Annotated[int | None, Field(ge=1)]
+    """
+    Canonical expected position 1–24; null for an added declaration.
+    """
+    sworn_no: Annotated[int | None, Field(ge=1)]
+    """
+    Position of the matched declaration in the sworn copy (see sworn.declarations[].no); null for a removed declaration.
+    """
+    similarity: Annotated[float, Field(ge=0.0, le=1.0)]
+    flag_id: FlagId | None = None
+    spans: list[DiffSpan]
+
+
+class CategoryLineCheck(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    expected: list[CategoryName]
+    found: list[CategoryName]
+    state: Annotated[CategoryLineState, Field(title="CategoryLineState")]
+    page: Annotated[int | None, Field(ge=1)] = None
+    flag_id: FlagId | None = None
+
+
+class AffidavitStructure(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    category_line: Annotated[CategoryLineCheck, Field(title="CategoryLineCheck")]
+    core: BlockCount
+    existing_institute: BlockCount
+    extra_blocks: list[ExtraBlock]
+
+
+class AffidavitTableRow(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    key: Annotated[str, Field(max_length=120, min_length=1)]
+    """
+    Row key: deed row number (land) or room ID (rooms).
+    """
+    state: Annotated[TableRowState, Field(title="TableRowState")]
+    page: Annotated[int | None, Field(ge=1)] = None
+    region: Region | None = None
+    sworn_cells: list[SwornCell | None]
+    application_report_cells: list[ApplicationReportCell | None]
+    cell_match: list[bool | None]
+    delta: float | None = None
+    flag_ids: list[FlagId] | None = None
+
+
+class AffidavitTable(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    table: Annotated[AffidavitTableName, Field(title="AffidavitTableName")]
+    columns: list[Column]
+    """
+    Field keys in column order, e.g. area_acre; the UI translates them.
+    """
+    rows: list[AffidavitTableRow]
+    total_rows: Annotated[int, Field(ge=0)]
+    computed_total_acres: Annotated[float | None, Field(ge=0.0)]
+    """
+    Land only: sum of sworn deed areas (the portal leaves the total blank).
+    """
+    expected_total_acres: Annotated[float | None, Field(ge=0.0)]
+    """
+    Land only: ApplicationSnapshot land.total_area in acres.
+    """
+    room_id_duplicates: list[RoomIdDuplicate]
+    """
+    Room IDs used more than once across the 4 room tables.
+    """
+
+
+class AffidavitStamp(BaseModel):
+    """
+    Filled by M6 (P-4); null until then.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    instrument: Annotated[str, Field(max_length=64, min_length=1)]
+    certificate_no: Annotated[str | None, Field(max_length=64)]
+    second_party: Annotated[str | None, Field(max_length=200)]
+    duty: Annotated[int | None, Field(ge=0)]
+    """
+    Stamp duty in paise (Portal §2 conventions).
+    """
+    state: VerificationLabel
+
+
+class AffidavitChronology(BaseModel):
+    """
+    Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload. Filled by M6 (P-4); null until then.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    application_date: Date | None
+    stamp_date: Date | None
+    notary_date: Date | None
+    dsc_date: Date | None = None
+    upload_date: Date | None
+    order_ok: bool | None
+    notary_expiry: Date | None = None
 
 
 class Alert(BaseModel):
@@ -1266,6 +1685,47 @@ class VerificationResult(BaseModel):
     Required when an official resolves the label.
     """
     checks: list[Check]
+
+
+class AffidavitDiff(BaseModel):
+    """
+    RB-05 DiffView payload, GET /v1/cases/{case_id}/affidavit-diff (UI spec §6.3, §7.1; design B1 row 1, C3). M5 output: the sworn Affidavit 2 compared clause by clause with the portal draft for the same AID and AY, and its land and room tables reconciled with the ApplicationSnapshot. Advisory only. Identifier cells that the gateway tokenises (deed holder, deed document no.) are masked.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    case: Annotated[AffidavitCase, Field(title="AffidavitCase")]
+    doc_id: DocId
+    run_id: RunId | None = None
+    engine_version: Annotated[str, Field(max_length=32, min_length=1)]
+    ruleset_version: Annotated[str, Field(max_length=64, min_length=1)]
+    advisory: Literal[True]
+    expected: Annotated[AffidavitExpected, Field(title="AffidavitExpected")]
+    """
+    Portal-generated Affidavit 2 for this AID and AY.
+    """
+    sworn: Annotated[AffidavitSworn, Field(title="AffidavitSworn")]
+    normalisation: Annotated[
+        AffidavitNormalisation, Field(title="AffidavitNormalisation")
+    ]
+    options: list[DeclarationOption]
+    ops: list[DiffOp]
+    structure: Annotated[AffidavitStructure, Field(title="AffidavitStructure")]
+    tables: list[AffidavitTable]
+    stamp: AffidavitStamp | None
+    """
+    Filled by M6 (P-4); null until then.
+    """
+    chronology: AffidavitChronology | None
+    """
+    Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload. Filled by M6 (P-4); null until then.
+    """
+    pending: list[PendingSection]
+    """
+    DiffView sections whose checks belong to a later module, so the UI can say so instead of showing an empty panel.
+    """
+    flags: list[Flag]
 
 
 class Document(BaseModel):

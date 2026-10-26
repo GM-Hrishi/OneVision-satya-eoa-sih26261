@@ -1,0 +1,114 @@
+# M5 affidavit diff + reconciliation rules (P-3). Every rule cites its APH clause and edition (guard rail 6).
+# Unconfirmed citations are marked [VERIFY]. Alert type/subtype follow Portal spec §2.9 (used by M11).
+# institution_visible follows UI spec §1.1: own-data inconsistencies (affidavit vs own portal data) yes;
+# anomaly indicators only after an official escalates (the human gate applies to every flag).
+ruleset: m5-affidavit
+version: "0.1.0"
+aph_edition: "2024-27"
+rules:
+  - rule_id: AFF-CAT-LINE
+    version: "0.1.0"
+    text_key: affidavit.category_line_missing
+    aph_clause: "Affidavit-2 NOTE"
+    also_cites: ["2.3.4b"]
+    severity: critical
+    label: mismatch_detected
+    alert: { type: missing_info, subtype: category_line_missing }
+    institution_visible: true
+    preliminary_indicator: true
+    description: The numbered category line in the opening block is missing or lists other categories than the portal draft.
+  - rule_id: AFF-DECL-MISSING
+    version: "0.1.0"
+    text_key: affidavit.declaration_missing
+    aph_clause: "Affidavit-2 NOTE"
+    also_cites: ["7.4(a)", "7.1 NOTE"]
+    severity: critical
+    label: mismatch_detected
+    alert: { type: suspected_anomaly, subtype: affidavit_diff }
+    institution_visible: false
+    preliminary_indicator: true
+    description: A declaration of the portal draft is not in the sworn copy.
+  - rule_id: AFF-DECL-CHANGED
+    version: "0.1.0"
+    text_key: affidavit.declaration_changed
+    aph_clause: "Affidavit-2 NOTE"
+    also_cites: ["7.4(a)", "7.1 NOTE"]
+    severity: critical
+    label: mismatch_detected
+    alert: { type: suspected_anomaly, subtype: affidavit_diff }
+    institution_visible: false
+    preliminary_indicator: true
+    description: A declaration differs from the portal draft after normalisation (whitespace, hyphens, strike-through options, names).
+  - rule_id: AFF-DECL-ADDED
+    version: "0.1.0"
+    text_key: affidavit.declaration_added
+    aph_clause: "Affidavit-2 NOTE"
+    also_cites: []
+    severity: warning
+    label: mismatch_detected
+    alert: { type: suspected_anomaly, subtype: affidavit_diff }
+    institution_visible: false
+    preliminary_indicator: true
+    description: The sworn copy carries a declaration or block that the portal draft does not print.
+  - rule_id: AFF-HEADER
+    version: "0.1.0"
+    text_key: affidavit.header_differs
+    aph_clause: "2.3.4b"
+    also_cites: ["Affidavit-2 NOTE"]
+    severity: warning
+    label: mismatch_detected
+    alert: { type: suspected_anomaly, subtype: affidavit_diff }
+    institution_visible: true
+    preliminary_indicator: true
+    description: An opening-block field (AY line, application ID, permanent ID, institute name, application date) differs from the portal draft.
+  - rule_id: LAND-AREA-RECON
+    version: "0.1.0"
+    text_key: affidavit.land_area_differs
+    aph_clause: "Annex-3 3.1g"
+    also_cites: ["Affidavit-2 NOTE"]
+    verify_note: "[VERIFY] 3.1g governs plots and distance; the area itself is sworn in the Affidavit 2 land table."
+    severity: warning
+    label: mismatch_detected
+    alert: { type: suspected_anomaly, subtype: affidavit_diff }
+    institution_visible: true
+    preliminary_indicator: true
+    unit: acre
+    tolerance: 0.005
+    description: A deed area, or the computed total of the land table, differs from the ApplicationSnapshot land details.
+  - rule_id: LAND-ROW-RECON
+    version: "0.1.0"
+    text_key: affidavit.land_row_differs
+    aph_clause: "Affidavit-2 NOTE"
+    also_cites: ["2.3.4b"]
+    severity: warning
+    label: mismatch_detected
+    alert: { type: suspected_anomaly, subtype: affidavit_diff }
+    institution_visible: true
+    preliminary_indicator: true
+    description: A land-table cell other than the area (holder, document no., registration date, plot no., village/district) differs from the ApplicationSnapshot, or a deed row is missing or extra.
+  - rule_id: ROOM-RECON
+    version: "0.1.0"
+    text_key: affidavit.room_differs
+    aph_clause: "Annex-3"
+    also_cites: ["Affidavit-2 NOTE"]
+    verify_note: "[VERIFY] exact Annexure-3 sub-clause for built-up area norms."
+    severity: warning
+    label: mismatch_detected
+    alert: { type: suspected_anomaly, subtype: affidavit_diff }
+    institution_visible: true
+    preliminary_indicator: true
+    unit: m2
+    tolerance: 0.01
+    description: A room-table cell (type, carpet area, completion columns) differs from the ApplicationSnapshot rooms, or a room row is missing or extra.
+  - rule_id: ROOM-ID-DUP
+    version: "0.1.0"
+    text_key: affidavit.room_id_duplicated
+    aph_clause: "Affidavit-2 NOTE"
+    also_cites: []
+    verify_note: "[VERIFY] no APH clause states uniqueness; design D5.10 rule."
+    severity: warning
+    label: manual_review_required
+    alert: { type: suspected_anomaly, subtype: affidavit_diff }
+    institution_visible: true
+    preliminary_indicator: true
+    description: The same room ID appears more than once across the four room tables.

@@ -1,6 +1,6 @@
 // Acceptance 3 (slice 0) in a real browser on default settings: HTTPS without warnings (Caddy's
 // local CA trusted once, see docs/DEV-SETUP.md), redirect to Keycloak, sign in as rb.southern.demo,
-// RB shell with the empty queue. Also: titles, one H1, no console errors, 403, 404, Hindi, mobile
+// RB shell with the queue (slice 1: the demo cases). Also: titles, one H1, no console errors, 403, 404, Hindi, mobile
 // width, 200% text, sign-out. Usage: node tests/e2e/workbench.cjs   (needs `make up`)
 const { chromium } = require("playwright");
 const fs = require("node:fs");
@@ -36,8 +36,12 @@ async function login(page, username) {
   await login(page, "rb.southern.demo");
   await page.waitForURL(`${BASE}/rb-queue`, { timeout: 20000 });
   check(page.url() === `${BASE}/rb-queue`, "signed in as rb.southern.demo lands on /rb-queue");
+  // The queue streams a skeleton (loading.tsx) while it calls the API; wait for the list itself.
+  await page.waitForSelector("#case-list", { timeout: 30000 }).catch(() => {});
   const body = await page.textContent("body");
-  check(body.includes("No applications yet.") && body.includes("Submit one from the mock portal."), "real empty state shown");
+  // Slice 1: the gateway serves the synthetic demo cases, so the queue lists them (the empty state
+  // shows only when the gateway holds no case for the region).
+  check(body.includes("Cases with an affidavit check") && body.includes("1-90000004217"), "queue lists the synthetic demo cases");
   check(body.includes("Prototype · connected to a mock approval portal · synthetic data only"), "prototype strip shown");
   check(body.includes("Regulation Bureau · Southern"), "role + region chip shown");
   const current = await page.getAttribute('nav[aria-label="Main navigation"] [aria-current="page"]', "href");
@@ -92,6 +96,7 @@ async function login(page, username) {
   await page.goto(`${BASE}/rb-queue`);
   await page.locator("aside").getByRole("button", { name: "हिन्दी" }).click();
   await page.waitForFunction(() => document.documentElement.lang === "hi");
+  await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("सत्यापन कतार"), null, { timeout: 15000 }).catch(() => {});
   check((await page.textContent("h1")).includes("सत्यापन कतार"), "switches to Hindi (lang=hi)");
   await page.screenshot({ path: path.join(shots, "rb-queue-hi.png"), fullPage: true });
   await page.locator("aside").getByRole("button", { name: "English" }).click();

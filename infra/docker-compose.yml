@@ -140,6 +140,9 @@ services:
       SATYA_CORS_ORIGINS: ${SATYA_WEB_ORIGIN:-https://localhost},${SATYA_PORTAL_ORIGIN:-https://portal.localhost}
       SATYA_MAX_BODY_BYTES: ${SATYA_MAX_BODY_BYTES:-1048576}
       SATYA_RATE_LIMIT: ${SATYA_RATE_LIMIT:-120/minute}
+      # Workbench API: access tokens from the workbench client, checked against the public issuer.
+      SATYA_KEYCLOAK_ISSUER: ${SATYA_AUTH_ORIGIN:-https://auth.localhost}/realms/satya
+      SATYA_TOKENISATION_KEY: ${SATYA_TOKENISATION_KEY:?}
     depends_on:
       migrate: { condition: service_completed_successfully }
       valkey: { condition: service_healthy }

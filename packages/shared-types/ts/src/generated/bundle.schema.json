@@ -11,6 +11,916 @@
       "pattern": "^[0-9]{4}-[0-9]{2}$",
       "description": "Academic year as printed, e.g. 2026-27."
     },
+    "AffidavitDiff": {
+      "title": "AffidavitDiff",
+      "description": "RB-05 DiffView payload, GET /v1/cases/{case_id}/affidavit-diff (UI spec §6.3, §7.1; design B1 row 1, C3). M5 output: the sworn Affidavit 2 compared clause by clause with the portal draft for the same AID and AY, and its land and room tables reconciled with the ApplicationSnapshot. Advisory only. Identifier cells that the gateway tokenises (deed holder, deed document no.) are masked.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case",
+        "doc_id",
+        "engine_version",
+        "ruleset_version",
+        "advisory",
+        "expected",
+        "sworn",
+        "normalisation",
+        "options",
+        "ops",
+        "structure",
+        "tables",
+        "stamp",
+        "chronology",
+        "pending",
+        "flags"
+      ],
+      "properties": {
+        "case": {
+          "title": "AffidavitCase",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "case_id",
+            "application_id",
+            "ay",
+            "regional_office",
+            "route",
+            "stage",
+            "category_set"
+          ],
+          "properties": {
+            "case_id": {
+              "$ref": "#/$defs/CaseId"
+            },
+            "application_id": {
+              "$ref": "#/$defs/ApplicationId"
+            },
+            "permanent_id": {
+              "$ref": "#/$defs/PermanentId"
+            },
+            "ay": {
+              "$ref": "#/$defs/AcademicYear"
+            },
+            "regional_office": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 64
+            },
+            "institution_name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            "route": {
+              "title": "CaseRoute",
+              "type": "string",
+              "enum": [
+                "self_disclosure",
+                "scrutiny",
+                "scrutiny_evc",
+                "scrutiny_only"
+              ],
+              "description": "Table 2.3 route (UI spec §6)."
+            },
+            "stage": {
+              "title": "CaseStage",
+              "type": "string",
+              "enum": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7"
+              ],
+              "description": "C2 stage ①–⑦."
+            },
+            "category_set": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/CategoryName"
+              }
+            }
+          }
+        },
+        "doc_id": {
+          "$ref": "#/$defs/DocId"
+        },
+        "run_id": {
+          "$ref": "#/$defs/RunId"
+        },
+        "engine_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "ruleset_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "advisory": {
+          "const": true
+        },
+        "expected": {
+          "title": "AffidavitExpected",
+          "description": "Portal-generated Affidavit 2 for this AID and AY.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "template_id",
+            "template_year",
+            "aid",
+            "category_list",
+            "declarations"
+          ],
+          "properties": {
+            "template_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "template_year": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 16,
+              "description": "APH edition the template belongs to, e.g. 2024-27."
+            },
+            "aid": {
+              "$ref": "#/$defs/ApplicationId"
+            },
+            "category_list": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/CategoryName"
+              }
+            },
+            "declarations": {
+              "type": "array",
+              "items": {
+                "title": "ExpectedDeclaration",
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "no",
+                  "printed_no",
+                  "block",
+                  "text"
+                ],
+                "properties": {
+                  "no": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Canonical position 1–24 (core 1–19, existing institute 20–24)."
+                  },
+                  "printed_no": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Number as printed in the draft; numbering restarts in the existing-institute block (design B1 row 1)."
+                  },
+                  "block": {
+                    "$ref": "#/$defs/DeclarationBlock"
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  }
+                }
+              }
+            }
+          }
+        },
+        "sworn": {
+          "title": "AffidavitSworn",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "page_count",
+            "sha256",
+            "template_match",
+            "text_source",
+            "ocr_mean_confidence",
+            "issuer_sig",
+            "uploader_sig",
+            "category_list_found",
+            "declarations"
+          ],
+          "properties": {
+            "page_count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "sha256": {
+              "$ref": "#/$defs/Sha256"
+            },
+            "template_match": {
+              "type": "boolean",
+              "description": "The sworn copy's heading and AY line identify the expected template."
+            },
+            "template_detected": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 120
+            },
+            "text_source": {
+              "title": "TextSource",
+              "type": "string",
+              "enum": [
+                "text_layer",
+                "ocr"
+              ],
+              "description": "Slice 1 reads the text layer only; OCR arrives with M3 (P-2)."
+            },
+            "ocr_mean_confidence": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1,
+              "description": "null for a text layer."
+            },
+            "issuer_sig": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/SignatureCheck"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filled by M6 (P-4); null until then."
+            },
+            "uploader_sig": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/SignatureCheck"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filled by M6 (P-4); null until then."
+            },
+            "category_list_found": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "items": {
+                "$ref": "#/$defs/CategoryName"
+              },
+              "description": "null when no category line was found."
+            },
+            "declarations": {
+              "type": "array",
+              "items": {
+                "title": "SwornDeclaration",
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "no",
+                  "printed_no",
+                  "block",
+                  "text",
+                  "page",
+                  "region",
+                  "ocr_confidence"
+                ],
+                "properties": {
+                  "no": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "description": "Position in the sworn copy, counted across blocks."
+                  },
+                  "printed_no": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 1,
+                    "description": "Number as printed in the sworn copy."
+                  },
+                  "block": {
+                    "$ref": "#/$defs/DeclarationBlock"
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4000
+                  },
+                  "page": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "region": {
+                    "$ref": "#/$defs/Region"
+                  },
+                  "ocr_confidence": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "minimum": 0,
+                    "maximum": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "normalisation": {
+          "title": "AffidavitNormalisation",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "whitespace",
+            "strike_through_resolved",
+            "names_substituted",
+            "hyphens_rejoined",
+            "date_order"
+          ],
+          "properties": {
+            "whitespace": {
+              "type": "boolean"
+            },
+            "strike_through_resolved": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Struck-through spans removed before comparing."
+            },
+            "names_substituted": {
+              "type": "boolean"
+            },
+            "hyphens_rejoined": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "date_order": {
+              "type": "string",
+              "enum": [
+                "MM/DD/YYYY",
+                "DD/MM/YYYY"
+              ],
+              "description": "Date order of the template year (design D4)."
+            },
+            "date_order_fallbacks": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Dates whose month was impossible in the template order and parsed the other way."
+            }
+          }
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "title": "DeclarationOption",
+            "description": "A strike-through option group in a declaration and the choice the deponent left standing.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "decl_no",
+              "group",
+              "choices",
+              "selected"
+            ],
+            "properties": {
+              "decl_no": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "group": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 64
+              },
+              "choices": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                }
+              },
+              "selected": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                }
+              }
+            }
+          }
+        },
+        "ops": {
+          "type": "array",
+          "items": {
+            "title": "DiffOp",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "op",
+              "decl_no",
+              "sworn_no",
+              "similarity",
+              "spans"
+            ],
+            "properties": {
+              "op": {
+                "title": "DiffOpKind",
+                "type": "string",
+                "enum": [
+                  "equal",
+                  "added",
+                  "removed",
+                  "changed"
+                ]
+              },
+              "decl_no": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1,
+                "description": "Canonical expected position 1–24; null for an added declaration."
+              },
+              "sworn_no": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1,
+                "description": "Position of the matched declaration in the sworn copy (see sworn.declarations[].no); null for a removed declaration."
+              },
+              "similarity": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "flag_id": {
+                "$ref": "#/$defs/FlagId"
+              },
+              "spans": {
+                "type": "array",
+                "items": {
+                  "title": "DiffSpan",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "text"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "title": "DiffSpanKind",
+                      "type": "string",
+                      "enum": [
+                        "equal",
+                        "insert",
+                        "delete"
+                      ]
+                    },
+                    "text": {
+                      "type": "string",
+                      "maxLength": 4000
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "structure": {
+          "title": "AffidavitStructure",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "category_line",
+            "core",
+            "existing_institute",
+            "extra_blocks"
+          ],
+          "properties": {
+            "category_line": {
+              "title": "CategoryLineCheck",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "expected",
+                "found",
+                "state"
+              ],
+              "properties": {
+                "expected": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/CategoryName"
+                  }
+                },
+                "found": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/CategoryName"
+                  }
+                },
+                "state": {
+                  "title": "CategoryLineState",
+                  "type": "string",
+                  "enum": [
+                    "present",
+                    "missing",
+                    "extra",
+                    "different"
+                  ]
+                },
+                "page": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 1
+                },
+                "flag_id": {
+                  "$ref": "#/$defs/FlagId"
+                }
+              }
+            },
+            "core": {
+              "$ref": "#/$defs/BlockCount"
+            },
+            "existing_institute": {
+              "$ref": "#/$defs/BlockCount"
+            },
+            "extra_blocks": {
+              "type": "array",
+              "items": {
+                "title": "ExtraBlock",
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "heading",
+                  "page"
+                ],
+                "properties": {
+                  "heading": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 400
+                  },
+                  "page": {
+                    "type": "integer",
+                    "minimum": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tables": {
+          "type": "array",
+          "items": {
+            "title": "AffidavitTable",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "table",
+              "columns",
+              "rows",
+              "total_rows",
+              "computed_total_acres",
+              "expected_total_acres",
+              "room_id_duplicates"
+            ],
+            "properties": {
+              "table": {
+                "title": "AffidavitTableName",
+                "type": "string",
+                "enum": [
+                  "land",
+                  "room_admin",
+                  "room_amenities",
+                  "room_instructional",
+                  "room_common"
+                ]
+              },
+              "columns": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64
+                },
+                "description": "Field keys in column order, e.g. area_acre; the UI translates them."
+              },
+              "rows": {
+                "type": "array",
+                "items": {
+                  "title": "AffidavitTableRow",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "key",
+                    "state",
+                    "sworn_cells",
+                    "application_report_cells",
+                    "cell_match"
+                  ],
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 120,
+                      "description": "Row key: deed row number (land) or room ID (rooms)."
+                    },
+                    "state": {
+                      "title": "TableRowState",
+                      "type": "string",
+                      "enum": [
+                        "matched",
+                        "differs",
+                        "missing_in_sworn",
+                        "extra_in_sworn"
+                      ]
+                    },
+                    "page": {
+                      "type": [
+                        "integer",
+                        "null"
+                      ],
+                      "minimum": 1
+                    },
+                    "region": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/$defs/Region"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "sworn_cells": {
+                      "type": "array",
+                      "items": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 400
+                      }
+                    },
+                    "application_report_cells": {
+                      "type": "array",
+                      "items": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 400
+                      }
+                    },
+                    "cell_match": {
+                      "type": "array",
+                      "items": {
+                        "type": [
+                          "boolean",
+                          "null"
+                        ]
+                      }
+                    },
+                    "delta": {
+                      "type": [
+                        "number",
+                        "null"
+                      ]
+                    },
+                    "flag_ids": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/$defs/FlagId"
+                      }
+                    }
+                  }
+                }
+              },
+              "total_rows": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "computed_total_acres": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0,
+                "description": "Land only: sum of sworn deed areas (the portal leaves the total blank)."
+              },
+              "expected_total_acres": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0,
+                "description": "Land only: ApplicationSnapshot land.total_area in acres."
+              },
+              "room_id_duplicates": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64
+                },
+                "description": "Room IDs used more than once across the 4 room tables."
+              }
+            }
+          }
+        },
+        "stamp": {
+          "anyOf": [
+            {
+              "title": "AffidavitStamp",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "instrument",
+                "certificate_no",
+                "second_party",
+                "duty",
+                "state"
+              ],
+              "properties": {
+                "instrument": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 64
+                },
+                "certificate_no": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 64
+                },
+                "second_party": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 200
+                },
+                "duty": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0,
+                  "description": "Stamp duty in paise (Portal §2 conventions)."
+                },
+                "state": {
+                  "$ref": "#/$defs/VerificationLabel"
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Filled by M6 (P-4); null until then."
+        },
+        "chronology": {
+          "anyOf": [
+            {
+              "title": "AffidavitChronology",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "application_date",
+                "stamp_date",
+                "notary_date",
+                "upload_date",
+                "order_ok"
+              ],
+              "properties": {
+                "application_date": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/Date"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "stamp_date": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/Date"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "notary_date": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/Date"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "dsc_date": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/Date"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "upload_date": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/Date"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "order_ok": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ]
+                },
+                "notary_expiry": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/Date"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload. Filled by M6 (P-4); null until then."
+        },
+        "pending": {
+          "type": "array",
+          "description": "DiffView sections whose checks belong to a later module, so the UI can say so instead of showing an empty panel.",
+          "items": {
+            "title": "PendingSection",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "section",
+              "module",
+              "promise"
+            ],
+            "properties": {
+              "section": {
+                "type": "string",
+                "enum": [
+                  "stamp",
+                  "chronology",
+                  "signatures",
+                  "ocr"
+                ]
+              },
+              "module": {
+                "type": "string",
+                "pattern": "^M[0-9]{1,2}$"
+              },
+              "promise": {
+                "type": "string",
+                "pattern": "^P-[0-9]{1,2}$"
+              }
+            }
+          }
+        },
+        "flags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Flag"
+          }
+        }
+      }
+    },
     "Alert": {
       "title": "Alert",
       "description": "Alert with type + subtype (Portal spec §2.9). Institution-facing alerts are limited to missing_info, expired, unresolved.clarification_* and unresolved.compliance_window_*.",
@@ -1172,10 +2082,36 @@
         }
       }
     },
+    "BlockCount": {
+      "title": "BlockCount",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected",
+        "found"
+      ],
+      "properties": {
+        "expected": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "found": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
     "CaseId": {
       "title": "CaseId",
       "type": "string",
       "pattern": "^cas_[0-9A-HJKMNP-TV-Z]{26}$"
+    },
+    "CategoryName": {
+      "title": "CategoryName",
+      "description": "An application category as printed in the affidavit's numbered category line, e.g. EoA Only.",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
     },
     "Check": {
       "title": "Check",
@@ -1332,6 +2268,16 @@
       "title": "Date",
       "type": "string",
       "format": "date"
+    },
+    "DeclarationBlock": {
+      "title": "DeclarationBlock",
+      "type": "string",
+      "enum": [
+        "core",
+        "existing_institute",
+        "extra"
+      ],
+      "description": "core = 19 core declarations; existing_institute = 5 'Existing Institute' declarations; extra = a block the 2024-27 draft does not print (e.g. a 2023-24-style Increase-in-Intake block)."
     },
     "Disposition": {
       "title": "Disposition",

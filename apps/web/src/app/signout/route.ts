@@ -3,7 +3,7 @@
 // CSRF: only same-origin POSTs are accepted (Origin header check) and cookies are SameSite=Lax.
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
-import { decode } from "next-auth/jwt";
+import { getToken } from "next-auth/jwt";
 
 export async function POST(request: NextRequest) {
   const home = new URL(process.env.NEXTAUTH_URL ?? "https://localhost/auth").origin;
@@ -11,12 +11,9 @@ export async function POST(request: NextRequest) {
     return new NextResponse(null, { status: 403 });
   }
   const jar = await cookies();
-  const sessionCookie = jar.getAll().find((c) => c.name.startsWith("__Secure-next-auth.session-token"));
-  let idToken: string | undefined;
-  if (sessionCookie && process.env.NEXTAUTH_SECRET) {
-    const token = await decode({ token: sessionCookie.value, secret: process.env.NEXTAUTH_SECRET }).catch(() => null);
-    idToken = typeof token?.idToken === "string" ? token.idToken : undefined;
-  }
+  // getToken re-assembles a session cookie that next-auth split into chunks (.0, .1, ...).
+  const token = await getToken({ req: request, secureCookie: true }).catch(() => null);
+  const idToken = typeof token?.idToken === "string" ? token.idToken : undefined;
   const logout = new URL(`${process.env.KEYCLOAK_ISSUER ?? ""}/protocol/openid-connect/logout`);
   logout.searchParams.set("client_id", process.env.KEYCLOAK_CLIENT_ID ?? "satya-web");
   logout.searchParams.set("post_logout_redirect_uri", `${home}/`);

@@ -22,10 +22,11 @@ apps/mock-portal/         "Approval Portal (Mock, for demo)": plain grey demo st
 services/api/             FastAPI gateway: /v1/health, /v1/meta, /v1/portal-events (HMAC, dedupe, ledger); Alembic
 services/worker/          Celery worker + beat on Valkey (ping task; feature tasks come in later slices)
 packages/shared-types/    JSON Schema (source of truth) -> generated TS types + Pydantic v2 models
-packages/templates/       placeholder: year-versioned template profiles (M3 slice)
-packages/rules/           placeholder: versioned YAML rules with APH clauses (M4 slice)
+packages/affidavit/       M5 (P-3) satya_affidavit: extract, normalise, diff, reconcile, flags, engine, eval; synth/ = synthetic PDF generator
+packages/templates/       year-versioned template profiles (affidavit-2/aff2-portal-2024-27.yaml; more with M3)
+packages/rules/           versioned YAML rules with APH clauses (m5-affidavit.yaml; more with M4)
 packages/issuers/         placeholder: Annexure-14 issuer profiles (M3/M4 slice)
-data/synthetic/           synthetic fixtures only (see its README)
+data/synthetic/           synthetic fixtures only (see its README); cases/ = generated demo cases (make synth)
 data/real-samples/        GIT-IGNORED. Never commit, upload, log or open in a cloud session
 infra/                    docker-compose.yml, caddy/Caddyfile, keycloak/realm-satya.json, postgres init, scripts/
 docs/specs/               given specs (read VERSIONS.md); docs/prompts/ = slice prompts
@@ -50,6 +51,8 @@ tests/                    cross-service smoke tests (need the running stack)
 | Integration/smoke | `make smoke` (needs `make up`; `make trust-ca` first for verified TLS) |
 | Browser acceptance | `make e2e` (Playwright/Chromium; Caddy CA trusted in NSS, see DEV-SETUP) |
 | Ledger chain check | `make ledger-verify` |
+| Synthetic demo cases · check | `make synth` · `make synth-check` (CI fails if stale) |
+| M5 metrics (104 synthetic affidavits) | `make eval-m5` (also printed by `uv run pytest packages/affidavit`) |
 | Real-data guard · secret scan | `make guard` · `make secret-scan` (same as CI) |
 | Memory budget | `make mem-check` (every service limited, total ≤ 8 GB) |
 
@@ -69,8 +72,10 @@ URLs: workbench `https://localhost` · API `https://localhost/api/v1/health` · 
 | Signature header (§2.2) | `X-SATYA-Signature: t=<unix>,kid=<key-id>,v1=<hex HMAC-SHA256 of "t.body">`, window 300 s |
 Generated code: `packages/shared-types/ts/src/generated/` and `packages/shared-types/python/satya_shared_types/generated/`.
 
+Workbench API (slice 1): `GET /v1/cases`, `GET /v1/cases/{case_id}/affidavit-diff` (Keycloak access token from `satya-web` as Bearer; RB role; region scope from `/regions/*`). Contract: `AffidavitDiff`.
+
 ## Resume protocol (short)
-- Each slice has a prompt in `docs/prompts/` and a `PROGRESS.md` table. Continue from the first step not `done`/`done-with-note`; re-verify, never redo a done step blindly.
+- Each slice has a prompt in `docs/prompts/` (or the session request) and a progress table (`PROGRESS.md` for slice 0, `PROGRESS-SLICE-<n>.md` after). Continue from the first step not `done`/`done-with-note`; re-verify, never redo a done step blindly.
 - One commit per step (message given in the prompt), push after each commit. Update `PROGRESS.md` every step.
 - Long commands run in the background with output in `.logs/<step>.log`; never block > ~8 min.
 - Blocked: record under "Blockers / questions", take the safest default, mark `done-with-note`.

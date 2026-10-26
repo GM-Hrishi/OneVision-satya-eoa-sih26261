@@ -15,11 +15,13 @@ COPY pyproject.toml uv.lock .python-version ./
 COPY services/api/pyproject.toml services/api/
 COPY services/worker/pyproject.toml services/worker/
 COPY packages/shared-types/python/pyproject.toml packages/shared-types/python/
+COPY packages/affidavit/pyproject.toml packages/affidavit/
 RUN --mount=type=secret,id=extra_ca,target=/run/secrets/extra_ca \
     --mount=type=cache,target=/root/.cache/uv \
     sh -c 'if [ -s /run/secrets/extra_ca ]; then export SSL_CERT_FILE=/run/secrets/extra_ca; fi; \
            uv sync --frozen --no-dev --no-install-workspace --package satya-api'
 COPY packages/shared-types/python packages/shared-types/python
+COPY packages/affidavit packages/affidavit
 COPY services/api services/api
 RUN --mount=type=secret,id=extra_ca,target=/run/secrets/extra_ca \
     --mount=type=cache,target=/root/.cache/uv \
@@ -33,6 +35,12 @@ WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
 COPY services/api/alembic.ini services/api/alembic.ini
 COPY services/api/migrations services/api/migrations
+# M5 (P-3): year-versioned template profiles, versioned rules and the synthetic demo cases (read-only).
+COPY packages/templates /app/packages/templates
+COPY packages/rules /app/packages/rules
+COPY data/synthetic/cases /app/data/synthetic/cases
+ENV SATYA_TEMPLATES_DIR=/app/packages/templates SATYA_RULES_DIR=/app/packages/rules \
+    SATYA_DEMO_CASES_DIR=/app/data/synthetic/cases
 USER satya
 EXPOSE 8000
 HEALTHCHECK --interval=15s --timeout=5s --start-period=20s --retries=5 \

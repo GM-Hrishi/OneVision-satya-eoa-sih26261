@@ -1,4 +1,4 @@
-# Architecture (slice 0)
+# Architecture (slices 0–1)
 What is built now, and where the later modules (M1–M13) attach. The target design is in `docs/specs/01-design-v2.2.1.md` and `docs/specs/04-portal-integration-spec.md` §8.
 
 ## Runtime view
@@ -59,11 +59,34 @@ Browser → `https://localhost` → `/signin` → Auth.js (`/auth/*`) → Keyclo
 | Identity | Keycloak: brute-force detection, password policy, no registration, events stored, secrets from `.env` |
 | Repo | `.env` and `data/real-samples/` git-ignored; gitleaks and the real-data guard in CI |
 
+## M5 affidavit diff path (slice 1)
+```mermaid
+flowchart LR
+  B[Browser] --> WEB[web: /case/:id/affidavit<br/>RB-05 DiffView]
+  WEB -- "Bearer access token (server side)" --> API[api: GET /v1/cases/:id/affidavit-diff]
+  API -- "JWKS (internal), iss, azp, roles, /regions/*" --> KC[keycloak]
+  API --> REPO[FixtureCaseRepository<br/>data/synthetic/cases: case, snapshot, sworn PDF<br/>schema + SHA-256 check]
+  REPO --> M5[satya_affidavit.engine.run]
+  M5 --> EX[extract: pdfplumber text layer,<br/>strike-through, tables, regions]
+  EX --> PA[parse: opening block, categories,<br/>19 + 5 declarations, tables]
+  T[packages/templates<br/>aff2-portal-2024-27] --> DR[expected portal draft<br/>for this AID and AY]
+  DR --> DF[diff: content alignment,<br/>canonical equality, spans]
+  PA --> DF
+  PA --> RC[reconcile: deeds by token,<br/>rooms by ID, total acres, duplicate IDs]
+  R[packages/rules<br/>m5-affidavit.yaml] --> FL[Flags §2.6.4]
+  DF --> FL
+  RC --> FL
+  FL --> OUT[AffidavitDiff JSON, cached by doc hash]
+```
+- The engine is a pure, deterministic library (`packages/affidavit`); the API runs it off the event loop, one job at a time, and caches by document hash. The worker will call the same library once the ingest path exists.
+- Slice 1 reads the committed synthetic cases. The ingest path (`application.submitted` → M2 fetch + hash → worker → stored result) replaces `FixtureCaseRepository` with P-19/P-17.
+- The web server holds the official's 5-minute access token in the encrypted session cookie and calls the API over the internal network; on expiry it sends the official through a silent SSO renewal.
+
 ## Where later slices attach
 | Module | Attaches at |
 |---|---|
 | M2 vault (P-19) | gateway after step 2: fetch `documents[]`, hash check, tokenise T fields, encrypt at rest |
-| M3/M5/M6/M4/M7/M8/M13/M9/M10 | Celery tasks in `services/worker` (queue on Valkey), results as `Flag` / `VerificationResult` |
+| M3/M6/M4/M7/M8/M13/M9/M10 (M5 engine exists as a library) | Celery tasks in `services/worker` (queue on Valkey), results as `Flag` / `VerificationResult` |
 | M12 (P-11) | extend `ledger` to every SATYA output; AU screens read it |
 | M11 (P-10, P-12) | workbench routes under `apps/web/src/app/(shell)/…`, rail items added in `src/lib/rail.ts` |
 | Mock portal (P-17) | MP-01..MP-06 screens, remaining inbound events, "Open in SATYA" deep link |

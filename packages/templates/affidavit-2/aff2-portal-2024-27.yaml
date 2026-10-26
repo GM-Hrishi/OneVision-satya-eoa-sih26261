@@ -1,0 +1,187 @@
+# Template profile: portal-generated "common affidavit" (APH Affidavit 2), editions 2024-25 to 2026-27.
+# SYNTHETIC WORDING. The structure follows design v2.2.1 B1 row 1 and D3 (heading + AY line, opening
+# block with a numbered category list, 19 core + 5 "Existing Institute" declarations, committee bullets,
+# land table, 4 room tables, verification + notary line, MM/DD/YYYY dates). The sentences are our own
+# paraphrase of the APH digest; they are not copied from any real portal draft. [VERIFY] the exact
+# portal wording on the team laptop (data/real-samples/, never in the repo).
+#
+# Option groups: [[group: a|b|c]]. The portal prints "a / b / c"; the deponent strikes through the
+# choices that do not apply. M5 resolves the strike-through before comparing (design C3).
+# Placeholders in {braces} are filled from the portal draft header for this AID and AY.
+
+template_id: aff2-portal-2024-27
+document: affidavit-2
+aph_edition: "2024-27"
+valid_ays: ["2024-25", "2025-26", "2026-27"]
+heading: AFFIDAVIT
+ay_line: "ACADEMIC YEAR – {ay_long}"
+date_order: MM/DD/YYYY
+
+header_fields:
+  - { key: pid, label: "Permanent ID" }
+  - { key: aid, label: "Application ID" }
+  - { key: institution_name, label: "Name of the Institute" }
+  - { key: address, label: "Address of the Institute" }
+  - { key: institution_type, label: "Type of Institute" }
+  - { key: region, label: "Region" }
+  - { key: application_date, label: "Date of Application" }
+category_label: "Application for"
+affirmation: >-
+  I, the deponent, being the {signatory_designation} of {trust_name}, which runs {institution_name},
+  do hereby solemnly affirm and declare as under:
+existing_institute_heading: "FOR EXISTING INSTITUTES"
+
+declarations:
+  - number: 1
+    block: core
+    text: >-
+      The information furnished in the online application for the Academic Year {ay_long} is true
+      and correct, and nothing has been concealed or withheld.
+  - number: 2
+    block: core
+    text: >-
+      The institution is functioning at the location approved by the Council and has not shifted to
+      any other location.
+  - number: 3
+    block: core
+    text: >-
+      A valid Occupancy Certificate / Completion Certificate / Building Licence / Form D, a valid
+      Structural Stability Certificate where required, and a valid Fire Safety Certificate issued by
+      the competent authorities have been uploaded on the portal.
+  - number: 4
+    block: core
+    text: >-
+      All the programmes of the institution are conducted on one campus at the approved location and
+      no programme is run at any other premises.
+  - number: 5
+    block: core
+    text: >-
+      The institution has a regular [[hoi_title: Principal|Director]] who possesses the qualifications
+      and experience prescribed by the Council.
+  - number: 6
+    block: core
+    text: >-
+      The institution fulfils the faculty norms and the faculty to student ratio prescribed by the
+      Council for every approved programme.
+  - number: 7
+    block: core
+    text: >-
+      The faculty data uploaded on the portal is true, and every faculty member shown is on the rolls
+      of this institution only.
+  - number: 8
+    block: core
+    text: >-
+      The institution does not retain the original degree certificates or other original documents of
+      any faculty member or student.
+  - number: 9
+    block: core
+    text: >-
+      The land of the institution, as given in the land table below, is contiguous and undisputed, and
+      is [[land_tenure: owned|leased]] by the [[entity: Trust|Society|Company]].
+  - number: 10
+    block: core
+    text: >-
+      The land area and the built-up area given in this affidavit and in the online application are
+      true and match the approved building plan.
+  - number: 11
+    block: core
+    text: >-
+      Salaries are paid to faculty and staff as per the prescribed pay scales through bank transfer,
+      with deductions towards provident fund and tax at source.
+  - number: 12
+    block: core
+    text: >-
+      The student data of the previous academic years furnished on the portal is true and complete.
+  - number: 13
+    block: core
+    text: >-
+      All fees and payments are collected and made only through digital modes, and no capitation fee
+      is charged.
+  - number: 14
+    block: core
+    text: >-
+      The audited statement of accounts of the Trust / Society / Company for the previous financial
+      year has been uploaded on the portal.
+  - number: 15
+    block: core
+    text: >-
+      No student is admitted beyond the intake approved by the Council for each programme.
+  - number: 16
+    block: core
+    text: >-
+      The institution follows the provisions of Appendix 16/17 of the Approval Process Handbook and the
+      Council's (Grant of Approval for Technical Institutions) Regulation Regulations, 2021.
+  - number: 17
+    block: core
+    text: >-
+      The institution publishes the Mandatory Disclosure on its website as per Appendix 6 and keeps it
+      up to date.
+  - number: 18
+    block: core
+    text: >-
+      If any information given in this affidavit or in the online application is found to be false,
+      the Council may take civil and/or criminal action against the deponent and the institution.
+  - number: 19
+    block: core
+    text: >-
+      The following committees are constituted and functioning in the institution:
+    bullets:
+      - Anti-Ragging Committee
+      - Anti-Ragging Squad
+      - Grievance Redressal Committee
+      - Internal Complaints Committee
+      - Committee for SC/ST
+  - number: 1
+    block: existing_institute
+    text: >-
+      The deficiencies noted in the previous letter of Extension of Approval have been complied with
+      within the period allowed.
+  - number: 2
+    block: existing_institute
+    text: >-
+      There is no change in the name, location, management or Trust / Society / Company of the
+      institution without the approval of the Council.
+  - number: 3
+    block: existing_institute
+    text: >-
+      The faculty and staff data on the portal has been entered and checked by the Head of the
+      Institution and is true.
+  - number: 4
+    block: existing_institute
+    text: >-
+      The enrolment of students for the previous academic year has been uploaded on the portal within
+      the prescribed date.
+  - number: 5
+    block: existing_institute
+    text: >-
+      The institution has not been debarred by the Council or by the affiliating University in the
+      previous academic year.
+
+tables:
+  land:
+    caption: "LAND DETAILS"
+    columns:
+      - { key: holder, label: "Name of the deed Holder" }
+      - { key: document_no, label: "Document No." }
+      - { key: registration_date, label: "Date of Registration" }
+      - { key: plot_no, label: "Plot No." }
+      - { key: village_district, label: "Address (Village) District" }
+      - { key: area_acre, label: "Area in Acre" }
+    total_label: "Total area in Acre"
+  rooms_heading: "BUILT-UP AREA DETAILS"
+  room_columns:
+    - { key: room_id, label: "Room No." }
+    - { key: room_type, label: "Room type" }
+    - { key: carpet_area_m2, label: "Carpet area (m²)" }
+    - { key: flooring, label: "Completion of Flooring" }
+    - { key: walls_painting, label: "Completion of Walls and painting" }
+    - { key: electrification, label: "Completion of Electrification and lighting" }
+  room_tables:
+    - { table: room_admin, snapshot_block: administrative, caption: "ADMINISTRATIVE AREA" }
+    - { table: room_amenities, snapshot_block: amenities, caption: "AMENITIES AREA" }
+    - { table: room_instructional, snapshot_block: instructional, caption: "INSTRUCTIONAL AREA" }
+    - { table: room_common, snapshot_block: instructional_common, caption: "INSTRUCTIONAL AREA – COMMON FACILITIES" }
+
+verification: >-
+  VERIFICATION: Verified at {town} on {sworn_date} that the contents of the above affidavit are true
+  and correct to the best of my knowledge and belief, and nothing material has been concealed.

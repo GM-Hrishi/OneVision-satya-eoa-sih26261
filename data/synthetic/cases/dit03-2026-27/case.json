@@ -1,0 +1,44 @@
+{
+  "_synthetic": "SYNTHETIC FIXTURE. Invented values for the SATYA-EoA demo and tests. Not a real institution, person, application or document.",
+  "case_id": "cas_01JD3M5A00000000000000DT03",
+  "application_id": "1-90000004217",
+  "permanent_id": "1-9000317",
+  "ay": "2026-27",
+  "regional_office": "Southern",
+  "state": "Tamil Nadu",
+  "route": "self_disclosure",
+  "stage": "2",
+  "category_set": [
+    "EoA Only"
+  ],
+  "institution_name": "Demo Institute of Technology 03",
+  "affidavit_draft": {
+    "template_id": "aff2-portal-2024-27",
+    "ay": "2026-27",
+    "category_set": [
+      "EoA Only"
+    ],
+    "header": {
+      "institution_name": "Demo Institute of Technology 03",
+      "address": "Demo Town 03, Demo District 07, Tamil Nadu",
+      "town": "Demo Town 03"
+    }
+  },
+  "stamp": {
+    "certificate_no": "IN-TN90326112004220Q",
+    "issued": "2026-11-22",
+    "notarised": "2026-11-24",
+    "notary_reg_no": "DEMO-NOT-0003",
+    "notary_valid_till": "2027-12-31"
+  },
+  "documents": [
+    {
+      "doc_id": "doc_QRQ9XKV1GHAT0J10S45FKAMK5R",
+      "slot": "annex2.1(i) affidavit",
+      "declared_type": "affidavit-2",
+      "file": "affidavit-sworn.pdf",
+      "sha256": "4e21c84958d781ca9e40dfa9f08039c1bd6793a6816c6478aef40634d68a3e5d",
+      "bytes": 71108
+    }
+  ]
+}

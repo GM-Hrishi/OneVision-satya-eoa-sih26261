@@ -17,6 +17,7 @@ RUN --mount=type=secret,id=extra_ca,target=/run/secrets/extra_ca \
     --mount=type=cache,id=pnpm-store,target=/pnpm/store \
     sh -c 'if [ -s /run/secrets/extra_ca ]; then export NODE_EXTRA_CA_CERTS=/run/secrets/extra_ca; fi; \
            pnpm install --frozen-lockfile --filter @satya/web... --store-dir /pnpm/store'
+COPY packages/shared-types/ts packages/shared-types/ts
 COPY apps/web apps/web
 # The token check needs docs/specs (excluded from the build context); CI runs it instead.
 RUN pnpm --filter @satya/web exec next build

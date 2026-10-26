@@ -20,6 +20,20 @@ export const UTILITY: RailItem[] = [
   { href: "/accessibility", labelKey: "accessibility" },
 ];
 
+export interface Crumb {
+  labelKey: string; // key in the "nav" namespace
+  href?: string; // set for ancestors that are real pages; the last crumb is the current page
+}
+
+/** Breadcrumb trail for a path: fixed routes from CRUMBS, case routes by pattern. */
+export function crumbsFor(pathname: string): Crumb[] {
+  if (/^\/case\/[^/]+\/affidavit$/.test(pathname)) {
+    return [{ labelKey: "queue", href: "/rb-queue" }, { labelKey: "affidavit" }];
+  }
+  const keys = CRUMBS[pathname] ?? [];
+  return keys.map((labelKey) => ({ labelKey }));
+}
+
 /** Breadcrumb trail labels (nav namespace) for each route. */
 export const CRUMBS: Record<string, string[]> = {
   "/rb-queue": ["queue"],

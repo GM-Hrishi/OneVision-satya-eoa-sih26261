@@ -12,5 +12,7 @@ declare module "next-auth/jwt" {
     roles?: Role[];
     regions?: string[];
     idToken?: string;
+    accessToken?: string;
+    accessTokenExpires?: number; // seconds since the epoch
   }
 }

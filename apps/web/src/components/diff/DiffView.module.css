@@ -1,0 +1,329 @@
+/* RB-05 DiffView (UI spec §7.1). Dense, document-first; tokens only (UI spec §8). The wrong value is
+   the heaviest, darkest element of its block (§0.10, mismatch emphasis V1). */
+
+.caseLine {
+  margin: var(--space-1) 0 0;
+  font-size: 0.9375rem;
+}
+
+.caseMeta {
+  margin: var(--space-1) 0 0;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.advisory {
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2) var(--space-3);
+  border-left: var(--size-saffron-bar) solid var(--color-saffron-rule);
+  background: var(--color-surface);
+  font-size: 0.875rem;
+}
+
+/* Flex bases in rem, not a viewport media query: at 200 % text the flag rail wraps below. */
+.layout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-5);
+}
+
+.mainCol {
+  flex: 1 1 36rem;
+  min-width: 0;
+}
+
+.section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-rule);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.section h2 {
+  margin: 0 0 var(--space-3);
+  font-size: 1.0625rem;
+}
+
+.section h3 {
+  margin: var(--space-4) 0 var(--space-2);
+  font-size: 0.9375rem;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: var(--space-4);
+}
+
+.card {
+  border: 1px solid var(--color-rule);
+  padding: var(--space-3);
+}
+
+.card h3 {
+  margin: 0 0 var(--space-2);
+  font-size: 0.9375rem;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.facts dt {
+  color: var(--color-muted);
+}
+
+.facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+
+.tableWrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table caption {
+  text-align: left;
+  font-weight: 700;
+  padding: 0 0 var(--space-2);
+}
+
+.table th,
+.table td {
+  border: 1px solid var(--color-rule);
+  padding: var(--space-1) var(--space-2);
+  text-align: left;
+  vertical-align: top;
+}
+
+.table thead th {
+  background: var(--color-page);
+  font-weight: 700;
+}
+
+.table tfoot td {
+  font-weight: 600;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Status labels: text always carries the meaning (never colour alone, guard rail 9). */
+.label {
+  display: inline-block;
+  padding: 0 var(--space-1);
+  border: 1.5px solid currentColor;
+  background: var(--color-surface);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.label[data-tone="mismatch"] {
+  color: var(--color-label-mismatch);
+}
+
+.label[data-tone="manual"] {
+  color: var(--color-label-manual-review);
+}
+
+.label[data-tone="ok"] {
+  color: var(--color-label-verified);
+}
+
+.label[data-tone="neutral"] {
+  color: var(--color-label-source-unavailable);
+}
+
+.wrong {
+  display: inline-block;
+  padding: 0 var(--space-1);
+  border: 1.5px solid var(--color-mismatch-border);
+  background: var(--color-mismatch-tint);
+  color: var(--color-mismatch-ink);
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.expectedValue {
+  display: block;
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+}
+
+.difference {
+  display: block;
+  color: var(--color-mismatch-ink);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.toggle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-4);
+  margin-bottom: var(--space-3);
+  font-size: 0.875rem;
+}
+
+.ops {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.op {
+  border-top: 1px solid var(--color-rule);
+  padding: var(--space-3) 0;
+}
+
+.op:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.opHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-1);
+  font-size: 0.875rem;
+}
+
+.opHead strong {
+  font-size: 0.9375rem;
+}
+
+.opText {
+  margin: 0;
+  max-width: 75ch;
+  line-height: 1.6;
+}
+
+.del {
+  background: var(--color-mismatch-tint);
+  color: var(--color-mismatch-ink);
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  font-weight: 700;
+}
+
+.ins {
+  background: var(--color-added-tint);
+  color: var(--color-added-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  font-weight: 700;
+}
+
+.muted {
+  color: var(--color-muted);
+}
+
+.note {
+  margin: var(--space-2) 0 0;
+  font-size: 0.875rem;
+}
+
+.rail {
+  flex: 1 1 18rem;
+  max-width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 72rem) {
+  .rail {
+    flex-grow: 0;
+    flex-basis: 22rem;
+  }
+}
+
+.rail h2 {
+  margin: 0 0 var(--space-3);
+  font-size: 1.0625rem;
+}
+
+.flags {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flag {
+  background: var(--color-surface);
+  border: 1px solid var(--color-rule);
+  margin-bottom: var(--space-3);
+  font-size: 0.875rem;
+}
+
+.flagStrip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-page);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.flagBody {
+  padding: var(--space-3);
+}
+
+.flagBody h3 {
+  margin: 0 0 var(--space-2);
+  font-size: 0.9375rem;
+}
+
+.prelim {
+  margin: var(--space-2) 0 0;
+  font-weight: 700;
+}
+
+.flagFoot {
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--color-rule);
+  color: var(--color-muted);
+}
+
+.provenance {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--color-chrome);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

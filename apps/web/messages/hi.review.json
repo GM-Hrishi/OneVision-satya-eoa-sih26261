@@ -35,5 +35,21 @@
   "policies.privacyBody": "[VERIFY]",
   "policies.cookiesBody": "[VERIFY]",
   "policies.securityBody": "[VERIFY]",
-  "policies.useBody": "[VERIFY]"
+  "policies.useBody": "[VERIFY]",
+  "diff.description": "[VERIFY]",
+  "diff.advisory": "[VERIFY]",
+  "diff.normalisation": "[VERIFY]",
+  "diff.changesCount": "[VERIFY]",
+  "diff.tablesIntro": "[VERIFY]",
+  "diff.stampPending": "[VERIFY]",
+  "diff.dispositionPending": "[VERIFY]",
+  "diff.labels.mismatch_detected": "[VERIFY]",
+  "diff.labels.manual_review_required": "[VERIFY]",
+  "diff.categoryState.missing": "[VERIFY]",
+  "diff.op.removed": "[VERIFY]",
+  "diff.swornHeading": "[VERIFY]",
+  "queue.listIntro": "[VERIFY]",
+  "diff.route.self_disclosure": "[VERIFY] 'स्व-प्रकटीकरण' for self-disclosure; EoA transliteration",
+  "rules.affidavit.room_id_duplicated": "[VERIFY]",
+  "diff.columns.carpet_area_m2": "[VERIFY] 'कारपेट क्षेत्रफल' vs 'फ़र्श क्षेत्रफल'"
 }

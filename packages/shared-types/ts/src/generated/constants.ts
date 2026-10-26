@@ -344,6 +344,7 @@ export const SNAPSHOT_REJECTED_FIELDS = [
 ] as const;
 
 export const SCHEMA_TITLES = [
+  "AffidavitDiff",
   "Alert",
   "ApplicationSnapshot",
   "Disposition",

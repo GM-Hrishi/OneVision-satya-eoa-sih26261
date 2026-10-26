@@ -9,6 +9,139 @@
 export type AcademicYear = string;
 /**
  * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "CaseId".
+ */
+export type CaseId = string;
+/**
+ * Portal application ID in printed form (design D4). Demo data uses 1-9….
+ *
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "ApplicationId".
+ */
+export type ApplicationId = string;
+/**
+ * Portal permanent ID in printed form (design D4).
+ *
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "PermanentId".
+ */
+export type PermanentId = string;
+/**
+ * Table 2.3 route (UI spec §6).
+ */
+export type CaseRoute = "self_disclosure" | "scrutiny" | "scrutiny_evc" | "scrutiny_only";
+/**
+ * C2 stage ①–⑦.
+ */
+export type CaseStage = "1" | "2" | "3" | "4" | "5" | "6" | "7";
+/**
+ * An application category as printed in the affidavit's numbered category line, e.g. EoA Only.
+ *
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "CategoryName".
+ */
+export type CategoryName = string;
+/**
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "DocId".
+ */
+export type DocId = string;
+/**
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "RunId".
+ */
+export type RunId = string;
+/**
+ * core = 19 core declarations; existing_institute = 5 'Existing Institute' declarations; extra = a block the 2024-27 draft does not print (e.g. a 2023-24-style Increase-in-Intake block).
+ *
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "DeclarationBlock".
+ */
+export type DeclarationBlock = "core" | "existing_institute" | "extra";
+/**
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "Sha256".
+ */
+export type Sha256 = string;
+/**
+ * Slice 1 reads the text layer only; OCR arrives with M3 (P-2).
+ */
+export type TextSource = "text_layer" | "ocr";
+export type SignatureRole = "issuer" | "uploader";
+export type SignatureState =
+  | "verified"
+  | "image_only"
+  | "chain_broken"
+  | "edited_after_signing"
+  | "not_digital"
+  | "not_applicable"
+  | "present"
+  | "absent_required";
+export type DiffOpKind = "equal" | "added" | "removed" | "changed";
+/**
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "FlagId".
+ */
+export type FlagId = string;
+export type DiffSpanKind = "equal" | "insert" | "delete";
+export type CategoryLineState = "present" | "missing" | "extra" | "different";
+export type AffidavitTableName =
+  "land" | "room_admin" | "room_amenities" | "room_instructional" | "room_common";
+export type TableRowState = "matched" | "differs" | "missing_in_sworn" | "extra_in_sworn";
+/**
+ * The six PS verification labels (Portal spec §2.6.3). Document label = most severe check outcome, in x-precedence order (most severe first). `verified` also requires at least one authenticity check; a valid uploader DSC never makes a document verified.
+ *
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "VerificationLabel".
+ */
+export type VerificationLabel =
+  | "verified"
+  | "mismatch_detected"
+  | "expired"
+  | "verification_pending"
+  | "source_unavailable"
+  | "manual_review_required";
+/**
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "Date".
+ */
+export type Date = string;
+export type ConfidenceBand = "high" | "medium" | "low";
+export type Provenance = "satya" | "portal";
+/**
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "Severity".
+ */
+export type Severity = "info" | "warning" | "critical";
+export type DispositionAction =
+  "accept" | "override" | "escalate_clarify" | "escalate_refer" | "escalate_manual";
+/**
+ * Keycloak realm roles (UI spec §1).
+ *
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "Role".
+ */
+export type Role = "RB" | "SC" | "EV" | "HC" | "RA" | "AU" | "INS";
+/**
+ * RFC 3339 date-time with offset (format-checked; Pydantic AwareDatetime); stored UTC, shown IST.
+ *
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "Timestamp".
+ */
+export type Timestamp = string;
+/**
+ * C2 stage ①–⑦.
+ */
+export type Stage = "1" | "2" | "3" | "4" | "5" | "6" | "7";
+/**
+ * M13 year-over-year verdict (design C4a): explained by an approved application, or a discrepancy.
+ *
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "YoyVerdict".
+ */
+export type YoyVerdict = "explained" | "discrepancy";
+/**
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
  * via the `definition` "AlertId".
  */
 export type AlertId = string;
@@ -53,72 +186,6 @@ export type AlertSubtype =
   | "hearing_scheduled"
   | "selection_round_opened";
 /**
- * This interface was referenced by `SatyaContracts`'s JSON-Schema
- * via the `definition` "Severity".
- */
-export type Severity = "info" | "warning" | "critical";
-/**
- * Keycloak realm roles (UI spec §1).
- *
- * This interface was referenced by `SatyaContracts`'s JSON-Schema
- * via the `definition` "Role".
- */
-export type Role = "RB" | "SC" | "EV" | "HC" | "RA" | "AU" | "INS";
-/**
- * This interface was referenced by `SatyaContracts`'s JSON-Schema
- * via the `definition` "CaseId".
- */
-export type CaseId = string;
-/**
- * Portal application ID in printed form (design D4). Demo data uses 1-9….
- *
- * This interface was referenced by `SatyaContracts`'s JSON-Schema
- * via the `definition` "ApplicationId".
- */
-export type ApplicationId = string;
-/**
- * This interface was referenced by `SatyaContracts`'s JSON-Schema
- * via the `definition` "FlagId".
- */
-export type FlagId = string;
-/**
- * This interface was referenced by `SatyaContracts`'s JSON-Schema
- * via the `definition` "DocId".
- */
-export type DocId = string;
-/**
- * The six PS verification labels (Portal spec §2.6.3). Document label = most severe check outcome, in x-precedence order (most severe first). `verified` also requires at least one authenticity check; a valid uploader DSC never makes a document verified.
- *
- * This interface was referenced by `SatyaContracts`'s JSON-Schema
- * via the `definition` "VerificationLabel".
- */
-export type VerificationLabel =
-  | "verified"
-  | "mismatch_detected"
-  | "expired"
-  | "verification_pending"
-  | "source_unavailable"
-  | "manual_review_required";
-/**
- * RFC 3339 date-time with offset (format-checked; Pydantic AwareDatetime); stored UTC, shown IST.
- *
- * This interface was referenced by `SatyaContracts`'s JSON-Schema
- * via the `definition` "Timestamp".
- */
-export type Timestamp = string;
-/**
- * Portal permanent ID in printed form (design D4).
- *
- * This interface was referenced by `SatyaContracts`'s JSON-Schema
- * via the `definition` "PermanentId".
- */
-export type PermanentId = string;
-/**
- * This interface was referenced by `SatyaContracts`'s JSON-Schema
- * via the `definition` "Date".
- */
-export type Date = string;
-/**
  * Flag only; blank in the report = unknown, never no (design D4).
  */
 export type TriState = "yes" | "no" | "unknown";
@@ -133,33 +200,16 @@ export type CheckKind =
   | "format"
   | "chronology";
 export type SourceMode = "live" | "mock" | "offline" | "none";
-/**
- * This interface was referenced by `SatyaContracts`'s JSON-Schema
- * via the `definition` "Sha256".
- */
-export type Sha256 = string;
 export type ExpiryBasis = "printed" | "computed_from_state_rule";
 /**
  * This interface was referenced by `SatyaContracts`'s JSON-Schema
  * via the `definition` "CorrelationId".
  */
 export type CorrelationId = string;
-export type DispositionAction =
-  "accept" | "override" | "escalate_clarify" | "escalate_refer" | "escalate_manual";
 /**
  * T = AICTE template, E = external, P = portal data (design B).
  */
 export type FormatType = "T" | "E" | "P";
-export type SignatureRole = "issuer" | "uploader";
-export type SignatureState =
-  | "verified"
-  | "image_only"
-  | "chain_broken"
-  | "edited_after_signing"
-  | "not_digital"
-  | "not_applicable"
-  | "present"
-  | "absent_required";
 export type DecidedBy = "system" | "official";
 /**
  * This interface was referenced by `SatyaContracts`'s JSON-Schema
@@ -205,24 +255,6 @@ export type EventType =
   | "referral.recommended"
   | "deficiency.candidates_proposed"
   | "ingest.failed";
-/**
- * This interface was referenced by `SatyaContracts`'s JSON-Schema
- * via the `definition` "RunId".
- */
-export type RunId = string;
-export type ConfidenceBand = "high" | "medium" | "low";
-export type Provenance = "satya" | "portal";
-/**
- * C2 stage ①–⑦.
- */
-export type Stage = "1" | "2" | "3" | "4" | "5" | "6" | "7";
-/**
- * M13 year-over-year verdict (design C4a): explained by an approved application, or a discrepancy.
- *
- * This interface was referenced by `SatyaContracts`'s JSON-Schema
- * via the `definition` "YoyVerdict".
- */
-export type YoyVerdict = "explained" | "discrepancy";
 /**
  * Portal → SATYA (Portal spec §2.4).
  *
@@ -286,6 +318,351 @@ export type RiskBand = "high" | "medium" | "low";
  * GENERATED from packages/shared-types/schemas by scripts/generate.mjs. Do not edit. All SATYA-EoA contracts (Portal spec §2) in one document.
  */
 export interface SatyaContracts {}
+/**
+ * RB-05 DiffView payload, GET /v1/cases/{case_id}/affidavit-diff (UI spec §6.3, §7.1; design B1 row 1, C3). M5 output: the sworn Affidavit 2 compared clause by clause with the portal draft for the same AID and AY, and its land and room tables reconciled with the ApplicationSnapshot. Advisory only. Identifier cells that the gateway tokenises (deed holder, deed document no.) are masked.
+ *
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "AffidavitDiff".
+ */
+export interface AffidavitDiff {
+  case: AffidavitCase;
+  doc_id: DocId;
+  run_id?: RunId;
+  engine_version: string;
+  ruleset_version: string;
+  advisory: true;
+  expected: AffidavitExpected;
+  sworn: AffidavitSworn;
+  normalisation: AffidavitNormalisation;
+  options: DeclarationOption[];
+  ops: DiffOp[];
+  structure: AffidavitStructure;
+  tables: AffidavitTable[];
+  /**
+   * Filled by M6 (P-4); null until then.
+   */
+  stamp: AffidavitStamp | null;
+  /**
+   * Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload. Filled by M6 (P-4); null until then.
+   */
+  chronology: AffidavitChronology | null;
+  /**
+   * DiffView sections whose checks belong to a later module, so the UI can say so instead of showing an empty panel.
+   */
+  pending: PendingSection[];
+  flags: Flag[];
+}
+export interface AffidavitCase {
+  case_id: CaseId;
+  application_id: ApplicationId;
+  permanent_id?: PermanentId;
+  ay: AcademicYear;
+  regional_office: string;
+  institution_name?: string;
+  route: CaseRoute;
+  stage: CaseStage;
+  category_set: CategoryName[];
+}
+/**
+ * Portal-generated Affidavit 2 for this AID and AY.
+ */
+export interface AffidavitExpected {
+  template_id: string;
+  /**
+   * APH edition the template belongs to, e.g. 2024-27.
+   */
+  template_year: string;
+  aid: ApplicationId;
+  category_list: CategoryName[];
+  declarations: ExpectedDeclaration[];
+}
+export interface ExpectedDeclaration {
+  /**
+   * Canonical position 1–24 (core 1–19, existing institute 20–24).
+   */
+  no: number;
+  /**
+   * Number as printed in the draft; numbering restarts in the existing-institute block (design B1 row 1).
+   */
+  printed_no: number;
+  block: DeclarationBlock;
+  text: string;
+}
+export interface AffidavitSworn {
+  page_count: number;
+  sha256: Sha256;
+  /**
+   * The sworn copy's heading and AY line identify the expected template.
+   */
+  template_match: boolean;
+  template_detected?: string | null;
+  text_source: TextSource;
+  /**
+   * null for a text layer.
+   */
+  ocr_mean_confidence: number | null;
+  /**
+   * Filled by M6 (P-4); null until then.
+   */
+  issuer_sig: SignatureCheck | null;
+  /**
+   * Filled by M6 (P-4); null until then.
+   */
+  uploader_sig: SignatureCheck | null;
+  /**
+   * null when no category line was found.
+   */
+  category_list_found: CategoryName[] | null;
+  declarations: SwornDeclaration[];
+}
+/**
+ * One of the two independent signature checks (Portal spec §2.8, UI spec §4.3). An image-only mark is never verified (decision #16).
+ *
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "SignatureCheck".
+ */
+export interface SignatureCheck {
+  role: SignatureRole;
+  state: SignatureState;
+  /**
+   * true only for a real CMS signature (/ByteRange).
+   */
+  has_byte_range: boolean;
+  reason_code?: string;
+  page?: number;
+  signer_role?: "chairman" | "secretary" | "issuer" | "unknown";
+  /**
+   * Demo chain anchors are always 'TEST TRUST ANCHOR' (guard rail 10).
+   */
+  trust_anchor_label?: string;
+}
+export interface SwornDeclaration {
+  /**
+   * Position in the sworn copy, counted across blocks.
+   */
+  no: number;
+  /**
+   * Number as printed in the sworn copy.
+   */
+  printed_no: number | null;
+  block: DeclarationBlock;
+  text: string;
+  page: number;
+  region: Region;
+  ocr_confidence: number | null;
+}
+/**
+ * Evidence region on a page, normalised 0–1.
+ *
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "Region".
+ */
+export interface Region {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+export interface AffidavitNormalisation {
+  whitespace: boolean;
+  /**
+   * Struck-through spans removed before comparing.
+   */
+  strike_through_resolved: number;
+  names_substituted: boolean;
+  hyphens_rejoined: number;
+  /**
+   * Date order of the template year (design D4).
+   */
+  date_order: "MM/DD/YYYY" | "DD/MM/YYYY";
+  /**
+   * Dates whose month was impossible in the template order and parsed the other way.
+   */
+  date_order_fallbacks?: number;
+}
+/**
+ * A strike-through option group in a declaration and the choice the deponent left standing.
+ */
+export interface DeclarationOption {
+  decl_no: number;
+  group: string;
+  choices: string[];
+  selected: string[];
+}
+export interface DiffOp {
+  op: DiffOpKind;
+  /**
+   * Canonical expected position 1–24; null for an added declaration.
+   */
+  decl_no: number | null;
+  /**
+   * Position of the matched declaration in the sworn copy (see sworn.declarations[].no); null for a removed declaration.
+   */
+  sworn_no: number | null;
+  similarity: number;
+  flag_id?: FlagId;
+  spans: DiffSpan[];
+}
+export interface DiffSpan {
+  kind: DiffSpanKind;
+  text: string;
+}
+export interface AffidavitStructure {
+  category_line: CategoryLineCheck;
+  core: BlockCount;
+  existing_institute: BlockCount;
+  extra_blocks: ExtraBlock[];
+}
+export interface CategoryLineCheck {
+  expected: CategoryName[];
+  found: CategoryName[];
+  state: CategoryLineState;
+  page?: number | null;
+  flag_id?: FlagId;
+}
+/**
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "BlockCount".
+ */
+export interface BlockCount {
+  expected: number;
+  found: number;
+}
+export interface ExtraBlock {
+  heading: string;
+  page: number;
+}
+export interface AffidavitTable {
+  table: AffidavitTableName;
+  /**
+   * Field keys in column order, e.g. area_acre; the UI translates them.
+   */
+  columns: string[];
+  rows: AffidavitTableRow[];
+  total_rows: number;
+  /**
+   * Land only: sum of sworn deed areas (the portal leaves the total blank).
+   */
+  computed_total_acres: number | null;
+  /**
+   * Land only: ApplicationSnapshot land.total_area in acres.
+   */
+  expected_total_acres: number | null;
+  /**
+   * Room IDs used more than once across the 4 room tables.
+   */
+  room_id_duplicates: string[];
+}
+export interface AffidavitTableRow {
+  /**
+   * Row key: deed row number (land) or room ID (rooms).
+   */
+  key: string;
+  state: TableRowState;
+  page?: number | null;
+  region?: Region | null;
+  sworn_cells: (string | null)[];
+  application_report_cells: (string | null)[];
+  cell_match: (boolean | null)[];
+  delta?: number | null;
+  flag_ids?: FlagId[];
+}
+export interface AffidavitStamp {
+  instrument: string;
+  certificate_no: string | null;
+  second_party: string | null;
+  /**
+   * Stamp duty in paise (Portal §2 conventions).
+   */
+  duty: number | null;
+  state: VerificationLabel;
+}
+export interface AffidavitChronology {
+  application_date: Date | null;
+  stamp_date: Date | null;
+  notary_date: Date | null;
+  dsc_date?: Date | null;
+  upload_date: Date | null;
+  order_ok: boolean | null;
+  notary_expiry?: Date | null;
+}
+export interface PendingSection {
+  section: "stamp" | "chronology" | "signatures" | "ocr";
+  module: string;
+  promise: string;
+}
+/**
+ * An evidence-linked finding (Portal spec §2.6.4). Every flag cites rule_id + rule_version + aph_clause + aph_edition (guard rail 6). Anomaly/forgery-type flags carry preliminary_indicator: true (PS FR2).
+ *
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "Flag".
+ */
+export interface Flag {
+  flag_id: FlagId;
+  /**
+   * null for snapshot-level findings.
+   */
+  doc_id: DocId | null;
+  page: number | null;
+  regions: Region[];
+  rule_id: string;
+  rule_version: string;
+  rule_text_key: string;
+  aph_clause: string;
+  /**
+   * e.g. 2024-27
+   */
+  aph_edition: string;
+  extracted_value: string | number | boolean | null;
+  expected_value: string | number | boolean | null;
+  value_unit: string | null;
+  delta?: number | null;
+  extracted_source: ExtractedSource;
+  expected_source: ExpectedSource;
+  confidence: number;
+  confidence_band: ConfidenceBand;
+  label: VerificationLabel;
+  provenance: Provenance;
+  preliminary_indicator: boolean;
+  severity: Severity;
+  disposition: Disposition | null;
+  check_ref?: string;
+  stage: Stage;
+  institution_visible: boolean;
+  yoy?: FlagYoy;
+  evidence_sha256: Sha256;
+}
+export interface ExtractedSource {
+  doc_label: string;
+  page: number | null;
+  row?: string | number | null;
+}
+export interface ExpectedSource {
+  label: string;
+}
+/**
+ * An official's recorded decision on a flag (Portal spec §2.6.5; UI spec §4.2). No action changes regulatory status; undo is a new ledger entry.
+ *
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "Disposition".
+ */
+export interface Disposition {
+  action: DispositionAction;
+  reason: string;
+  reason_template_id?: string;
+  /**
+   * Opaque user reference (Keycloak subject), never a name.
+   */
+  by_user_ref: string;
+  by_role: Role;
+  at: Timestamp;
+  ledger_no: number;
+}
+export interface FlagYoy {
+  ay_a_ref: string;
+  ay_b_ref: string;
+  verdict: YoyVerdict;
+}
 /**
  * Alert with type + subtype (Portal spec §2.9). Institution-facing alerts are limited to missing_info, expired, unresolved.clarification_* and unresolved.compliance_window_*.
  *
@@ -563,18 +940,6 @@ export interface CheckEvidence {
   regions?: Region[];
 }
 /**
- * Evidence region on a page, normalised 0–1.
- *
- * This interface was referenced by `SatyaContracts`'s JSON-Schema
- * via the `definition` "Region".
- */
-export interface Region {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
-/**
  * This interface was referenced by `SatyaContracts`'s JSON-Schema
  * via the `definition` "CheckSource".
  */
@@ -587,24 +952,6 @@ export interface FieldDiff {
   field: string;
   submitted: string | number | boolean | null;
   source: string | number | boolean | null;
-}
-/**
- * An official's recorded decision on a flag (Portal spec §2.6.5; UI spec §4.2). No action changes regulatory status; undo is a new ledger entry.
- *
- * This interface was referenced by `SatyaContracts`'s JSON-Schema
- * via the `definition` "Disposition".
- */
-export interface Disposition {
-  action: DispositionAction;
-  reason: string;
-  reason_template_id?: string;
-  /**
-   * Opaque user reference (Keycloak subject), never a name.
-   */
-  by_user_ref: string;
-  by_role: Role;
-  at: Timestamp;
-  ledger_no: number;
 }
 /**
  * A document in a case (Portal spec §2.6.2). classified_type comes from body text / issuer, never heading, filename or uploader label (decision #15); when it differs from declared_type a suspected_anomaly.document_misclassified flag is raised.
@@ -629,27 +976,6 @@ export interface Document {
   signatures: SignatureCheck[];
   verification?: VerificationResult;
   flag_count: number;
-}
-/**
- * One of the two independent signature checks (Portal spec §2.8, UI spec §4.3). An image-only mark is never verified (decision #16).
- *
- * This interface was referenced by `SatyaContracts`'s JSON-Schema
- * via the `definition` "SignatureCheck".
- */
-export interface SignatureCheck {
-  role: SignatureRole;
-  state: SignatureState;
-  /**
-   * true only for a real CMS signature (/ByteRange).
-   */
-  has_byte_range: boolean;
-  reason_code?: string;
-  page?: number;
-  signer_role?: "chairman" | "secretary" | "issuer" | "unknown";
-  /**
-   * Demo chain anchors are always 'TEST TRUST ANCHOR' (guard rail 10).
-   */
-  trust_anchor_label?: string;
 }
 /**
  * Per-document verification with all checks (Portal spec §2.7). Every mock result is shown as MOCK SOURCE (guard rail 10).
@@ -709,58 +1035,4 @@ export interface Subject {
   application_id: ApplicationId;
   permanent_id?: PermanentId;
   ay: AcademicYear;
-}
-/**
- * An evidence-linked finding (Portal spec §2.6.4). Every flag cites rule_id + rule_version + aph_clause + aph_edition (guard rail 6). Anomaly/forgery-type flags carry preliminary_indicator: true (PS FR2).
- *
- * This interface was referenced by `SatyaContracts`'s JSON-Schema
- * via the `definition` "Flag".
- */
-export interface Flag {
-  flag_id: FlagId;
-  /**
-   * null for snapshot-level findings.
-   */
-  doc_id: DocId | null;
-  page: number | null;
-  regions: Region[];
-  rule_id: string;
-  rule_version: string;
-  rule_text_key: string;
-  aph_clause: string;
-  /**
-   * e.g. 2024-27
-   */
-  aph_edition: string;
-  extracted_value: string | number | boolean | null;
-  expected_value: string | number | boolean | null;
-  value_unit: string | null;
-  delta?: number | null;
-  extracted_source: ExtractedSource;
-  expected_source: ExpectedSource;
-  confidence: number;
-  confidence_band: ConfidenceBand;
-  label: VerificationLabel;
-  provenance: Provenance;
-  preliminary_indicator: boolean;
-  severity: Severity;
-  disposition: Disposition | null;
-  check_ref?: string;
-  stage: Stage;
-  institution_visible: boolean;
-  yoy?: FlagYoy;
-  evidence_sha256: Sha256;
-}
-export interface ExtractedSource {
-  doc_label: string;
-  page: number | null;
-  row?: string | number | null;
-}
-export interface ExpectedSource {
-  label: string;
-}
-export interface FlagYoy {
-  ay_a_ref: string;
-  ay_b_ref: string;
-  verdict: YoyVerdict;
 }

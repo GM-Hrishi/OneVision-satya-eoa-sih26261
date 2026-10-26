@@ -8,7 +8,7 @@ import { SignInRedirect } from "./SignInRedirect";
 
 export const generateMetadata = (): Promise<Metadata> => pageMetadata("signin");
 
-type Props = { searchParams: Promise<{ callbackUrl?: string; error?: string }> };
+type Props = { searchParams: Promise<{ callbackUrl?: string; error?: string; renew?: string }> };
 
 function safePath(value: string | undefined): string {
   return value && value.startsWith("/") && !value.startsWith("//") ? value : "/";
@@ -17,7 +17,8 @@ function safePath(value: string | undefined): string {
 export default async function SignInPage({ searchParams }: Props) {
   const params = await searchParams;
   const callbackUrl = safePath(params.callbackUrl);
-  if (await currentSession()) redirect(callbackUrl);
+  // renew=1: the session is alive but its API access token expired; run the (silent) SSO flow again.
+  if (params.renew !== "1" && (await currentSession())) redirect(callbackUrl);
   const t = await getTranslations("signin");
   return (
     <>

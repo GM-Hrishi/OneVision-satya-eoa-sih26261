@@ -1,0 +1,201 @@
+{
+  "_synthetic": "SYNTHETIC FIXTURE. Invented values for the SATYA-EoA demo and tests. Not a real institution, person, application or document.",
+  "case": "ce05-2026-27-clean",
+  "profile": 5,
+  "variant": "clean",
+  "control": true,
+  "style": "plain",
+  "slot": "annex2.1(i) affidavit",
+  "expected_flags": [],
+  "printed": {
+    "header.pid": "1-9000305",
+    "header.aid": "1-90000005105",
+    "header.institution_name": "Demo College of Engineering 05",
+    "header.address": "Demo Town 05, Demo District 06, Tamil Nadu",
+    "header.institution_type": "Private-Self Financing",
+    "header.region": "Southern",
+    "header.application_date": "11/16/2026",
+    "header.ay_line": "ACADEMIC YEAR – 2026-2027",
+    "categories": [
+      "EoA Only"
+    ],
+    "declarations": [
+      "The information furnished in the online application for the Academic Year 2026-2027 is true and correct, and nothing has been concealed or withheld.",
+      "The institution is functioning at the location approved by the Council and has not shifted to any other location.",
+      "A valid Occupancy Certificate / Completion Certificate / Building Licence / Form D, a valid Structural Stability Certificate where required, and a valid Fire Safety Certificate issued by the competent authorities have been uploaded on the portal.",
+      "All the programmes of the institution are conducted on one campus at the approved location and no programme is run at any other premises.",
+      "The institution has a regular Principal who possesses the qualifications and experience prescribed by the Council.",
+      "The institution fulfils the faculty norms and the faculty to student ratio prescribed by the Council for every approved programme.",
+      "The faculty data uploaded on the portal is true, and every faculty member shown is on the rolls of this institution only.",
+      "The institution does not retain the original degree certificates or other original documents of any faculty member or student.",
+      "The land of the institution, as given in the land table below, is contiguous and undisputed, and is owned by the Trust .",
+      "The land area and the built-up area given in this affidavit and in the online application are true and match the approved building plan.",
+      "Salaries are paid to faculty and staff as per the prescribed pay scales through bank transfer, with deductions towards provident fund and tax at source.",
+      "The student data of the previous academic years furnished on the portal is true and complete.",
+      "All fees and payments are collected and made only through digital modes, and no capitation fee is charged.",
+      "The audited statement of accounts of the Trust / Society / Company for the previous financial year has been uploaded on the portal.",
+      "No student is admitted beyond the intake approved by the Council for each programme.",
+      "The institution follows the provisions of Appendix 16/17 of the Approval Process Handbook and the Council's (Grant of Approval for Technical Institutions) Regulation Regulations, 2021.",
+      "The institution publishes the Mandatory Disclosure on its website as per Appendix 6 and keeps it up to date.",
+      "If any information given in this affidavit or in the online application is found to be false, the Council may take civil and/or criminal action against the deponent and the institution.",
+      "The following committees are constituted and functioning in the institution: Anti-Ragging Committee Anti-Ragging Squad Grievance Redressal Committee Internal Complaints Committee Committee for SC/ST",
+      "The deficiencies noted in the previous letter of Extension of Approval have been complied with within the period allowed.",
+      "There is no change in the name, location, management or Trust / Society / Company of the institution without the approval of the Council.",
+      "The faculty and staff data on the portal has been entered and checked by the Head of the Institution and is true.",
+      "The enrolment of students for the previous academic year has been uploaded on the portal within the prescribed date.",
+      "The institution has not been debarred by the Council or by the affiliating University in the previous academic year."
+    ],
+    "land.1": [
+      "Demo Educational Trust 05",
+      "DEMO-DEED-0501",
+      "08/14/2001",
+      "DEMO-PLOT-051",
+      "Demo Town 05 / Demo District 06",
+      "7.75"
+    ],
+    "land.2": [
+      "Demo Educational Trust 05",
+      "DEMO-DEED-0502",
+      "02/09/2011",
+      "DEMO-PLOT-052",
+      "Demo Town 05 / Demo District 06",
+      "2.50"
+    ],
+    "room_admin": [
+      [
+        "A-101",
+        "Principal Office",
+        "30.0",
+        "Ready",
+        "Ready",
+        "Ready"
+      ],
+      [
+        "A-102",
+        "Board Room",
+        "40.0",
+        "Ready",
+        "Ready",
+        "Ready"
+      ],
+      [
+        "A-103",
+        "Office All Inclusive",
+        "150.0",
+        "Ready",
+        "Ready",
+        "Ready"
+      ],
+      [
+        "A-104",
+        "Department Office",
+        "30.0",
+        "Ready",
+        "Ready",
+        "Ready"
+      ]
+    ],
+    "room_amenities": [
+      [
+        "M-101",
+        "Toilets",
+        "120.0",
+        "Ready",
+        "Ready",
+        "Ready"
+      ],
+      [
+        "M-102",
+        "Boys Common Room",
+        "75.0",
+        "Ready",
+        "Ready",
+        "Ready"
+      ],
+      [
+        "M-103",
+        "Girls Common Room",
+        "75.0",
+        "Ready",
+        "Ready",
+        "Ready"
+      ]
+    ],
+    "room_instructional": [
+      [
+        "I-201",
+        "Class Room",
+        "66.0",
+        "Ready",
+        "Ready",
+        "Ready"
+      ],
+      [
+        "I-202",
+        "Tutorial Room",
+        "33.0",
+        "Ready",
+        "Ready",
+        "Ready"
+      ],
+      [
+        "I-203",
+        "Laboratory",
+        "66.0",
+        "Ready",
+        "Ready",
+        "Ready"
+      ],
+      [
+        "I-204",
+        "Workshop",
+        "200.0",
+        "Ready",
+        "Ready",
+        "Ready"
+      ],
+      [
+        "I-205",
+        "Drawing Hall",
+        "132.0",
+        "Ready",
+        "Ready",
+        "Ready"
+      ]
+    ],
+    "room_common": [
+      [
+        "C-301",
+        "Library and Reading Room",
+        "400.0",
+        "Ready",
+        "Ready",
+        "Ready"
+      ],
+      [
+        "C-302",
+        "Seminar Hall",
+        "132.0",
+        "Ready",
+        "Ready",
+        "Ready"
+      ],
+      [
+        "C-303",
+        "Language Laboratory",
+        "66.0",
+        "Ready",
+        "Ready",
+        "Ready"
+      ],
+      [
+        "C-304",
+        "Computer Centre",
+        "150.0",
+        "Ready",
+        "Ready",
+        "Ready"
+      ]
+    ]
+  }
+}

@@ -1,6 +1,7 @@
 """SATYA-EoA gateway (Portal Integration API, Portal spec §2). Advisory only; synthetic data only.
 
 Slice 0 endpoints: GET /v1/health, GET /v1/health/live, GET /v1/meta, POST /v1/portal-events.
+Slice 1 (Workbench API, OIDC bearer): GET /v1/cases, GET /v1/cases/{case_id}/affidavit-diff (M5).
 """
 
 import asyncio
@@ -9,6 +10,7 @@ import json
 import logging
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Any
 
 import httpx
@@ -19,6 +21,10 @@ from fastapi.responses import JSONResponse
 from redis.asyncio import Redis
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from satya_affidavit.engine import ENGINE_VERSION as M5_ENGINE_VERSION
+from satya_affidavit.rules import load_ruleset
+from satya_api.auth import Principal, TokenVerifier, http_jwks_fetcher
+from satya_api.cases import CASE_ID, CaseError, CaseRepository, FixtureCaseRepository
 from satya_api.config import (
     API_VERSION,
     SERVICE_VERSION,
@@ -82,8 +88,10 @@ def create_app(
     store: EventStore | None = None,
     redis: Redis | None = None,
     checks: dict[str, CheckFn] | None = None,
+    cases: CaseRepository | None = None,
+    verifier: TokenVerifier | None = None,
 ) -> FastAPI:
-    """Build the app. Tests inject a MemoryStore, no Redis and fake dependency checks."""
+    """Build the app. Tests inject a MemoryStore, no Redis, fake checks, cases and a verifier."""
     settings = settings or get_settings()
     configure_logging()
     if redis is None and store is None and settings.valkey_url.get_secret_value():
@@ -92,6 +100,8 @@ def create_app(
     client_limit, client_window = parse_rate(settings.client_rate_limit)
     ip_limiter = RateLimiter(redis, ip_limit, ip_window, "ip")
     client_limiter = RateLimiter(redis, client_limit, client_window, "client")
+    user_limit, user_window = parse_rate(settings.user_rate_limit)
+    user_limiter = RateLimiter(redis, user_limit, user_window, "user")
     hmac_keys = settings.hmac_key_map()
 
     @asynccontextmanager
@@ -103,6 +113,19 @@ def create_app(
         else:
             app.state.store = store
         app.state.http = httpx.AsyncClient(timeout=2.0)
+        realm = f"{settings.keycloak_url}/realms/{settings.keycloak_realm}"
+        app.state.verifier = verifier or TokenVerifier(
+            settings.keycloak_issuer,
+            settings.workbench_client_id,
+            http_jwks_fetcher(app.state.http, f"{realm}/protocol/openid-connect/certs"),
+        )
+        if cases is not None:
+            app.state.cases = cases
+        else:
+            if not settings.token_key():
+                log.error("no tokenisation key (>= 32 chars); land tables cannot be reconciled")
+            root = Path(settings.demo_cases_dir) if settings.demo_cases_dir else None
+            app.state.cases = FixtureCaseRepository(root, settings.token_key())
         if not hmac_keys:
             log.error("no HMAC keys configured; every portal event will be rejected")
         yield
@@ -209,8 +232,9 @@ def create_app(
             "schema_version": constants.EVENT_SPEC,
             "supported_ays": list(SUPPORTED_AYS),
             "aph_editions": ["2024-27"],
-            "template_profiles": [],
-            "ruleset_versions": [],
+            "template_profiles": ["aff2-portal-2024-27"],
+            "ruleset_versions": [load_ruleset().ref],
+            "engines": {"m5-affidavit-diff": M5_ENGINE_VERSION},
             "adapters": [],
             "adapters_note": (
                 "No source adapters in slice 0. TN Form D and TN fire licence adapters arrive "
@@ -303,6 +327,82 @@ def create_app(
         if result.duplicate:
             return JSONResponse({"duplicate": True, "receipt_id": result.receipt_id}, 200)
         return JSONResponse({"receipt_id": result.receipt_id, "duplicate": False}, 202)
+
+    # ---- Workbench API (UI spec §6) ------------------------------------------------------------
+    async def official(request: Request, role: str = "RB") -> Principal:
+        """Verify the bearer token, apply the per-user quota and require the role."""
+        verifier: TokenVerifier = request.app.state.verifier
+        principal = await verifier.verify(request.headers.get("authorization"))
+        retry_after = await user_limiter.hit(principal.subject)
+        if retry_after is not None:
+            security.warning("rate limited", extra={"trace_id": trace(request), "scope": "user"})
+            raise ProblemError(429, "RATE_LIMITED", headers={"Retry-After": str(retry_after)})
+        if role not in principal.roles:
+            security.warning(
+                "permission denied",
+                extra={"trace_id": trace(request), "sub": principal.subject, "need": role},
+            )
+            raise ProblemError(403, "SCOPE_DENIED")
+        return principal
+
+    def in_scope(request: Request, principal: Principal, region: str, case_id: str) -> None:
+        if not principal.can_see_region(region):
+            security.warning(
+                "case outside region scope",
+                extra={"trace_id": trace(request), "sub": principal.subject, "case_id": case_id},
+            )
+            raise ProblemError(403, "SCOPE_DENIED")
+
+    @app.get("/v1/cases")
+    async def list_cases(request: Request) -> JSONResponse:
+        principal = await official(request)
+        repo: CaseRepository = request.app.state.cases
+        items = []
+        for summary in await repo.list_cases():
+            if not principal.can_see_region(summary.regional_office):
+                continue
+            try:
+                diff = await repo.affidavit_diff(summary.case_id)
+                open_flags: int | None = len(diff["flags"])
+            except CaseError:
+                log.exception("case unusable", extra={"case_id": summary.case_id})
+                open_flags = None
+            items.append(
+                {
+                    "case_id": summary.case_id,
+                    "application_id": summary.application_id,
+                    "region": summary.regional_office,
+                    "ay": summary.ay,
+                    "category_set": list(summary.category_set),
+                    "route": summary.route,
+                    "stage": summary.stage,
+                    "institution_name": summary.institution_name,
+                    "open_flags": open_flags,
+                }
+            )
+        body = {"items": items, "totals": {"submitted": len(items)}, "advisory": True}
+        return JSONResponse(body, headers={"Cache-Control": "no-store"})
+
+    @app.get("/v1/cases/{case_id}/affidavit-diff")
+    async def affidavit_diff(case_id: str, request: Request) -> JSONResponse:
+        principal = await official(request)
+        if not CASE_ID.fullmatch(case_id):
+            raise ProblemError(404, "NOT_FOUND")
+        repo: CaseRepository = request.app.state.cases
+        summary = await repo.get(case_id)
+        if summary is None:
+            raise ProblemError(404, "NOT_FOUND")
+        in_scope(request, principal, summary.regional_office, case_id)
+        try:
+            diff = await repo.affidavit_diff(case_id)
+        except CaseError:
+            log.exception("case unusable", extra={"trace_id": trace(request), "case_id": case_id})
+            raise ProblemError(500, "INTERNAL_ERROR") from None
+        log.info(
+            "affidavit diff served",
+            extra={"trace_id": trace(request), "sub": principal.subject, "case_id": case_id},
+        )
+        return JSONResponse(diff, headers={"Cache-Control": "no-store"})
 
     return app
 

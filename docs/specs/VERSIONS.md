@@ -10,4 +10,5 @@ Specs are written in the team's planning workspace and copied here. When a spec 
 | 04-portal-integration-spec.md | Portal spec | v0.2.1 | 25 Oct 2026 | §3–§7 pending |
 | 05-ui-design-spec.md | UI spec | v0.7.1 | 25 Oct 2026 | §10 build handoff pending |
 
-Pending updates (re-copy when they land): design v2.3; Portal §3–§7; UI §10 + remaining P1 screens; synthetic test-set plan; demo script.
+Pending updates (re-copy when they land): design v2.3; Portal §3–§7; UI §10 + remaining P1 screens.
+Written in the repo (slice 1), not copied: `docs/DEMO-SCRIPT.md` v1.0 and `docs/SYNTHETIC-TESTSET-PLAN.md` v1.0. If the planning workspace publishes its own versions, they replace these and this note is updated.

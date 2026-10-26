@@ -14,6 +14,7 @@ COPY pyproject.toml uv.lock .python-version ./
 COPY services/api/pyproject.toml services/api/
 COPY services/worker/pyproject.toml services/worker/
 COPY packages/shared-types/python/pyproject.toml packages/shared-types/python/
+COPY packages/affidavit/pyproject.toml packages/affidavit/
 RUN --mount=type=secret,id=extra_ca,target=/run/secrets/extra_ca \
     --mount=type=cache,target=/root/.cache/uv \
     sh -c 'if [ -s /run/secrets/extra_ca ]; then export SSL_CERT_FILE=/run/secrets/extra_ca; fi; \

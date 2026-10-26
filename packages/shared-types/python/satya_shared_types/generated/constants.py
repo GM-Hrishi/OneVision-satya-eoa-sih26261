@@ -223,4 +223,4 @@ SNAPSHOT_TOKEN_FIELDS: Final = {
 
 SNAPSHOT_REJECTED_FIELDS: Final = ("hoi", "hoi.name", "hoi.dob", "hoi.contact", "hoi.pan", "hoi.address", "bank.account_number", "faculty[].pan", "faculty[].dob", "faculty[].name", "faculty[].mobile", "faculty[].email")
 
-SCHEMA_TITLES: Final = ("Alert", "ApplicationSnapshot", "Disposition", "Document", "EventEnvelope", "Flag", "RiskBand", "VerificationLabel", "VerificationResult", "YoyVerdict")
+SCHEMA_TITLES: Final = ("AffidavitDiff", "Alert", "ApplicationSnapshot", "Disposition", "Document", "EventEnvelope", "Flag", "RiskBand", "VerificationLabel", "VerificationResult", "YoyVerdict")

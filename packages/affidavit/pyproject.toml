@@ -1,0 +1,20 @@
+[project]
+name = "satya-affidavit"
+version = "0.1.0"
+description = "SATYA-EoA M5: Affidavit 2 normalised clause diff + ApplicationSnapshot reconciliation (P-3). Advisory; synthetic data only."
+requires-python = ">=3.12"
+dependencies = [
+    "pdfplumber==0.11.10",
+    "pyyaml==6.0.3",
+    "satya-shared-types",
+]
+
+[tool.uv.sources]
+satya-shared-types = { workspace = true }
+
+[build-system]
+requires = ["hatchling==1.32.4"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/satya_affidavit"]

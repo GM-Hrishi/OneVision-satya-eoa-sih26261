@@ -1,6 +1,8 @@
 // Sign-in through Keycloak (OIDC authorization code + PKCE) with next-auth v4.
 // The session is an encrypted (JWE), HttpOnly, Secure, SameSite=Lax cookie; tokens never reach
-// browser JavaScript. Discovery uses the internal Keycloak URL, so the browser gets the public
+// browser JavaScript. The access token (5 min, Keycloak default) is kept inside that cookie so the
+// workbench server can call the gateway's Workbench API on the official's behalf (src/lib/api.ts);
+// no refresh token is stored. When it expires the official is sent through a silent SSO renewal. Discovery uses the internal Keycloak URL, so the browser gets the public
 // authorization endpoint while token/JWKS calls stay on the private network.
 import type { NextAuthOptions } from "next-auth";
 import KeycloakProvider from "next-auth/providers/keycloak";
@@ -52,6 +54,8 @@ export function authOptions(): NextAuthOptions {
             .filter((g) => g.startsWith("/regions/"))
             .map((g) => g.slice("/regions/".length));
           token.idToken = account.id_token;
+          token.accessToken = account.access_token;
+          token.accessTokenExpires = account.expires_at;
         }
         return token;
       },

@@ -29,13 +29,23 @@ lint: ## ESLint + ruff
 
 typecheck: ## tsc + mypy
 	pnpm -r typecheck
-	uv run mypy services/api/src services/worker/src packages/shared-types/python/satya_shared_types
+	uv run mypy services/api/src services/worker/src packages/shared-types/python/satya_shared_types packages/affidavit/src
 
 test: ## Unit tests (no running stack needed)
 	pnpm -r test
 	uv run pytest packages/shared-types/python
 	uv run pytest services/api
 	uv run pytest services/worker
+	uv run pytest packages/affidavit
+
+synth: ## Regenerate the synthetic demo cases (data/synthetic/cases: affidavit PDFs, snapshots, truth)
+	uv run python -m satya_affidavit.synth
+
+eval-m5: ## M5 metrics (precision, recall, false-flag rate, extraction) over the 104 synthetic affidavits
+	uv run python -m satya_affidavit.eval
+
+synth-check: ## Fail if the committed synthetic demo cases differ from a fresh generation
+	uv run python -m satya_affidavit.synth --check
 
 secrets: ## Generate .env from .env.example with random values (keeps an existing .env)
 	@bash infra/scripts/gen-secrets.sh
@@ -76,12 +86,13 @@ smoke: ## Cross-service smoke tests against the running stack
 	uv run python tests/oidc_login_check.py rb.southern.demo RB
 	$(COMPOSE) --profile test run --rm --build worker-test
 
-e2e: ## Browser acceptance (Playwright/Chromium): workbench sign-in + shell, mock portal signed events
+e2e: ## Browser acceptance (Playwright/Chromium): workbench sign-in + shell, mock portal signed events, RB-05 DiffView
 	NODE_PATH=$$(npm root -g) node tests/e2e/workbench.cjs
 	NODE_PATH=$$(npm root -g) node tests/e2e/mock-portal.cjs
+	NODE_PATH=$$(npm root -g) node tests/e2e/diffview.cjs
 	$(COMPOSE) exec -T api python -m satya_api.ledger_verify
 
 test-db: ## Postgres-backed API tests in a throwaway pgvector container
 	bash infra/scripts/test-db.sh
 
-.PHONY: guard secret-scan help install secrets up down ps logs reset mem-check config ledger-verify trust-ca smoke e2e test-db gen-types check-types-diff lint typecheck test
+.PHONY: synth synth-check eval-m5 guard secret-scan help install secrets up down ps logs reset mem-check config ledger-verify trust-ca smoke e2e test-db gen-types check-types-diff lint typecheck test

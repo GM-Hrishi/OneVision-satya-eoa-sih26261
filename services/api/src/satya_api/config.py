@@ -26,6 +26,14 @@ class Settings(BaseSettings):
     rate_limit: str = "120/minute"
     client_rate_limit: str = "600/minute"
     cors_origins: str = "https://localhost,https://portal.localhost"
+    # Workbench API (OIDC bearer tokens from the workbench client, Portal spec §2.0).
+    keycloak_issuer: str = "https://auth.localhost/realms/satya"
+    workbench_client_id: str = "satya-web"
+    user_rate_limit: str = "300/minute"
+    # Gateway tokenisation key (Portal spec §2.6.1; the gateway holds it in the demo).
+    tokenisation_key: SecretStr = SecretStr("")
+    # Slice 1: synthetic demo cases served read-only (data/synthetic/cases). Empty = no cases.
+    demo_cases_dir: str = ""
 
     def hmac_key_map(self) -> dict[str, bytes]:
         keys: dict[str, bytes] = {}
@@ -34,6 +42,10 @@ class Settings(BaseSettings):
             if sep and kid and len(secret) >= 32:
                 keys[kid] = secret.encode()
         return keys
+
+    def token_key(self) -> bytes:
+        key = self.tokenisation_key.get_secret_value()
+        return key.encode() if len(key) >= 32 else b""
 
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
