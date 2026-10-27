@@ -1,0 +1,47 @@
+{
+  "_synthetic": "SYNTHETIC FIXTURE. Invented values for the SATYA-EoA demo and tests. Not a real institution, person, application or document.",
+  "case": "ce07-2026-27-m6-udin_length",
+  "profile": 7,
+  "variant": "udin_length",
+  "control": false,
+  "timeline": {
+    "application": "2026-11-19",
+    "stamp_issued": "2026-11-20T11:05:00+05:30",
+    "notarised": "2026-11-21",
+    "issuer_dsc": "2026-11-22T10:15:00+05:30",
+    "mark": null,
+    "uploader_dsc": "2026-11-22T16:30:00+05:30",
+    "uploaded": "2026-11-22T16:40:00+05:30"
+  },
+  "expected_flags": [
+    {
+      "rule_id": "UDIN-STRUCT",
+      "check_ref": "m6:UDIN-STRUCT:udin:format",
+      "doc_id": "doc_NV4591P8W249EK6Z5V7A5QZX4C",
+      "label": "manual_review_required"
+    }
+  ],
+  "expected_checks": [
+    {
+      "doc_id": "doc_NV4591P8W249EK6Z5V7A5QZX4C",
+      "kind": "format",
+      "outcome": "manual_review_required",
+      "reason_code": "UDIN_MALFORMED"
+    }
+  ],
+  "expected_document_labels": {
+    "doc_GAYHCHK6AE9ZP13E65PZPVBKCG": "verified",
+    "doc_NV4591P8W249EK6Z5V7A5QZX4C": "manual_review_required"
+  },
+  "printed": {
+    "stamp.certificate_no": "IN-TN90726111904224Q",
+    "stamp.second_party": "AICTE NEW DELHI",
+    "stamp.duty": 100,
+    "stamp.issued": "2026-11-20",
+    "notary.date": "2026-11-21",
+    "notary.valid_till": "2027-12-31",
+    "mark.date": null,
+    "udin": "26990749GBKLN3835",
+    "udin.membership_no": "990749"
+  }
+}

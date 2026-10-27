@@ -65,9 +65,17 @@ class TraceMiddleware:
 class BodyLimitMiddleware:
     """Rejects bodies over max_bytes with 413 PAYLOAD_TOO_LARGE, whether declared or streamed."""
 
-    def __init__(self, app: ASGIApp, max_bytes: int) -> None:
+    def __init__(self, app: ASGIApp, max_bytes: int, upload_max_bytes: int | None = None) -> None:
         self.app = app
         self.max_bytes = max_bytes
+        self.upload_max_bytes = upload_max_bytes or max_bytes
+
+    def limit_for(self, scope: Scope) -> int:
+        """Only the document upload route may carry a PDF (Slice D); every other route is small."""
+        path = str(scope.get("path", ""))
+        if path.startswith("/v1/cases/") and path.endswith("/documents"):
+            return self.upload_max_bytes
+        return self.max_bytes
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http" or scope.get("method") in ("GET", "HEAD", "OPTIONS"):
@@ -76,7 +84,8 @@ class BodyLimitMiddleware:
         trace_id = scope.get("state", {}).get("trace_id", "")
         headers = dict(scope.get("headers") or [])
         declared = headers.get(b"content-length")
-        if declared is not None and (not declared.isdigit() or int(declared) > self.max_bytes):
+        limit = self.limit_for(scope)
+        if declared is not None and (not declared.isdigit() or int(declared) > limit):
             await self._reject(scope, receive, send, trace_id)
             return
         chunks: list[bytes] = []
@@ -88,7 +97,7 @@ class BodyLimitMiddleware:
                 return
             chunk = message.get("body", b"")
             size += len(chunk)
-            if size > self.max_bytes:
+            if size > limit:
                 await self._reject(scope, receive, send, trace_id)
                 return
             chunks.append(chunk)

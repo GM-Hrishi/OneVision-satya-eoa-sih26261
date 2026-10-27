@@ -41,7 +41,9 @@ async function login(page, username, start = `${BASE}/`) {
   const queue = await page.textContent("main");
   check(queue.includes("1-90000004217") && queue.includes("1-90000005105"), "queue lists both demo cases");
   check(queue.includes("7 findings") && queue.includes("No findings"), "queue shows finding counts (7 = 5 M5 + 2 M6, and none)");
-  await page.getByRole("link", { name: "Open the affidavit diff for application 1-90000004217" }).click();
+  await page.getByRole("link", { name: "Open the case for application 1-90000004217" }).click();
+  await page.waitForURL(`${BASE}/case/${DIT03}`, { timeout: 30000 });
+  await page.getByRole("link", { name: "Affidavit diff" }).first().click();
   await page.waitForURL(`${BASE}/case/${DIT03}/affidavit`, { timeout: 30000 });
   check(true, "queue link opens RB-05 for DIT 03");
   await page.waitForSelector("#diff-flags", { timeout: 30000 });

@@ -5,15 +5,16 @@ tokenisation and the vault arrive with M2 (P-19).
 """
 
 import asyncio
+import hashlib
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
-from typing import Protocol
+from typing import Any, Protocol
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from ulid import ULID
 
-from satya_api.ledger import GENESIS, LedgerRow, chain_hash
+from satya_api.ledger import GENESIS, LedgerRow, chain_hash, detail_text
 
 # Arbitrary constant key for pg_advisory_xact_lock: serialises ledger appends and dedupe.
 LEDGER_LOCK_KEY = 0x5A7A_0001
@@ -45,6 +46,9 @@ def new_receipt_id() -> str:
 class EventStore(Protocol):
     async def record_inbound(self, event: InboundEvent) -> RecordResult: ...
     async def ledger_rows(self) -> list[LedgerRow]: ...
+    async def append(
+        self, event_type: str, case_id: str | None, actor: str | None, detail: dict[str, Any]
+    ) -> LedgerRow: ...
     async def ping(self) -> None: ...
     async def close(self) -> None: ...
 
@@ -78,6 +82,28 @@ class MemoryStore:
 
     async def ledger_rows(self) -> list[LedgerRow]:
         return list(self.rows)
+
+    async def append(
+        self, event_type: str, case_id: str | None, actor: str | None, detail: dict[str, Any]
+    ) -> LedgerRow:
+        async with self._lock:
+            now = datetime.now(UTC)
+            prev = self.rows[-1].hash if self.rows else GENESIS
+            text_ = detail_text(event_type, case_id, actor, detail)
+            sha = hashlib.sha256(text_.encode()).hexdigest()
+            row = LedgerRow(
+                len(self.rows) + 1,
+                now,
+                event_type,
+                sha,
+                prev,
+                chain_hash(prev, sha, now),
+                case_id,
+                actor,
+                text_,
+            )
+            self.rows.append(row)
+            return row
 
     async def ping(self) -> None:
         return None
@@ -155,11 +181,44 @@ class PostgresStore:
         async with self.engine.connect() as conn:
             result = await conn.execute(
                 text(
-                    "SELECT seq, at, event_type, payload_sha256, prev_hash, hash "
-                    "FROM ledger ORDER BY seq"
+                    "SELECT seq, at, event_type, payload_sha256, prev_hash, hash, "
+                    "case_id, actor, detail_json FROM ledger ORDER BY seq"
                 )
             )
             return [LedgerRow(*row) for row in result.all()]
+
+    async def append(
+        self, event_type: str, case_id: str | None, actor: str | None, detail: dict[str, Any]
+    ) -> LedgerRow:
+        text_ = detail_text(event_type, case_id, actor, detail)
+        sha = hashlib.sha256(text_.encode()).hexdigest()
+        async with self.engine.begin() as conn:
+            await conn.execute(text("SELECT pg_advisory_xact_lock(:k)"), {"k": LEDGER_LOCK_KEY})
+            prev = (
+                await conn.execute(text("SELECT hash FROM ledger ORDER BY seq DESC LIMIT 1"))
+            ).scalar_one_or_none() or GENESIS
+            at = datetime.now(UTC)
+            digest = chain_hash(prev, sha, at)
+            seq = (
+                await conn.execute(
+                    text(
+                        "INSERT INTO ledger (at, event_type, payload_sha256, prev_hash, hash, "
+                        "case_id, actor, detail_json) VALUES (:at, :type, :sha, :prev, :hash, "
+                        ":case, :actor, :detail) RETURNING seq"
+                    ),
+                    {
+                        "at": at,
+                        "type": event_type,
+                        "sha": sha,
+                        "prev": prev,
+                        "hash": digest,
+                        "case": case_id,
+                        "actor": actor,
+                        "detail": text_,
+                    },
+                )
+            ).scalar_one()
+        return LedgerRow(seq, at, event_type, sha, prev, digest, case_id, actor, text_)
 
     async def ping(self) -> None:
         async with self.engine.connect() as conn:

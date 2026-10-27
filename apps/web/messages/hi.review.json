@@ -208,5 +208,6 @@
   "verification.reason.UDIN_REUSED": "[VERIFY] reason text (new in slice 2, M6)",
   "verification.reason.SRC_NO_CHANNEL": "[VERIFY] reason text (new in slice 2, M6)",
   "verification.reason.SRC_NO_IDENTIFIER": "[VERIFY] reason text (new in slice 2, M6)",
-  "diff.stampInstrument": "[VERIFY] 'उपकरण' for stamp instrument (legal sense: 'लिखत'?)"
+  "diff.stampInstrument": "[VERIFY] 'उपकरण' for stamp instrument (legal sense: 'लिखत'?)",
+  "demo.loading": "[VERIFY] The whole demo namespace (queue, case review, upload, audit, alerts) is English text in Hindi mode. Hindi for Slice D is out of scope."
 }

@@ -63,7 +63,12 @@ make secrets     # random secrets into .env (git-ignored)
 make up          # build, start all services, wait until healthy
 make trust-ca    # export the local HTTPS root CA once, then trust it (DEV-SETUP)
 ```
-Then open **https://localhost** and sign in as `rb.southern.demo`: the queue lists two synthetic cases; open *Affidavit diff* for `1-90000004217` to see RB-05 (`docs/DEMO-SCRIPT.md` has the full demo) (password: `grep DEMO_USER_PASSWORD .env`). The mock portal is at **https://portal.localhost**: press *Send test event* and watch the signed event get a receipt.
+Then open **https://localhost** and sign in as `rb.southern.demo`: run `make demo-reset` first; the queue lists five synthetic cases; open `1-90000004217` and its *Affidavit diff* tab to see RB-05 (`docs/DEMO-NOTES.md` has the click path) (password: `grep DEMO_USER_PASSWORD .env`). The mock portal is at **https://portal.localhost**: press *Send test event* and watch the signed event get a receipt.
+
+## Demo flow (Slice D)
+`make demo-reset` (after `make up`) loads the same five synthetic cases every time and records their intake and first checks in the ledger. Sign in as `rb.southern.demo`: the queue shows each case with a High, Medium or Low band, label counts and status; a case shows its documents with one of the six labels, source answers, findings with the rule, APH clause, extracted and expected values and a fixed-template reason, and a PDF viewer that opens at the finding. An official records one of five dispositions with a reason. `/audit` shows the hash chain with a recomputed "chain verified" status; `/alerts` lists alerts derived from stored data.
+
+What is real and what is not: all data is synthetic; the approval portal is a mock; every source answer (SHCIL e-stamp, ICAI UDIN) is a MOCK SOURCE; the signature chain is checked offline against a TEST TRUST ANCHOR that proves nothing outside this repository. SATYA advises; officials decide; there is no approve or reject control. Results are "all planted cases detected on synthetic test sets"; the generator and the rules were written together, so this says nothing about real documents. Not built: scans and OCR, intake vault, identity graph, year-over-year, EVC, the full mock portal, Hindi for these screens. See [docs/DEMO-NOTES.md](docs/DEMO-NOTES.md) and [docs/DEMO-CHECKLIST.md](docs/DEMO-CHECKLIST.md).
 
 ## Status
 | Slice | Scope | Status |
@@ -72,7 +77,8 @@ Then open **https://localhost** and sign in as `rb.southern.demo`: the queue lis
 | 1 M5 | Affidavit 2 diff and reconciliation (P-3), RB-05 DiffView; all planted cases detected on synthetic test sets | Built on synthetic data |
 | 2 M6 | Real signature vs image, test trust anchor, stamp chronology, UDIN (P-4, P-18), RB-05/RB-06 badges; all planted cases detected on synthetic test sets | Built on synthetic data |
 | Intake + vault | Document intake and vault (P-19) | Planned |
-| Workbench | Queue, decision bar, alerts, audit (P-10, P-11, P-12) | Planned |
+| Demo flow (Slice D) | Seed and reset, upload, six labels with mock sources, queue with risk band, flags with evidence viewer, five dispositions, audit with chain check, alerts (P-10, P-11, P-12 first cut) | Built on synthetic data |
+| Workbench | Remaining screens (manual tasks RB-09, case replay, Hindi) | Planned |
 | Mock portal | Complete screens and events (P-17) | Planned |
 | M3 | Template-aware extraction and OCR on synthetic templates (P-2, P-6) | Planned |
 | M13, M7, M4, M8 | Year-over-year (P-8), source adapters (P-5), APH date rules (P-7), identity graph (P-9) | Planned |

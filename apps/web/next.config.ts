@@ -12,7 +12,7 @@ const config: NextConfig = {
   productionBrowserSourceMaps: false,
   typescript: { ignoreBuildErrors: false },
   // forbidden() renders app/forbidden.tsx with HTTP 403.
-  experimental: { authInterrupts: true },
+  experimental: { authInterrupts: true, serverActions: { bodySizeLimit: "6mb" } },
   env: {
     SATYA_BUILD_DATE: new Date().toISOString().slice(0, 10),
   },

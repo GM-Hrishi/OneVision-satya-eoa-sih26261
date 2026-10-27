@@ -10,10 +10,13 @@ export interface RailItem {
 const RB: RailItem[] = [
   { href: "/rb-queue?view=overview", labelKey: "overview" },
   { href: "/rb-queue", labelKey: "queue" },
-  // P1, later slices: /rb-queue/manual (RB-09), /alerts (SH-04). P2 hidden: evc-selection, monitoring.
+  { href: "/alerts", labelKey: "alerts" },
+  { href: "/audit", labelKey: "audit" },
+  // P1, later slices: /rb-queue/manual (RB-09). P2 hidden: evc-selection, monitoring.
 ];
+const AU: RailItem[] = [{ href: "/audit", labelKey: "audit" }];
 
-export const RAIL: Partial<Record<Role, RailItem[]>> = { RB };
+export const RAIL: Partial<Record<Role, RailItem[]>> = { RB, AU };
 
 export const UTILITY: RailItem[] = [
   { href: "/help", labelKey: "help" },
@@ -27,10 +30,11 @@ export interface Crumb {
 
 /** Breadcrumb trail for a path: fixed routes from CRUMBS, case routes by pattern. */
 export function crumbsFor(pathname: string): Crumb[] {
-  const caseView = /^\/case\/[^/]+\/(affidavit|verification)$/.exec(pathname);
+  const caseView = /^\/case\/[^/]+\/(affidavit|verification|upload)$/.exec(pathname);
   if (caseView?.[1]) {
     return [{ labelKey: "queue", href: "/rb-queue" }, { labelKey: caseView[1] }];
   }
+  if (/^\/case\/[^/]+$/.test(pathname)) return [{ labelKey: "queue", href: "/rb-queue" }, { labelKey: "caseOverview" }];
   const keys = CRUMBS[pathname] ?? [];
   return keys.map((labelKey) => ({ labelKey }));
 }
@@ -38,6 +42,8 @@ export function crumbsFor(pathname: string): Crumb[] {
 /** Breadcrumb trail labels (nav namespace) for each route. */
 export const CRUMBS: Record<string, string[]> = {
   "/rb-queue": ["queue"],
+  "/alerts": ["alerts"],
+  "/audit": ["audit"],
   "/help": ["help"],
   "/accessibility": ["accessibility"],
   "/about": ["about"],

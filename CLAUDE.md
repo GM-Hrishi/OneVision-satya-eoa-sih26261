@@ -52,6 +52,7 @@ tests/                    cross-service smoke tests (need the running stack)
 | Integration/smoke | `make smoke` (needs `make up`; `make trust-ca` first for verified TLS) |
 | Browser acceptance | `make e2e` (Playwright/Chromium; Caddy CA trusted in NSS, see DEV-SETUP) |
 | Ledger chain check | `make ledger-verify` |
+| Demo reset (5 synthetic cases, empty ledger, seed) | `make demo-reset` (needs `make up`; demo database only) |
 | Synthetic demo cases · check | `make synth` · `make synth-check` (CI fails if stale) |
 | M5 metrics (104 synthetic affidavits) | `make eval-m5` (also printed by `uv run pytest packages/affidavit`) |
 | M6/P-18 metrics (256 synthetic cases) | `make eval-m6` (also printed by `uv run pytest packages/forensics`) |
@@ -74,7 +75,7 @@ URLs: workbench `https://localhost` · API `https://localhost/api/v1/health` · 
 | Signature header (§2.2) | `X-SATYA-Signature: t=<unix>,kid=<key-id>,v1=<hex HMAC-SHA256 of "t.body">`, window 300 s |
 Generated code: `packages/shared-types/ts/src/generated/` and `packages/shared-types/python/satya_shared_types/generated/`.
 
-Workbench API (slices 1–2): `GET /v1/cases`, `GET /v1/cases/{case_id}/affidavit-diff`, `GET /v1/cases/{case_id}/verification`, `GET /v1/cases/{case_id}/documents/{doc_id}/verification` (Keycloak access token from `satya-web` as Bearer; RB role; region scope from `/regions/*`; per-user quota). Contracts: `AffidavitDiff`, `CaseVerification`, `VerificationResult`.
+Workbench API (slices 1–2, Slice D adds `/v1/cases` queue rows with `risk_band`, `/v1/cases/{id}/review`, `POST /v1/cases/{id}/documents`, `.../documents/pick`, `.../documents/{doc}/file`, `POST .../flags/{flag}/disposition`, `/v1/audit`, `/v1/alerts`): `GET /v1/cases`, `GET /v1/cases/{case_id}/affidavit-diff`, `GET /v1/cases/{case_id}/verification`, `GET /v1/cases/{case_id}/documents/{doc_id}/verification` (Keycloak access token from `satya-web` as Bearer; RB role; region scope from `/regions/*`; per-user quota). Contracts: `AffidavitDiff`, `CaseVerification`, `VerificationResult`.
 
 ## Resume protocol (short)
 - Each slice has a prompt in `docs/prompts/` (or the session request) and a progress table (`docs/progress/PROGRESS.md` for slice 0, `docs/progress/PROGRESS-SLICE-<n>.md` after). Continue from the first step not `done`/`done-with-note`; re-verify, never redo a done step blindly.

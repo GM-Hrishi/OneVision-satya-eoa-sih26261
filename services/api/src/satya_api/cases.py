@@ -100,6 +100,20 @@ class FixtureCaseRepository:
             base / "registry" / "prior-filings.json" if base else None
         )
         self._registry: Registry | None = None
+        # Slice D: documents uploaded through the workbench replace the seeded file of a slot.
+        self._overlay: dict[tuple[str, str], dict[str, Any]] = {}
+
+    def set_upload(self, case_id: str, slot: str, entry: dict[str, Any]) -> None:
+        """Make `entry` (doc_id, sha256, bytes, uploaded_at, upload_path) the file of a slot."""
+        self._overlay[(case_id, slot)] = entry
+        self._registry = None  # stamp numbers and UDINs of the register come from the documents
+
+    def clear_uploads(self) -> None:
+        self._overlay.clear()
+        self._registry = None
+
+    def case_dir(self, case_id: str) -> Path | None:
+        return self._index().get(case_id)
 
     def _index(self) -> dict[str, Path]:
         if self._dirs is None:
@@ -126,6 +140,10 @@ class FixtureCaseRepository:
             snapshot = json.loads((path / "snapshot.json").read_text("utf-8"))
         except (OSError, ValueError) as exc:
             raise CaseError("case files unreadable") from exc
+        for doc in case.get("documents", []):
+            entry = self._overlay.get((case_id, doc.get("slot", "")))
+            if entry:
+                doc.update(entry)
         if list(validator("ApplicationSnapshot").iter_errors(snapshot)):
             raise CaseError("snapshot fails ApplicationSnapshot")
         return path, case, snapshot
@@ -135,7 +153,7 @@ class FixtureCaseRepository:
         name = str(doc.get("file", ""))
         if not name or "/" in name or "\\" in name or name.startswith("."):
             raise CaseError("bad document file name")
-        pdf_path = path / name
+        pdf_path = Path(doc["upload_path"]) if doc.get("upload_path") else path / name
         if pdf_path.stat().st_size > MAX_PDF_BYTES:
             raise CaseError("DOC_TOO_LARGE")
         data = pdf_path.read_bytes()
@@ -185,6 +203,16 @@ class FixtureCaseRepository:
         except (OSError, ValueError) as exc:
             raise CaseError("case.json unreadable") from exc
         return self._summary(case)
+
+    async def case_files(
+        self, case_id: str
+    ) -> tuple[dict[str, Any], dict[str, Any], dict[str, bytes]]:
+        return await asyncio.to_thread(self._load_all, case_id)
+
+    async def registry(self) -> Registry:
+        if self._registry is None:
+            self._registry = await asyncio.to_thread(self._build_registry)
+        return self._registry
 
     async def m5_diff(self, case_id: str) -> dict[str, Any]:
         """The M5 AffidavitDiff alone (M6 sections still null, `pending` lists them)."""

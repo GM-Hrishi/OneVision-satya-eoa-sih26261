@@ -126,13 +126,15 @@ def test_wrong_role_is_403(wb: TestClient) -> None:
 
 def test_case_list_is_scoped_to_the_officials_region(wb: TestClient) -> None:
     body = wb.get("/v1/cases", headers=auth(token())).json()
-    assert {i["case_id"] for i in body["items"]} == {DIT03, DCE05}
+    assert {i["case_id"] for i in body["items"]} >= {DIT03, DCE05}
+    assert len(body["items"]) == 5  # Slice D seed set
     flags = {i["case_id"]: i["open_flags"] for i in body["items"]}
-    assert flags == {DIT03: 7, DCE05: 0}  # M5 (5) + M6 (2: image-only mark, mark after notary)
+    assert flags[DIT03] == 7  # M5 (5) + M6 (2: image-only mark, mark after notary)
+    assert flags[DCE05] == 0
     other = wb.get("/v1/cases", headers=auth(token(groups=["/regions/northern"]))).json()
     assert other["items"] == []
     national = wb.get("/v1/cases", headers=auth(token(groups=["/regions/national"]))).json()
-    assert len(national["items"]) == 2
+    assert len(national["items"]) == 5
 
 
 def test_affidavit_diff_matches_the_contract_and_the_planted_findings(wb: TestClient) -> None:
@@ -177,8 +179,11 @@ def test_unknown_or_malformed_case_is_404(wb: TestClient, case_id: str) -> None:
 def test_per_user_quota() -> None:
     for client in _client(user_rate_limit="2/minute"):
         headers = auth(token())
-        codes = [client.get("/v1/cases", headers=headers).status_code for _ in range(3)]
-        assert codes == [200, 200, 429]
+        # A cheap authorised route (unknown case id), so the three calls fall in one window.
+        codes = [
+            client.get("/v1/cases/not-a-case/review", headers=headers).status_code for _ in range(3)
+        ]
+        assert codes == [404, 404, 429]
 
 
 def test_meta_lists_the_rulesets(wb: TestClient) -> None:

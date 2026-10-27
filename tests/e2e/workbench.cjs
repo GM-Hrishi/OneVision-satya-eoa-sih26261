@@ -41,7 +41,7 @@ async function login(page, username) {
   const body = await page.textContent("body");
   // Slice 1: the gateway serves the synthetic demo cases, so the queue lists them (the empty state
   // shows only when the gateway holds no case for the region).
-  check(body.includes("Cases with an affidavit check") && body.includes("1-90000004217"), "queue lists the synthetic demo cases");
+  check(body.includes("Cases for review") && body.includes("1-90000004217"), "queue lists the synthetic demo cases");
   check(body.includes("Prototype · connected to a mock approval portal · synthetic data only"), "prototype strip shown");
   check(body.includes("Regulation Bureau · Southern"), "role + region chip shown");
   const current = await page.getAttribute('nav[aria-label="Main navigation"] [aria-current="page"]', "href");

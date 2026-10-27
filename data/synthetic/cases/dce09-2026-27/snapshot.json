@@ -1,0 +1,265 @@
+{
+  "ay": "2026-27",
+  "captured_at": "2026-11-09T11:05:00+05:30",
+  "basic": {
+    "application_id": "1-90000009109",
+    "permanent_id": "1-9000309",
+    "institution_type": "Private-Self Financing",
+    "status": "Submitted",
+    "application_date": "2026-11-09",
+    "submission_date": "2026-11-13",
+    "regional_office": "Southern",
+    "overall_deficiency": "no"
+  },
+  "trust": {
+    "name": "Demo Educational Trust 09",
+    "registration_ref": "DEMO-TRUST-REG-0009"
+  },
+  "authorised_signatory": {
+    "name": "Demo Trustee 09",
+    "designation": "chairman"
+  },
+  "courses": [
+    {
+      "programme": "Engineering and Technology",
+      "level": "UG",
+      "course": "Computer Science and Engineering",
+      "intake_approved": [
+        {
+          "ay": "2024-25",
+          "intake": 120
+        },
+        {
+          "ay": "2025-26",
+          "intake": 120
+        }
+      ],
+      "intake_applied": 120
+    }
+  ],
+  "land": {
+    "total_area": 10.0,
+    "unit": "acre",
+    "pieces": 1,
+    "max_distance_km": 0.0,
+    "coordinates": {
+      "lat": {
+        "deg": 12,
+        "min": 39,
+        "sec": 0,
+        "hemisphere": "N"
+      },
+      "lon": {
+        "deg": 81,
+        "min": 39,
+        "sec": 0,
+        "hemisphere": "E"
+      }
+    },
+    "deeds": [
+      {
+        "holder": "Demo Educational Trust 09",
+        "document_no": "DEMO-DEED-0901",
+        "registration_date": "2008-03-28",
+        "plot_no": "DEMO-PLOT-091",
+        "village_district": "Demo Town 09 / Demo District 01",
+        "area_acre": 10.0
+      }
+    ]
+  },
+  "buildings": [
+    {
+      "block": "Academic Block A",
+      "sanctioned_area_m2": 9800,
+      "constructed_area_m2": 9800,
+      "approving_authority": "Demo Local Planning Authority 09",
+      "approval_date": "2010-03-01"
+    }
+  ],
+  "rooms": {
+    "administrative": [
+      {
+        "room_id": "A-101",
+        "room_type": "Principal Office",
+        "carpet_area_m2": 30.0,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      },
+      {
+        "room_id": "A-102",
+        "room_type": "Board Room",
+        "carpet_area_m2": 40.0,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      },
+      {
+        "room_id": "A-103",
+        "room_type": "Office All Inclusive",
+        "carpet_area_m2": 150.0,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      },
+      {
+        "room_id": "A-104",
+        "room_type": "Department Office",
+        "carpet_area_m2": 30.0,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      },
+      {
+        "room_id": "A-105",
+        "room_type": "Central Store",
+        "carpet_area_m2": 30.0,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      },
+      {
+        "room_id": "A-106",
+        "room_type": "Exam Control Office",
+        "carpet_area_m2": 30.0,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      }
+    ],
+    "amenities": [
+      {
+        "room_id": "M-101",
+        "room_type": "Toilets",
+        "carpet_area_m2": 120.0,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      },
+      {
+        "room_id": "M-102",
+        "room_type": "Boys Common Room",
+        "carpet_area_m2": 75.0,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      },
+      {
+        "room_id": "M-103",
+        "room_type": "Girls Common Room",
+        "carpet_area_m2": 75.0,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      }
+    ],
+    "instructional": [
+      {
+        "room_id": "I-201",
+        "room_type": "Class Room",
+        "carpet_area_m2": 66.0,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      },
+      {
+        "room_id": "I-202",
+        "room_type": "Tutorial Room",
+        "carpet_area_m2": 33.0,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      },
+      {
+        "room_id": "I-203",
+        "room_type": "Laboratory",
+        "carpet_area_m2": 66.0,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      },
+      {
+        "room_id": "I-204",
+        "room_type": "Workshop",
+        "carpet_area_m2": 200.0,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      },
+      {
+        "room_id": "I-205",
+        "room_type": "Drawing Hall",
+        "carpet_area_m2": 132.0,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      },
+      {
+        "room_id": "I-206",
+        "room_type": "Class Room",
+        "carpet_area_m2": 66.0,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      }
+    ],
+    "instructional_common": [
+      {
+        "room_id": "C-301",
+        "room_type": "Library and Reading Room",
+        "carpet_area_m2": 400.0,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      },
+      {
+        "room_id": "C-302",
+        "room_type": "Seminar Hall",
+        "carpet_area_m2": 132.0,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      },
+      {
+        "room_id": "C-303",
+        "room_type": "Language Laboratory",
+        "carpet_area_m2": 66.0,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      },
+      {
+        "room_id": "C-304",
+        "room_type": "Computer Centre",
+        "carpet_area_m2": 150.0,
+        "flooring": "Ready",
+        "walls_painting": "Ready",
+        "electrification": "Ready"
+      }
+    ]
+  },
+  "declaration": {
+    "items": {
+      "a": true,
+      "b": true,
+      "c": true,
+      "d": true,
+      "e": true,
+      "f": true
+    },
+    "category_list": [
+      "EoA Only"
+    ]
+  },
+  "deficiency_report": {
+    "template_year": "2026-27",
+    "sections": [
+      {
+        "section": "Principal eligibility",
+        "deficiency": "no"
+      }
+    ],
+    "overall": "no",
+    "principal_eligibility": "yes"
+  }
+}

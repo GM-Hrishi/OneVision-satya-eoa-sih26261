@@ -81,6 +81,9 @@ mem-check: ## Check every service has a memory limit and the sum is <= 8 GiB
 config: ## Validate the compose file
 	$(COMPOSE) config --quiet && echo "compose config OK"
 
+demo-reset: ## Reset the demo to the same 5 synthetic cases, empty ledger plus seed (needs make up)
+	bash infra/scripts/demo-reset.sh
+
 ledger-verify: ## Recompute the ledger hash chain inside the api container
 	$(COMPOSE) exec -T api python -m satya_api.ledger_verify
 
@@ -98,9 +101,10 @@ e2e: ## Browser acceptance (Playwright/Chromium): workbench sign-in + shell, moc
 	NODE_PATH=$$(npm root -g) node tests/e2e/mock-portal.cjs
 	NODE_PATH=$$(npm root -g) node tests/e2e/diffview.cjs
 	NODE_PATH=$$(npm root -g) node tests/e2e/verification.cjs
+	NODE_PATH=$$(npm root -g) node tests/e2e/demo-flow.cjs
 	$(COMPOSE) exec -T api python -m satya_api.ledger_verify
 
 test-db: ## Postgres-backed API tests in a throwaway pgvector container
 	bash infra/scripts/test-db.sh
 
-.PHONY: pki eval-m6 synth synth-check eval-m5 guard secret-scan help install secrets up down ps logs reset mem-check config ledger-verify trust-ca smoke e2e test-db gen-types check-types-diff lint typecheck test
+.PHONY: demo-reset pki eval-m6 synth synth-check eval-m5 guard secret-scan help install secrets up down ps logs reset mem-check config ledger-verify trust-ca smoke e2e test-db gen-types check-types-diff lint typecheck test

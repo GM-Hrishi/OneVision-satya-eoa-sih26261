@@ -5,11 +5,11 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/ui/PageHeader";
 import styles from "@/components/ui/Page.module.css";
-import { apiGet } from "@/lib/api";
+import { queue } from "@/lib/demo";
 import { requireRole } from "@/lib/session";
-import { CaseList, type CaseRow } from "./CaseList";
+import { applyQuery, CaseList, parseQuery } from "./CaseList";
 
-type Props = { searchParams: Promise<{ view?: string }> };
+type Props = { searchParams: Promise<Record<string, string | undefined>> };
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const t = await getTranslations("queue");
@@ -21,19 +21,21 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 }
 
 export default async function QueuePage({ searchParams }: Props) {
-  const overview = (await searchParams).view === "overview";
+  const params = await searchParams;
+  const overview = params.view === "overview";
   await requireRole("RB", overview ? "/rb-queue?view=overview" : "/rb-queue");
   const t = await getTranslations("queue");
   const portal = process.env.SATYA_PORTAL_ORIGIN ?? "https://portal.localhost";
   const path = overview ? "/rb-queue?view=overview" : "/rb-queue";
-  const { items } = await apiGet<{ items: CaseRow[] }>("/v1/cases", path);
+  const { items } = await queue(path);
+  const query = parseQuery(params);
   return (
     <>
       <PageHeader title={overview ? t("overviewTitle") : t("title")}>
         <p className={styles.lede}>{t("intro")}</p>
       </PageHeader>
       {items.length > 0 ? (
-        <CaseList items={items} />
+        <CaseList items={applyQuery(items, query)} total={items.length} query={query} />
       ) : (
       <section className={styles.empty} aria-labelledby="queue-empty">
         <p id="queue-empty" className={styles.emptyTitle}>

@@ -70,3 +70,7 @@ Exact versions pinned on 26 Oct 2026, checked against the registries (Docker Hub
 
 ## Updating
 Bump a version in one place (image tag in `infra/docker-compose.yml` / Dockerfile `ARG`, or the manifest + lockfile), run `make test` and `make up && make smoke && make e2e`, then update this table in the same commit.
+
+| Library (workbench) | Version | Notes |
+|---|---|---|
+| pdfjs-dist | 5.7.284 (Apache-2.0) | Slice D evidence viewer; worker served from the workbench origin |

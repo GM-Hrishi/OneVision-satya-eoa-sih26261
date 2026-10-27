@@ -1,0 +1,47 @@
+{
+  "_synthetic": "SYNTHETIC FIXTURE. Invented values for the SATYA-EoA demo and tests. Not a real institution, person, application or document.",
+  "case": "dt11-2026-27-m6-stamp_reused",
+  "profile": 11,
+  "variant": "stamp_reused",
+  "control": false,
+  "timeline": {
+    "application": "2026-11-16",
+    "stamp_issued": "2026-11-17T11:05:00+05:30",
+    "notarised": "2026-11-18",
+    "issuer_dsc": "2026-11-19T10:15:00+05:30",
+    "mark": null,
+    "uploader_dsc": "2026-11-19T16:30:00+05:30",
+    "uploaded": "2026-11-19T16:40:00+05:30"
+  },
+  "expected_flags": [
+    {
+      "rule_id": "STAMP-REUSE",
+      "check_ref": "m6:STAMP-REUSE:stamp:certificate_no",
+      "doc_id": "doc_R4GC8BS2PYZK2JWWDQCN8ATQVS",
+      "label": "manual_review_required"
+    }
+  ],
+  "expected_checks": [
+    {
+      "doc_id": "doc_R4GC8BS2PYZK2JWWDQCN8ATQVS",
+      "kind": "format",
+      "outcome": "manual_review_required",
+      "reason_code": "STAMP_NO_REUSED"
+    }
+  ],
+  "expected_document_labels": {
+    "doc_R4GC8BS2PYZK2JWWDQCN8ATQVS": "manual_review_required",
+    "doc_KE9H07FN9VY4Y9GZ5V0QJYM8XZ": "source_unavailable"
+  },
+  "printed": {
+    "stamp.certificate_no": "IN-TN91125111604228Q",
+    "stamp.second_party": "AICTE NEW DELHI",
+    "stamp.duty": 100,
+    "stamp.issued": "2026-11-17",
+    "notary.date": "2026-11-18",
+    "notary.valid_till": "2027-12-31",
+    "mark.date": null,
+    "udin": "26991177SACNWX4700",
+    "udin.membership_no": "991177"
+  }
+}

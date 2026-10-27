@@ -13,10 +13,13 @@ from satya_affidavit.synth.institutions import PROFILES
 from satya_forensics import pki
 from satya_forensics.synth.variants import VARIANTS, M6Case, build_case, prior_filings
 
-# (directory, profile, demo)
-DEMO_CASES: tuple[tuple[str, int, bool], ...] = (
-    ("dit03-2026-27", 3, True),
-    ("dce05-2026-27", 5, False),
+# (directory, profile, M6 variant, demo story). Slice D (demo flow) adds three planted cases.
+DEMO_CASES: tuple[tuple[str, int, str, bool], ...] = (
+    ("dit03-2026-27", 3, "clean", True),  # flagship: M5 findings + image-only mark + no UDIN
+    ("dce05-2026-27", 5, "clean", False),  # clean control
+    ("dit11-2026-27", 11, "stamp_reused", False),  # e-stamp number reused from a prior filing
+    ("dce07-2026-27", 7, "udin_length", False),  # UDIN structure problem
+    ("dce09-2026-27", 9, "sig_expired", False),  # issuer certificate expired at signing
 )
 REGISTRY_FILE = "prior-filings.json"
 PKI_FILES = ("satya-test-root.pem", "satya-test-sub-ca-1.pem", "satya-test-sub-ca-1.crl")
@@ -45,14 +48,14 @@ def case_files(m6: M6Case) -> dict[str, bytes]:
 
 
 def demo_cases() -> list[M6Case]:
-    return [build_case(p, "clean", demo=demo) for _, p, demo in DEMO_CASES]
+    return [build_case(p, variant, demo=demo) for _, p, variant, demo in DEMO_CASES]
 
 
 def all_files() -> dict[str, bytes]:
     """Every generated file under data/synthetic, keyed by its path relative to that folder."""
     out: dict[str, bytes] = {}
     specs: list[pki.SignerSpec] = []
-    for (directory, _, _), m6 in zip(DEMO_CASES, demo_cases(), strict=True):
+    for (directory, *_), m6 in zip(DEMO_CASES, demo_cases(), strict=True):
         for name, data in case_files(m6).items():
             out[f"cases/{directory}/{name}"] = data
         specs += m6.crl_specs

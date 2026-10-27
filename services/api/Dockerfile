@@ -47,6 +47,7 @@ COPY data/synthetic/pki /app/data/synthetic/pki
 COPY data/synthetic/registry /app/data/synthetic/registry
 ENV SATYA_TEMPLATES_DIR=/app/packages/templates SATYA_RULES_DIR=/app/packages/rules \
     SATYA_DEMO_CASES_DIR=/app/data/synthetic/cases
+RUN mkdir -p /var/lib/satya/uploads && chown satya:satya /var/lib/satya/uploads
 USER satya
 EXPOSE 8000
 HEALTHCHECK --interval=15s --timeout=5s --start-period=20s --retries=5 \

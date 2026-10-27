@@ -15,6 +15,8 @@ export function proxy(request: NextRequest) {
     "img-src 'self' data:",
     "font-src 'self'",
     "connect-src 'self'",
+    // PDF.js runs its parser in a worker served from this origin.
+    "worker-src 'self' blob:",
     `form-action 'self' ${authOrigin}`,
     "frame-ancestors 'none'",
     "base-uri 'self'",

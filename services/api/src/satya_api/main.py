@@ -17,10 +17,11 @@ from pathlib import Path
 from typing import Any
 
 import httpx
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 from redis.asyncio import Redis
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -47,6 +48,7 @@ from satya_api.problems import ProblemError, problem_response
 from satya_api.ratelimit import RateLimiter
 from satya_api.signature import HEADER, verify
 from satya_api.store import EventStore, InboundEvent, PostgresStore
+from satya_api.workflow import FLAG_ID, Workflow, WorkflowError
 from satya_forensics.engine import ENGINE_VERSION as M6_ENGINE_VERSION
 from satya_forensics.rules import load_ruleset as load_m6_ruleset
 from satya_shared_types import constants, validator
@@ -56,6 +58,7 @@ security = logging.getLogger("satya.security")
 
 CheckFn = Callable[[], Awaitable[None]]
 MAX_REPORTED_ERRORS = 20
+RISK_BANDS = ("high", "medium", "low")
 
 
 def _schema_errors(name: str, data: Any, prefix: str = "") -> list[dict[str, str]]:
@@ -107,6 +110,8 @@ def create_app(
     client_limiter = RateLimiter(redis, client_limit, client_window, "client")
     user_limit, user_window = parse_rate(settings.user_rate_limit)
     user_limiter = RateLimiter(redis, user_limit, user_window, "user")
+    upload_limit, upload_window = parse_rate(settings.upload_rate_limit)
+    upload_limiter = RateLimiter(redis, upload_limit, upload_window, "upload")
     hmac_keys = settings.hmac_key_map()
 
     @asynccontextmanager
@@ -131,9 +136,18 @@ def create_app(
                 log.error("no tokenisation key (>= 32 chars); land tables cannot be reconciled")
             root = Path(settings.demo_cases_dir) if settings.demo_cases_dir else None
             app.state.cases = FixtureCaseRepository(root, settings.token_key())
+        app.state.workflow = Workflow(
+            app.state.cases,
+            app.state.store,
+            Path(settings.upload_dir) if settings.upload_dir else None,
+        )
+        await app.state.workflow.restore_uploads()
+        warm_task = asyncio.create_task(app.state.workflow.warm()) if settings.warm_cache else None
         if not hmac_keys:
             log.error("no HMAC keys configured; every portal event will be rejected")
         yield
+        if warm_task is not None:
+            warm_task.cancel()
         await app.state.store.close()
         await app.state.http.aclose()
         if redis is not None:
@@ -149,7 +163,11 @@ def create_app(
     )
 
     # Added innermost first: Trace -> CORS -> RateLimit -> BodyLimit -> routes.
-    app.add_middleware(BodyLimitMiddleware, max_bytes=settings.max_body_bytes)
+    app.add_middleware(
+        BodyLimitMiddleware,
+        max_bytes=settings.max_body_bytes,
+        upload_max_bytes=settings.upload_max_bytes,
+    )
     app.add_middleware(RateLimitMiddleware, limiter=ip_limiter)
     app.add_middleware(
         CORSMiddleware,
@@ -337,7 +355,7 @@ def create_app(
         return JSONResponse({"receipt_id": result.receipt_id, "duplicate": False}, 202)
 
     # ---- Workbench API (UI spec §6) ------------------------------------------------------------
-    async def official(request: Request, role: str = "RB") -> Principal:
+    async def official(request: Request, role: str | tuple[str, ...] = "RB") -> Principal:
         """Verify the bearer token, apply the per-user quota and require the role."""
         verifier: TokenVerifier = request.app.state.verifier
         principal = await verifier.verify(request.headers.get("authorization"))
@@ -345,10 +363,11 @@ def create_app(
         if retry_after is not None:
             security.warning("rate limited", extra={"trace_id": trace(request), "scope": "user"})
             raise ProblemError(429, "RATE_LIMITED", headers={"Retry-After": str(retry_after)})
-        if role not in principal.roles:
+        needed = (role,) if isinstance(role, str) else role
+        if not principal.roles.intersection(needed):
             security.warning(
                 "permission denied",
-                extra={"trace_id": trace(request), "sub": principal.subject, "need": role},
+                extra={"trace_id": trace(request), "sub": principal.subject, "need": list(needed)},
             )
             raise ProblemError(403, "SCOPE_DENIED")
         return principal
@@ -363,31 +382,19 @@ def create_app(
 
     @app.get("/v1/cases")
     async def list_cases(request: Request) -> JSONResponse:
+        """The queue (RB-02): one row per case with its risk band, label counts and status."""
         principal = await official(request)
-        repo: CaseRepository = request.app.state.cases
-        items = []
-        for summary in await repo.list_cases():
-            if not principal.can_see_region(summary.regional_office):
-                continue
-            try:
-                open_flags: int | None = await repo.open_flags(summary.case_id)
-            except CaseError:
-                log.exception("case unusable", extra={"case_id": summary.case_id})
-                open_flags = None
-            items.append(
-                {
-                    "case_id": summary.case_id,
-                    "application_id": summary.application_id,
-                    "region": summary.regional_office,
-                    "ay": summary.ay,
-                    "category_set": list(summary.category_set),
-                    "route": summary.route,
-                    "stage": summary.stage,
-                    "institution_name": summary.institution_name,
-                    "open_flags": open_flags,
-                }
-            )
-        body = {"items": items, "totals": {"submitted": len(items)}, "advisory": True}
+        flow: Workflow = request.app.state.workflow
+        items = await flow.queue(principal.can_see_region)
+        body = {
+            "items": items,
+            "totals": {
+                "submitted": len(items),
+                "by_band": {b: sum(1 for i in items if i["risk_band"] == b) for b in RISK_BANDS},
+                "sources_unavailable": sum(i["manual_tasks"] for i in items),
+            },
+            "advisory": True,
+        }
         return JSONResponse(body, headers={"Cache-Control": "no-store"})
 
     async def scoped_case(request: Request, case_id: str) -> tuple[Principal, CaseRepository]:
@@ -455,6 +462,179 @@ def create_app(
             },
         )
         return JSONResponse(body, headers={"Cache-Control": "no-store"})
+
+    # ---- Slice D: review, upload, decisions, audit, alerts -------------------------------------
+    class DispositionBody(BaseModel):
+        action: str = Field(max_length=32)
+        reason: str = Field(max_length=4000)
+
+    class PickBody(BaseModel):
+        slot: str = Field(max_length=16)
+        source_case_id: str = Field(max_length=64)
+
+    def problem(exc: WorkflowError) -> ProblemError:
+        status = 404 if exc.code == "FLAG_NOT_FOUND" else 422
+        return ProblemError(status, exc.code)
+
+    def flow_of(request: Request) -> Workflow:
+        flow: Workflow = request.app.state.workflow
+        return flow
+
+    @app.get("/v1/cases/{case_id}/review")
+    async def case_review(case_id: str, request: Request) -> JSONResponse:
+        """Documents with labels and source responses, flags with why sentences, band, decisions."""
+        await scoped_case(request, case_id)
+        try:
+            body = await flow_of(request).view(case_id)
+        except CaseError:
+            raise unusable(request, case_id) from None
+        return JSONResponse(body, headers={"Cache-Control": "no-store"})
+
+    async def upload_guard(request: Request, principal: Principal) -> None:
+        retry_after = await upload_limiter.hit(principal.subject)
+        if retry_after is not None:
+            security.warning("rate limited", extra={"trace_id": trace(request), "scope": "upload"})
+            raise ProblemError(429, "RATE_LIMITED", headers={"Retry-After": str(retry_after)})
+
+    @app.post("/v1/cases/{case_id}/documents")
+    async def upload_document(
+        case_id: str, request: Request, slot: str, filename: str
+    ) -> JSONResponse:
+        """Add a synthetic PDF to a slot (raw body). PDF only, 5 MB, checked by name and content."""
+        principal, _ = await scoped_case(request, case_id)
+        await upload_guard(request, principal)
+        if (
+            request.headers.get("content-type", "").split(";")[0].strip().lower()
+            != "application/pdf"
+        ):
+            raise ProblemError(415, "UNSUPPORTED_MEDIA_TYPE", "The body must be application/pdf.")
+        data = await request.body()
+        try:
+            view = await flow_of(request).upload(
+                case_id, slot, filename, data, principal.subject, "upload"
+            )
+        except WorkflowError as exc:
+            security.warning(
+                "upload rejected",
+                extra={"trace_id": trace(request), "sub": principal.subject, "code": exc.code},
+            )
+            raise problem(exc) from None
+        except CaseError:
+            raise unusable(request, case_id) from None
+        return JSONResponse(view, status_code=201, headers={"Cache-Control": "no-store"})
+
+    @app.post("/v1/cases/{case_id}/documents/pick")
+    async def pick_document(case_id: str, body: PickBody, request: Request) -> JSONResponse:
+        """Use a seeded synthetic document of another case in this case's slot."""
+        principal, _ = await scoped_case(request, case_id)
+        await upload_guard(request, principal)
+        if not CASE_ID.fullmatch(body.source_case_id):
+            raise ProblemError(404, "NOT_FOUND")
+        try:
+            view = await flow_of(request).pick(
+                case_id, body.slot, body.source_case_id, principal.subject
+            )
+        except WorkflowError as exc:
+            raise problem(exc) from None
+        except CaseError:
+            raise unusable(request, case_id) from None
+        return JSONResponse(view, status_code=201, headers={"Cache-Control": "no-store"})
+
+    @app.get("/v1/cases/{case_id}/documents/{doc_id}/file")
+    async def document_file(case_id: str, doc_id: str, request: Request) -> Response:
+        """The stored PDF, for the viewer (inline, never sniffed)."""
+        principal, repo = await scoped_case(request, case_id)
+        if not DOC_ID.fullmatch(doc_id):
+            raise ProblemError(404, "NOT_FOUND")
+        try:
+            _, _, files = await repo.case_files(case_id)  # type: ignore[attr-defined]
+        except CaseError:
+            raise unusable(request, case_id) from None
+        data = files.get(doc_id)
+        if data is None:
+            raise ProblemError(404, "NOT_FOUND")
+        log.info(
+            "document served",
+            extra={"trace_id": trace(request), "sub": principal.subject, "doc_id": doc_id},
+        )
+        return Response(
+            data,
+            media_type="application/pdf",
+            headers={
+                "Cache-Control": "no-store",
+                "X-Content-Type-Options": "nosniff",
+                "Content-Disposition": 'inline; filename="document.pdf"',
+            },
+        )
+
+    @app.post("/v1/cases/{case_id}/flags/{flag_id}/disposition")
+    async def record_disposition(
+        case_id: str, flag_id: str, body: DispositionBody, request: Request
+    ) -> JSONResponse:
+        """One of the five dispositions, reason of 10+ characters. Advisory: no status changes."""
+        principal, _ = await scoped_case(request, case_id)
+        if not FLAG_ID.fullmatch(flag_id):
+            raise ProblemError(404, "NOT_FOUND")
+        try:
+            result = await flow_of(request).disposition(
+                case_id, flag_id, body.action, body.reason, principal.subject, "RB"
+            )
+        except WorkflowError as exc:
+            raise problem(exc) from None
+        except CaseError:
+            raise unusable(request, case_id) from None
+        security.info(
+            "disposition recorded",
+            extra={
+                "trace_id": trace(request),
+                "sub": principal.subject,
+                "case_id": case_id,
+                "action": body.action,
+            },
+        )
+        return JSONResponse(
+            {**result, "advisory": True, "regulatory_effect": "none"},
+            status_code=201,
+            headers={"Cache-Control": "no-store"},
+        )
+
+    @app.get("/v1/audit")
+    async def audit(request: Request, case_id: str | None = None) -> JSONResponse:
+        """The ledger (newest first) with the chain recomputed on every call (AU and RB)."""
+        principal = await official(request, ("AU", "RB"))
+        if case_id is not None and not CASE_ID.fullmatch(case_id):
+            raise ProblemError(404, "NOT_FOUND")
+        flow = flow_of(request)
+        allowed = await visible_cases(request, principal)
+        body = await flow.audit(case_id, allowed)
+        return JSONResponse(body, headers={"Cache-Control": "no-store"})
+
+    async def visible_cases(request: Request, principal: Principal) -> Callable[[str | None], bool]:
+        if "AU" in principal.roles:
+            return lambda _case: True
+        ok = {
+            c.case_id
+            for c in await request.app.state.cases.list_cases()
+            if principal.can_see_region(c.regional_office)
+        }
+        return lambda case: case in ok
+
+    @app.get("/v1/audit/{seq}")
+    async def audit_entry(seq: int, request: Request) -> JSONResponse:
+        principal = await official(request, ("AU", "RB"))
+        entry = await flow_of(request).audit_entry(seq)
+        allowed = await visible_cases(request, principal)
+        if entry is None or not allowed(entry["case_id"]):
+            raise ProblemError(404, "NOT_FOUND")
+        return JSONResponse(entry, headers={"Cache-Control": "no-store"})
+
+    @app.get("/v1/alerts")
+    async def alerts(request: Request) -> JSONResponse:
+        principal = await official(request)
+        items = await flow_of(request).alerts(principal.can_see_region)
+        return JSONResponse(
+            {"items": items, "advisory": True}, headers={"Cache-Control": "no-store"}
+        )
 
     return app
 

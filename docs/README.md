@@ -5,6 +5,8 @@ One line per doc. Synthetic data only; advisory only; mock approval portal.
 - [DEV-SETUP.md](DEV-SETUP.md): local setup, Windows/WSL notes, trusting the Caddy CA, troubleshooting.
 - [ARCHITECTURE.md](ARCHITECTURE.md): services, data flow, module map and the M5/M6 paths.
 - [STACK-VERSIONS.md](STACK-VERSIONS.md): pinned versions of every runtime, image and library.
+- [DEMO-NOTES.md](DEMO-NOTES.md): Slice D click path, what each screen proves, what to say, what is not built.
+- [DEMO-CHECKLIST.md](DEMO-CHECKLIST.md): before-recording checklist (ports, users, zoom, reset, clean console).
 - [DEMO-SCRIPT.md](DEMO-SCRIPT.md): the 5 to 7 minute demo on one synthetic Tamil Nadu case.
 - [SYNTHETIC-TESTSET-PLAN.md](SYNTHETIC-TESTSET-PLAN.md): how each Phase-1 rule is measured on synthetic test sets.
 - [ISSUES.md](ISSUES.md): backlog of promises P-1 to P-19, generated from `backlog/promises.json`.
@@ -30,5 +32,7 @@ One line per doc. Synthetic data only; advisory only; mock approval portal.
 - [progress/DECISIONS-SLICE-0.md](progress/DECISIONS-SLICE-0.md): slice 0 non-obvious choices.
 - [progress/DECISIONS-SLICE-1.md](progress/DECISIONS-SLICE-1.md): slice 1 non-obvious choices.
 - [progress/DECISIONS-SLICE-2.md](progress/DECISIONS-SLICE-2.md): slice 2 non-obvious choices.
+- [progress/DEMO-SLICE-PROGRESS.md](progress/DEMO-SLICE-PROGRESS.md): Slice D (demo flow) step table.
+- [progress/DECISIONS-SLICE-D.md](progress/DECISIONS-SLICE-D.md): Slice D non-obvious choices.
 - [progress/PRE-PUBLIC-CHECK.md](progress/PRE-PUBLIC-CHECK.md): read-only pre-public repository check.
 - [progress/BRANCH-CLEANUP.md](progress/BRANCH-CLEANUP.md): branch and tag cleanup status (if manual steps remain).

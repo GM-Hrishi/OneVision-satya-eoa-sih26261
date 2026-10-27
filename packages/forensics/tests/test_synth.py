@@ -146,7 +146,7 @@ def test_demo_case_story() -> None:
     assert truth["printed"]["udin"] is None  # F10: no UDIN on the audited statement
     clean = json.loads((root / "cases/dce05-2026-27/truth-m6.json").read_text("utf-8"))
     assert clean["expected_flags"] == []
-    assert len(DEMO_CASES) == 2
+    assert len(DEMO_CASES) == 5
 
 
 def test_committed_synthetic_files_match_a_fresh_generation() -> None:

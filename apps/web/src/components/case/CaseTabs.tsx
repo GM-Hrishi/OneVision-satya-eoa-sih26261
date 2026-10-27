@@ -6,11 +6,13 @@ import { getTranslations } from "next-intl/server";
 import styles from "./CaseTabs.module.css";
 
 const TABS = [
+  { segment: "", labelKey: "caseOverview" },
+  { segment: "upload", labelKey: "upload" },
   { segment: "affidavit", labelKey: "affidavit" },
   { segment: "verification", labelKey: "verification" },
 ] as const;
 
-export async function CaseTabs({ caseId, current }: { caseId: string; current: (typeof TABS)[number]["segment"] }) {
+export async function CaseTabs({ caseId, current }: { caseId: string; current: (typeof TABS)[number]["segment"] | "overview" }) {
   const t = await getTranslations("nav");
   const tv = await getTranslations("verification");
   return (
@@ -19,8 +21,8 @@ export async function CaseTabs({ caseId, current }: { caseId: string; current: (
         {TABS.map((tab) => (
           <li key={tab.segment}>
             <Link
-              href={`/case/${caseId}/${tab.segment}`}
-              aria-current={tab.segment === current ? "page" : undefined}
+              href={tab.segment ? `/case/${caseId}/${tab.segment}` : `/case/${caseId}`}
+              aria-current={(tab.segment || "overview") === current ? "page" : undefined}
               className={styles.tab}
             >
               {t(tab.labelKey)}

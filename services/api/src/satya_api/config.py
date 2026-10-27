@@ -34,6 +34,12 @@ class Settings(BaseSettings):
     tokenisation_key: SecretStr = SecretStr("")
     # Slice 1: synthetic demo cases served read-only (data/synthetic/cases). Empty = no cases.
     demo_cases_dir: str = ""
+    # Slice D: where uploaded synthetic PDFs are kept (named by SHA-256) and the upload limits.
+    upload_dir: str = ""
+    upload_max_bytes: int = Field(default=5 * 1024 * 1024, gt=0)
+    upload_rate_limit: str = "20/minute"
+    # Run the M5/M6 checks of every demo case once at start so the first queue load is fast.
+    warm_cache: bool = False
 
     def hmac_key_map(self) -> dict[str, bytes]:
         keys: dict[str, bytes] = {}

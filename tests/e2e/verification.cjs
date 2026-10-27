@@ -37,7 +37,9 @@ async function login(page, username, start = `${BASE}/`) {
   await login(page, "rb.southern.demo");
   await page.waitForURL(`${BASE}/rb-queue`, { timeout: 20000 });
   await page.waitForSelector("#case-list", { timeout: 30000 });
-  await page.getByRole("link", { name: "Open the verification panel for application 1-90000004217" }).click();
+  await page.getByRole("link", { name: "Open the case for application 1-90000004217" }).click();
+  await page.waitForURL(`${BASE}/case/${DIT03}`, { timeout: 30000 });
+  await page.getByRole("link", { name: "Verification" }).first().click();
   await page.waitForURL(`${BASE}/case/${DIT03}/verification`, { timeout: 30000 });
   await page.waitForSelector("#ver-docs", { timeout: 30000 });
   check(true, "queue link opens RB-06 for DIT 03");

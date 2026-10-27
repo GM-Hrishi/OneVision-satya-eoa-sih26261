@@ -26,6 +26,11 @@ A value is synthetic only if it was made up for testing and cannot be traced to 
 |---|---|---|---|
 | `dit03-2026-27` | Demo Institute of Technology 03 (`1-90000004217`) | category line missing; declaration 9 narrowed; deed 2 area 3.50 vs 4.50 (total 11.50 vs 12.50); room ID `I-201` in two tables | the "Digitally signed by" mark on the last page is printed text (no /ByteRange) dated two days after notarisation; uploader DSC chains to the TEST TRUST ANCHOR; audited statement without UDIN |
 | `dce05-2026-27` | Demo College of Engineering 05 (`1-90000005105`) | nothing (clean control) | nothing: deponent and uploader signatures valid, dates in order, valid UDIN |
+| `dit11-2026-27` | Demo Institute of Technology 11 (`1-90000011111`) | nothing | e-stamp certificate number already used on a prior filing (`STAMP-REUSE`) |
+| `dce07-2026-27` | Demo College of Engineering 07 (`1-90000007107`) | nothing | UDIN with the wrong length (`UDIN-STRUCT`) |
+| `dce09-2026-27` | Demo College of Engineering 09 (`1-90000009109`) | nothing | the issuer certificate had expired at the signing time (`SIG-CERT-EXPIRED`) |
+
+The last three cases were added for the Slice D demo flow; they use the existing M6 variants `stamp_reused`, `udin_length` and `sig_expired`.
 
 ## Test PKI (`pki/`) and registers (`registry/`)
 - `pki/satya-test-root.pem` ("SATYA TEST TRUST ANCHOR"), `pki/satya-test-sub-ca-1.pem` and `pki/satya-test-sub-ca-1.crl` are the **public** half of the synthetic test PKI (`packages/forensics/src/satya_forensics/pki.py`). Keys are Ed25519, derived from public seeds at test time and never stored. The UI always calls this root "TEST TRUST ANCHOR". It is not a CA and proves nothing outside this test suite.

@@ -47,3 +47,53 @@ export async function apiGet<T>(path: string, callbackPath: string): Promise<T> 
   if (!response.ok) throw new ApiUnavailable(response.status);
   return (await response.json()) as T;
 }
+
+export interface ApiResult<T> {
+  ok: boolean;
+  status: number;
+  data: T | null;
+  code: string | null;
+}
+
+/** POST to the Workbench API from a server action. Never throws on 4xx: the caller shows `code`. */
+export async function apiPost<T>(path: string, callbackPath: string, body: BodyInit, contentType: string): Promise<ApiResult<T>> {
+  const token = await accessToken();
+  if (!token) renew(callbackPath);
+  const base = process.env.SATYA_API_INTERNAL_URL ?? "http://api:8000";
+  try {
+    const response = await fetch(`${base}${path}`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": contentType, Accept: "application/json" },
+      body,
+      cache: "no-store",
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+    if (response.status === 401) renew(callbackPath);
+    const data = (await response.json().catch(() => null)) as (T & { code?: string }) | null;
+    return { ok: response.ok, status: response.status, data: response.ok ? data : null, code: response.ok ? null : (data?.code ?? "INTERNAL_ERROR") };
+  } catch {
+    return { ok: false, status: 0, data: null, code: "UNAVAILABLE" };
+  }
+}
+
+/** GET raw bytes (a stored PDF) for the viewer route. Same status mapping as apiGet. */
+export async function apiBytes(path: string, callbackPath: string): Promise<{ bytes: ArrayBuffer; type: string }> {
+  const token = await accessToken();
+  if (!token) renew(callbackPath);
+  const base = process.env.SATYA_API_INTERNAL_URL ?? "http://api:8000";
+  let response: Response;
+  try {
+    response = await fetch(`${base}${path}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store",
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+  } catch {
+    throw new ApiUnavailable(0);
+  }
+  if (response.status === 401) renew(callbackPath);
+  if (response.status === 403) forbidden();
+  if (response.status === 404) notFound();
+  if (!response.ok) throw new ApiUnavailable(response.status);
+  return { bytes: await response.arrayBuffer(), type: response.headers.get("content-type") ?? "application/pdf" };
+}
