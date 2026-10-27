@@ -1,0 +1,124 @@
+/* AlertCard: tint, full border and radius from the alert tokens. No side stripe. */
+.card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: start;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--alert-low-border);
+  border-radius: 6px;
+  background: var(--alert-low-bg);
+  color: var(--color-text);
+}
+
+.card[data-tone="high"] {
+  border-color: var(--alert-high-border);
+  background: var(--alert-high-bg);
+}
+
+.card[data-tone="med"] {
+  border-color: var(--alert-med-border);
+  background: var(--alert-med-bg);
+}
+
+.icon {
+  display: inline-flex;
+  padding-top: 2px;
+  color: var(--alert-low-fg);
+}
+
+.card[data-tone="high"] .icon,
+.card[data-tone="high"] .severity {
+  color: var(--alert-high-fg);
+}
+
+.card[data-tone="med"] .icon,
+.card[data-tone="med"] .severity {
+  color: var(--alert-med-fg);
+}
+
+.card[data-tone="low"] .severity {
+  color: var(--alert-low-fg);
+}
+
+.body {
+  min-width: 0;
+}
+
+.body p {
+  margin: 0;
+  max-width: none;
+}
+
+.first {
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+.card[data-unread="true"] .first {
+  font-weight: 700;
+}
+
+.severity {
+  font-weight: 700;
+}
+
+.what {
+  margin-top: 2px;
+  font-size: 0.875rem;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+  font-size: 0.8125rem;
+}
+
+.app {
+  font-family: var(--font-mono);
+}
+
+.clause {
+  padding: 0 6px;
+  border: 1px solid var(--tag-neutral-border);
+  border-radius: 4px;
+  background: var(--color-surface);
+  color: var(--tag-neutral-fg);
+  font-size: 0.71875rem;
+  font-weight: 500;
+  line-height: 1.55;
+}
+
+.prelim {
+  margin-top: var(--space-1);
+  font-size: 0.8125rem;
+}
+
+.action {
+  align-self: center;
+  color: var(--color-accent);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.card[data-compact="true"] {
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+}
+
+.card[data-compact="true"] .action {
+  grid-column: 2;
+  justify-self: start;
+}
+
+.card[data-compact="true"] .what {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

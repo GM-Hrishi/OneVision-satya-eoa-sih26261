@@ -102,6 +102,7 @@ e2e: ## Browser acceptance (Playwright/Chromium): workbench sign-in + shell, moc
 	NODE_PATH=$$(npm root -g) node tests/e2e/diffview.cjs
 	NODE_PATH=$$(npm root -g) node tests/e2e/verification.cjs
 	NODE_PATH=$$(npm root -g) node tests/e2e/demo-flow.cjs
+	NODE_PATH=$$(npm root -g) node tests/e2e/polish.cjs
 	$(COMPOSE) exec -T api python -m satya_api.ledger_verify
 
 test-db: ## Postgres-backed API tests in a throwaway pgvector container

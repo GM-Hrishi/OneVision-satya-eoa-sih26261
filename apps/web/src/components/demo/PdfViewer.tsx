@@ -2,6 +2,7 @@
 // PDF.js viewer: renders one page of a stored synthetic PDF and outlines the evidence regions of a
 // flag (normalised 0..1, origin top left). The PDF comes from the workbench's own /pdf route.
 import { useEffect, useRef, useState } from "react";
+import { SourceTag } from "@/components/ui/SourceTag";
 import styles from "./Demo.module.css";
 
 export interface ViewerTarget {
@@ -73,6 +74,7 @@ export function PdfViewer({ target, text }: { target: ViewerTarget | null; text:
     <div className={styles.viewer} aria-label={text.title}>
       <div className={styles.viewerBar}>
         <strong>{target.label}</strong>
+        <SourceTag kind="testAnchor" />
         <span>{text.page.replace("{page}", String(page)).replace("{pages}", String(pages || "?"))}</span>
         <button type="button" className={styles.linkButton} disabled={page <= 1} onClick={() => setPage(page - 1)}>
           {text.prev}

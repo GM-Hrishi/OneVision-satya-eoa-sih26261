@@ -26,12 +26,28 @@ describe("messages", () => {
     }
   });
 
-  it("the prototype strip carries the exact wording", () => {
-    expect(en.shell.prototypeStrip).toBe("Prototype · connected to a mock approval portal · synthetic data only");
+  it("the empty queue and the forbidden page carry the exact wording", () => {
     expect(en.queue.emptyTitle + " " + en.queue.emptyBody).toBe(
-      "No applications yet. Submit one from the mock portal.",
+      "No applications yet. Submit one from the approval portal.",
     );
     expect(en.forbidden.heading).toBe("Not assigned to you");
+  });
+
+  const values = (obj: Record<string, unknown>): string[] =>
+    Object.values(obj).flatMap((v) => (v && typeof v === "object" ? values(v as Record<string, unknown>) : [String(v)]));
+
+  it("the workbench copy has no prototype, concept, mock or demo wording and no em dashes (v0.8)", () => {
+    for (const [name, messages] of [["en", en], ["hi", hi]] as const) {
+      for (const text of values(messages)) {
+        expect(text, `${name}: ${text}`).not.toMatch(/prototype|concept|\bmock\b|\bdemo\b|प्रोटोटाइप|नकली|मॉक|डेमो|\u2014|\u2013/i);
+      }
+    }
+  });
+
+  it("the old upper-case source and anchor tags are gone", () => {
+    const text = JSON.stringify(en);
+    expect(text).not.toContain("MOCK SOURCE");
+    expect(text).not.toContain("TEST TRUST ANCHOR");
   });
 
   it("no copy offers an approve, reject or auto-clear action (guard rail 1)", () => {

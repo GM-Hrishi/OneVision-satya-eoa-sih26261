@@ -13,14 +13,14 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { SignatureBadge } from "@/components/signature/SignatureBadge";
+import { SourceTag } from "@/components/ui/SourceTag";
+import { StatusLabel } from "@/components/ui/StatusLabel";
 import styles from "./DiffView.module.css";
 
 type T = Awaited<ReturnType<typeof getTranslations<"diff">>>;
 export type Tone = "mismatch" | "manual" | "ok" | "neutral";
 
 const VALUE_PREVIEW = 160;
-// Demo chains always end at the synthetic root, shown as TEST TRUST ANCHOR (guard rail 10).
-const TRUST_ANCHOR = "TEST TRUST ANCHOR";
 const SEVERITY_ORDER = { critical: 0, warning: 1, info: 2 } as const;
 
 export function Label({ tone, children }: { tone: Tone; children: ReactNode }) {
@@ -133,11 +133,11 @@ export async function DiffView({ diff, showAll, allHref, changedHref, verificati
                   <>
                     <dt>{t("issuerSignature")}</dt>
                     <dd>
-                      <SignatureBadge sig={diff.sworn.issuer_sig} anchor={TRUST_ANCHOR} />
+                      <SignatureBadge sig={diff.sworn.issuer_sig} />
                     </dd>
                     <dt>{t("uploaderSignature")}</dt>
                     <dd>
-                      <SignatureBadge sig={diff.sworn.uploader_sig} anchor={TRUST_ANCHOR} />
+                      <SignatureBadge sig={diff.sworn.uploader_sig} />
                     </dd>
                   </>
                 )}
@@ -240,7 +240,7 @@ function StampAndOrder({ diff, t }: { diff: AffidavitDiff; t: T }) {
         <dl className={styles.facts}>
           <dt>{t("stampChecks")}</dt>
           <dd>
-            <Label tone={labelTone(stamp.state)}>{t(`labels.${stamp.state}`)}</Label>
+            <StatusLabel label={stamp.state} size="sm" />
             <span className={styles.expectedValue}>{t("stampStateNote")}</span>
           </dd>
           <dt>{t("stampInstrument")}</dt>
@@ -531,6 +531,13 @@ function ReconTable({ table, t }: { table: AffidavitTable; t: T }) {
   );
 }
 
+/** Findings that rest on a signature chain or on a lookup in the simulated registry carry the tag. */
+function flagSource(flag: Flag): "simulated" | "testAnchor" | null {
+  if (flag.rule_id.startsWith("SIG-")) return "testAnchor";
+  if (flag.rule_id === "STAMP-REUSE" || flag.rule_id.startsWith("UDIN-REUSE")) return "simulated";
+  return null;
+}
+
 export function FlagCard({ flag, t, title }: { flag: Flag; t: T; title: string }) {
   const extracted = preview(flag.extracted_value);
   const expected = preview(flag.expected_value);
@@ -538,7 +545,7 @@ export function FlagCard({ flag, t, title }: { flag: Flag; t: T; title: string }
   return (
     <article className={styles.flag} aria-labelledby={headingId}>
       <div className={styles.flagStrip}>
-        <Label tone={labelTone(flag.label)}>{t(`labels.${flag.label}`)}</Label>
+        <StatusLabel label={flag.label} />
         <span className={styles.label} data-tone="neutral">
           {t(`severity.${flag.severity}`)}
         </span>
@@ -564,6 +571,12 @@ export function FlagCard({ flag, t, title }: { flag: Flag; t: T; title: string }
           <dd>
             {expected === null ? t("none") : <Cell value={expected} t={t} />}
             <span className={styles.expectedValue}>{flag.expected_source.label}</span>
+            {flagSource(flag) ? (
+              <>
+                {" "}
+                <SourceTag kind={flagSource(flag) ?? "simulated"} />
+              </>
+            ) : null}
           </dd>
           {flag.delta != null ? (
             <>

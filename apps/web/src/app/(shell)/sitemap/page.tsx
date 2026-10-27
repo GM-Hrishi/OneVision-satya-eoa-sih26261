@@ -8,8 +8,10 @@ import { pageMetadata } from "@/lib/page";
 export const generateMetadata = (): Promise<Metadata> => pageMetadata("sitemap");
 
 const WORK = [
-  { href: "/rb-queue?view=overview", key: "overview" },
+  { href: "/overview", key: "overview" },
   { href: "/rb-queue", key: "queue" },
+  { href: "/alerts", key: "alerts" },
+  { href: "/audit", key: "audit" },
 ] as const;
 const INFO = [
   { href: "/help", key: "help" },

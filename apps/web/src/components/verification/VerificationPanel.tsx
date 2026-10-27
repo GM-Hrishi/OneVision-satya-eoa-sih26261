@@ -1,12 +1,14 @@
 // RB-06 Verification panel (UI spec §6.4, §7.2, wireframe W1): one row per document with exactly one
-// of the six labels, the source checked (MOCK SOURCE marker for mock adapters), both signature
+// of the six labels, the source checked (Simulated source tag for mock adapters), both signature
 // badges and the time of the check; label counts; the checks and findings behind each label; the
 // signature-to-label mapping legend. Advisory only: nothing here approves, rejects or clears.
 import type { CaseVerification, CaseVerificationDocument, Check, Flag } from "@satya/shared-types";
 import { getLocale, getTranslations } from "next-intl/server";
-import { FlagCard, Label, labelTone } from "@/components/diff/DiffView";
+import { FlagCard, Label } from "@/components/diff/DiffView";
 import styles from "@/components/diff/DiffView.module.css";
 import { SignatureBadge } from "@/components/signature/SignatureBadge";
+import { SourceTag } from "@/components/ui/SourceTag";
+import { StatusLabel } from "@/components/ui/StatusLabel";
 import { LABEL_ORDER } from "@/lib/labels";
 import own from "./VerificationPanel.module.css";
 
@@ -36,7 +38,6 @@ export async function VerificationPanel({ data }: { data: CaseVerification }) {
   const td = await getTranslations("diff");
   const tr = await getTranslations("rules");
   const locale = await getLocale();
-  const anchor = data.trust_anchor_label;
   return (
     <>
       <section className={styles.section} aria-labelledby="ver-counts">
@@ -45,8 +46,7 @@ export async function VerificationPanel({ data }: { data: CaseVerification }) {
         <ul className={own.counts}>
           {LABEL_ORDER.map((label) => (
             <li key={label}>
-              <Label tone={labelTone(label)}>{td(`labels.${label}`)}</Label>
-              <span className={own.count}>{data.label_counts[label]}</span>
+              <StatusLabel label={label} count={data.label_counts[label]} />
             </li>
           ))}
         </ul>
@@ -82,22 +82,28 @@ export async function VerificationPanel({ data }: { data: CaseVerification }) {
                     <td>{doc.issuer_profile ?? <span className={styles.muted}>{tv("issuerProfilePending")}</span>}</td>
                     <td>
                       {sourceText(doc, tv)}{" "}
-                      <span className={styles.label} data-tone={doc.source.adapter_mode === "mock" ? "manual" : "neutral"}>
-                        {tv(`mode.${doc.source.adapter_mode}`)}
-                      </span>
+                      {doc.source.adapter_mode === "mock" ? (
+                        <SourceTag kind="simulated" />
+                      ) : doc.source.channel === "pdf-signature" ? (
+                        <SourceTag kind="testAnchor" />
+                      ) : (
+                        <span className={styles.label} data-tone="neutral">
+                          {tv(`mode.${doc.source.adapter_mode}`)}
+                        </span>
+                      )}
                     </td>
                     <td>
                       {doc.label === "not_applicable" ? (
                         <Label tone="neutral">{tv("notApplicable")}</Label>
                       ) : (
-                        <Label tone={labelTone(doc.label)}>{td(`labels.${doc.label}`)}</Label>
+                        <StatusLabel label={doc.label} size="sm" />
                       )}
                     </td>
                     <td>
-                      <SignatureBadge sig={doc.issuer_sig} anchor={anchor} />
+                      <SignatureBadge sig={doc.issuer_sig} />
                     </td>
                     <td>
-                      <SignatureBadge sig={doc.uploader_sig} anchor={anchor} />
+                      <SignatureBadge sig={doc.uploader_sig} />
                     </td>
                     <td className={own.nowrap}>{formatIst(doc.checked_at, locale)}</td>
                     <td className={styles.num}>{tv("findings", { count: doc.flag_count })}</td>
@@ -125,11 +131,11 @@ export async function VerificationPanel({ data }: { data: CaseVerification }) {
         <h2 id="ver-legend">{tv("legendHeading")}</h2>
         <ul className={own.legend}>
           {(["verified", "mismatch", "expired", "manual", "unavailable", "absent"] as const).map((k) => (
-            <li key={k}>{tv(`legend.${k}`, { anchor })}</li>
+            <li key={k}>{tv(`legend.${k}`)}</li>
           ))}
         </ul>
         <p className={styles.note}>{tv("legendUploader")}</p>
-        <p className={styles.note}>{tv("legendAnchor", { anchor })}</p>
+        <p className={styles.note}>{tv("legendAnchor")}</p>
       </section>
     </>
   );
@@ -166,7 +172,7 @@ async function DocumentDetails({
               <tr key={`${check.kind}-${check.reason_code}-${i}`}>
                 <td>{tv(`kind.${check.kind}`)}</td>
                 <td>
-                  <Label tone={labelTone(check.outcome)}>{td(`labels.${check.outcome}`)}</Label>
+                  <StatusLabel label={check.outcome} size="sm" />
                 </td>
                 <td>{reasonText(check, tv)}</td>
                 <td>{check.evidence ? tv("evidencePage", { page: check.evidence.page }) : tv("noEvidence")}</td>

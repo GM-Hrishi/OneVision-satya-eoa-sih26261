@@ -1,4 +1,4 @@
-"""Minimal source hub (Slice D): three adapters, all offline or MOCK SOURCE, on synthetic data.
+"""Minimal source hub (Slice D): three adapters, all offline or simulated, on synthetic data.
 
 Adapters
 - `cca-offline-chain` (offline): the chain check M6 already ran against the TEST TRUST ANCHOR. Not
@@ -8,7 +8,8 @@ Adapters
 - `icai-udin-mock` (mock): accepts a UDIN whose structure, year and membership number passed the
   M6 checks and that no other filing uses. No ICAI connection exists.
 A document without a usable source ends `source_unavailable` and gets a manual task (RB-09).
-Every response carries `MOCK SOURCE` in its source name and a response hash for the ledger.
+Every response carries `mode: "mock"` (the workbench shows a Simulated source tag) and a
+response hash for the ledger.
 """
 
 from __future__ import annotations
@@ -24,9 +25,15 @@ from satya_forensics.registry import Registry
 SHCIL = {
     "adapter_id": "shcil-estamp-mock",
     "mode": "mock",
-    "name": "SHCIL e-stamp lookup (MOCK SOURCE)",
+    "name": "SHCIL e-stamp lookup",
 }
-ICAI = {"adapter_id": "icai-udin-mock", "mode": "mock", "name": "ICAI UDIN lookup (MOCK SOURCE)"}
+ICAI = {"adapter_id": "icai-udin-mock", "mode": "mock", "name": "ICAI UDIN lookup"}
+# Every source the hub knows, for the Overview source line (name_key is a workbench message key).
+SOURCES: tuple[dict[str, str], ...] = (
+    {"adapter_id": "cca-offline-chain", "name_key": "cca_offline_chain", "mode": "offline"},
+    {"adapter_id": SHCIL["adapter_id"], "name_key": "shcil_estamp", "mode": SHCIL["mode"]},
+    {"adapter_id": ICAI["adapter_id"], "name_key": "icai_udin", "mode": ICAI["mode"]},
+)
 AFFIDAVIT_SLOT = "annex2.1(i) affidavit"
 ACCOUNTS_SLOT = "annex2.1(vii) audited accounts"
 

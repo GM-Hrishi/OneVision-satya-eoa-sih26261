@@ -38,6 +38,7 @@ class Settings(BaseSettings):
     upload_dir: str = ""
     upload_max_bytes: int = Field(default=5 * 1024 * 1024, gt=0)
     upload_rate_limit: str = "20/minute"
+    overview_rate_limit: str = "30/minute"
     # Run the M5/M6 checks of every demo case once at start so the first queue load is fast.
     warm_cache: bool = False
 

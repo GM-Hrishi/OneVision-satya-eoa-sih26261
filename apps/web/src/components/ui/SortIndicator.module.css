@@ -1,0 +1,26 @@
+.sort {
+  flex: none;
+}
+
+.up,
+.down {
+  fill: var(--sort-idle);
+}
+
+.sort[data-direction="ascending"] .up {
+  fill: var(--sort-active);
+}
+
+.sort[data-direction="ascending"] .down {
+  fill: var(--sort-active);
+  opacity: 0.35;
+}
+
+.sort[data-direction="descending"] .down {
+  fill: var(--sort-active);
+}
+
+.sort[data-direction="descending"] .up {
+  fill: var(--sort-active);
+  opacity: 0.35;
+}

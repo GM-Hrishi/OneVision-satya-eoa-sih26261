@@ -8,7 +8,7 @@ export interface RailItem {
 }
 
 const RB: RailItem[] = [
-  { href: "/rb-queue?view=overview", labelKey: "overview" },
+  { href: "/overview", labelKey: "overview" },
   { href: "/rb-queue", labelKey: "queue" },
   { href: "/alerts", labelKey: "alerts" },
   { href: "/audit", labelKey: "audit" },
@@ -18,10 +18,7 @@ const AU: RailItem[] = [{ href: "/audit", labelKey: "audit" }];
 
 export const RAIL: Partial<Record<Role, RailItem[]>> = { RB, AU };
 
-export const UTILITY: RailItem[] = [
-  { href: "/help", labelKey: "help" },
-  { href: "/accessibility", labelKey: "accessibility" },
-];
+export const UTILITY: RailItem[] = [{ href: "/help", labelKey: "help" }];
 
 export interface Crumb {
   labelKey: string; // key in the "nav" namespace
@@ -41,6 +38,7 @@ export function crumbsFor(pathname: string): Crumb[] {
 
 /** Breadcrumb trail labels (nav namespace) for each route. */
 export const CRUMBS: Record<string, string[]> = {
+  "/overview": ["overview"],
   "/rb-queue": ["queue"],
   "/alerts": ["alerts"],
   "/audit": ["audit"],

@@ -20,18 +20,8 @@
   top: var(--space-2);
 }
 
-.prototype {
-  margin: 0;
-  max-width: none;
-  padding: var(--space-1) var(--space-4);
-  background: var(--color-prototype-strip-bg);
-  color: var(--color-prototype-strip-ink);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  border-bottom: 1px solid var(--color-rule);
-}
-
 .top {
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -61,7 +51,8 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: 0.875rem;
+  color: var(--color-muted);
+  font-size: 0.8125rem;
 }
 
 .crumb:not(:last-child)::after {
@@ -74,35 +65,6 @@
   color: var(--color-text);
   font-weight: 600;
   text-decoration: none;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.chip {
-  display: inline-block;
-  padding: 0.125rem var(--space-2);
-  border: 1px solid var(--color-field);
-  background: var(--color-page);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.inline {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.user {
-  font-size: 0.8125rem;
-  color: var(--color-muted);
 }
 
 .textButton {
@@ -171,37 +133,6 @@
   padding-top: var(--space-2);
 }
 
-.lang {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
-  color: var(--color-chrome-muted);
-}
-
-.langButton {
-  font: inherit;
-  font-size: 0.9375rem;
-  background: none;
-  border: 0;
-  padding: 0.125rem 0;
-  color: var(--color-chrome-muted);
-  cursor: pointer;
-}
-
-.langButton[aria-pressed="true"] {
-  color: var(--color-surface);
-  font-weight: 700;
-  text-decoration: underline;
-  text-decoration-color: var(--color-saffron-rule);
-  text-decoration-thickness: 2px;
-  text-underline-offset: 0.3em;
-}
-
-.langButton:focus-visible {
-  outline-color: var(--color-saffron-rule);
-}
-
 .main {
   flex: 1;
   min-width: 0;
@@ -214,43 +145,48 @@
 }
 
 .footer {
-  padding: var(--space-4);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-5);
+  min-height: 36px;
+  padding: var(--space-1) var(--space-4);
   background: var(--color-surface);
   border-top: 1px solid var(--color-rule);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   color: var(--color-muted);
 }
 
 .footerLinks {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2) var(--space-5);
   list-style: none;
-  margin: 0 0 var(--space-2);
+  margin: 0;
   padding: 0;
 }
 
+.footerLinks li + li::before {
+  content: "\00b7" / "";
+  margin: 0 var(--space-2);
+}
+
+.footerLinks a {
+  color: var(--color-muted);
+  text-decoration: none;
+}
+
+.footerLinks a:hover {
+  text-decoration: underline;
+}
+
 .footerMeta {
-  margin: 0 0 var(--space-1);
+  margin: 0;
   max-width: none;
 }
 
 .mobileMenu {
   display: none;
-}
-
-.footerLang {
-  display: none;
-}
-
-.footerLang .lang,
-.footerLang .langButton {
-  color: var(--color-accent);
-  padding-left: 0;
-}
-
-.footerLang .langButton[aria-pressed="true"] {
-  color: var(--color-text);
 }
 
 .menuButton {
@@ -300,12 +236,69 @@
     display: none;
   }
 
-  .mobileMenu,
-  .footerLang {
+  .mobileMenu {
     display: block;
   }
 
   .main {
     padding: var(--space-4);
   }
+}
+
+.headRight {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2) var(--space-4);
+  margin-left: auto;
+}
+
+/* Plain context text: no border, no fill, not focusable, no hover. */
+.context {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+}
+
+.bar {
+  color: #c9d0da;
+}
+
+.search {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.searchInput {
+  width: 13rem;
+  max-width: 100%;
+  min-height: 2rem;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--color-field);
+  border-radius: 4px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.8125rem;
+}
+
+.searchButton {
+  min-height: 2rem;
+  padding: 0 var(--space-2);
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--color-accent);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.searchButton:hover {
+  background: var(--menu-hover);
 }

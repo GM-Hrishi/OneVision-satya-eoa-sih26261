@@ -5,14 +5,14 @@ import { RAIL, UTILITY } from "../src/lib/rail";
 describe("rail", () => {
   it("marks exactly one RB item current per page", () => {
     const items = RAIL.RB ?? [];
-    const current = (path: string, view: string | null) => items.filter((i) => isCurrent(i.href, path, view));
-    expect(current("/rb-queue", null).map((i) => i.labelKey)).toEqual(["queue"]);
-    expect(current("/rb-queue", "overview").map((i) => i.labelKey)).toEqual(["overview"]);
-    expect(current("/help", null)).toEqual([]);
+    const current = (path: string) => items.filter((i) => isCurrent(i.href, path));
+    expect(current("/rb-queue").map((i) => i.labelKey)).toEqual(["queue"]);
+    expect(current("/overview").map((i) => i.labelKey)).toEqual(["overview"]);
+    expect(current("/help")).toEqual([]);
   });
 
   it("lists only routes that exist in this build (no dead navigation)", () => {
-    const built = new Set(["/rb-queue", "/alerts", "/audit", "/help", "/accessibility"]);
+    const built = new Set(["/overview", "/rb-queue", "/alerts", "/audit", "/help", "/accessibility"]);
     for (const item of [...(RAIL.RB ?? []), ...(RAIL.AU ?? []), ...UTILITY]) {
       expect(built.has(new URL(item.href, "https://x.invalid").pathname), item.href).toBe(true);
     }

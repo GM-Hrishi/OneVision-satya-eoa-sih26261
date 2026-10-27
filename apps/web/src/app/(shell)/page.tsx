@@ -5,6 +5,6 @@ import { primaryRole, requireSession } from "@/lib/session";
 export default async function RoleHomeRedirect() {
   const session = await requireSession("/");
   const role = primaryRole(session);
-  if (role === "RB") redirect("/rb-queue");
+  if (role === "RB") redirect("/overview");
   redirect("/home");
 }

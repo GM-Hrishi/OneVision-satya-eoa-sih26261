@@ -10,7 +10,7 @@ const tokens = JSON.parse(readFileSync(join(app, "src/styles/tokens.json"), "utf
 const lines = ["/* GENERATED from tokens.json by scripts/gen-tokens.mjs. Do not edit. Source: UI spec §8. */", ":root {"];
 for (const [group, values] of Object.entries(tokens)) {
   if (group.startsWith("_")) continue;
-  for (const [name, value] of Object.entries(values)) lines.push(`  --${group}-${name}: ${value};`);
+  for (const [name, value] of Object.entries(values)) lines.push(group === "raw" ? `  --${name}: ${value};` : `  --${group}-${name}: ${value};`);
 }
 lines.push("}", "");
 const css = lines.join("\n");
@@ -19,7 +19,7 @@ const target = join(app, "src/styles/tokens.css");
 const spec = readFileSync(join(app, "../../docs/specs/05-ui-design-spec.md"), "utf8");
 const summary = spec.split("\n").find((l) => l.startsWith("Token summary:")) ?? "";
 const specHex = new Set((summary.match(/#[0-9A-Fa-f]{6}/g) ?? []).map((h) => h.toUpperCase()));
-const ours = new Set(Object.values(tokens.color).map((h) => h.toUpperCase()));
+const ours = new Set(Object.values({ ...tokens.color, ...tokens.raw }).map((h) => h.toUpperCase()));
 const missing = [...specHex].filter((h) => !ours.has(h));
 if (specHex.size === 0 || missing.length) {
   console.error(`tokens.json is missing UI spec §8 colours: ${missing.join(", ") || "(no summary line found)"}`);

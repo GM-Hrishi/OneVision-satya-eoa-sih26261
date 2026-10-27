@@ -1,0 +1,47 @@
+/* SourceTag (v0.8): small neutral tag, 11.5px, 1px border, 4px radius, focusable. */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px 0 4px;
+  border: 1px solid var(--tag-neutral-border);
+  border-radius: 4px;
+  background: var(--tag-neutral-bg);
+  color: var(--tag-neutral-fg);
+  font-size: 0.71875rem;
+  font-weight: 500;
+  line-height: 1.55;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.tag:focus-visible {
+  outline: 2px solid var(--color-surface);
+  box-shadow: 0 0 0 4px var(--color-saffron-rule);
+}
+
+.tip {
+  padding: 6px 10px;
+  border-radius: 4px;
+  background: var(--color-text);
+  color: var(--color-surface);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  max-width: 20rem;
+}
+
+/* Exports print the marker as plain text, so it can never be dropped by a print style. */
+.print {
+  display: none;
+}
+
+@media print {
+  .tag {
+    display: none;
+  }
+
+  .print {
+    display: inline;
+    font-size: 0.75rem;
+  }
+}

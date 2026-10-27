@@ -1,0 +1,83 @@
+/* StatusLabel (v0.8): tint background, text and icon in the same dark colour, 6px radius, no border. */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 6px;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.pill[data-size="md"] {
+  padding: 2px 8px 2px 6px;
+  font-size: 0.78125rem;
+  line-height: 20px;
+}
+
+.pill[data-size="sm"] {
+  padding: 1px 7px 1px 5px;
+  font-size: 0.75rem;
+  line-height: 18px;
+}
+
+.count {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pill[data-label="verified"] {
+  background: var(--label-verified-bg);
+  color: var(--label-verified-fg);
+}
+
+.pill[data-label="mismatch_detected"] {
+  background: var(--label-mismatch-bg);
+  color: var(--label-mismatch-fg);
+}
+
+.pill[data-label="expired"] {
+  background: var(--label-expired-bg);
+  color: var(--label-expired-fg);
+}
+
+.pill[data-label="verification_pending"] {
+  background: var(--label-pending-bg);
+  color: var(--label-pending-fg);
+}
+
+.pill[data-label="source_unavailable"] {
+  background: var(--label-unavail-bg);
+  color: var(--label-unavail-fg);
+}
+
+.pill[data-label="manual_review_required"] {
+  background: var(--label-review-bg);
+  color: var(--label-review-fg);
+}
+
+/* A zero count renders untinted (still text, never colour alone). */
+.pill[data-zero="true"] {
+  background: transparent;
+  color: var(--label-zero-fg);
+}
+
+.focus {
+  display: inline-flex;
+  border-radius: 6px;
+}
+
+.focus:focus-visible {
+  outline: 2px solid var(--color-surface);
+  box-shadow: 0 0 0 4px var(--color-saffron-rule);
+}
+
+.tip {
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: var(--color-text);
+  color: var(--color-surface);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  max-width: 18rem;
+}

@@ -12,7 +12,7 @@ import hashlib
 import json
 import logging
 import re
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -24,9 +24,11 @@ from satya_api.cases import (
     FixtureCaseRepository,
 )
 from satya_api.ledger import LedgerRow, verify_chain
-from satya_api.sources import apply_hub
+from satya_api.sources import SOURCES, apply_hub
 from satya_api.store import EventStore
 from satya_api.triage import (
+    BAND_RANK,
+    STATUSES,
     alerts_for,
     case_status,
     flag_order,
@@ -235,12 +237,12 @@ class Workflow:
         base = await self.analyse(case_id)
         disposed = disposed if disposed is not None else await self.dispositions()
         flags = [{**f, "disposition": disposed.get((case_id, f["flag_id"]))} for f in base["flags"]]
-        done = {f["flag_id"] for f in flags if f["disposition"]}
+        decisions = {f["flag_id"]: f["disposition"]["action"] for f in flags if f["disposition"]}
         return {
             **base,
             "flags": flags,
-            "status": case_status(flags, done),
-            "undisposed_flags": len(flags) - len(done),
+            "status": case_status(flags, decisions),
+            "undisposed_flags": len(flags) - len(decisions),
         }
 
     # ---- writes (all go through the ledger) ----------------------------------------------------
@@ -256,7 +258,7 @@ class Workflow:
                         "doc_id": doc["doc_id"],
                         "adapter_id": resp["source"]["adapter_id"],
                         "source_name": resp["source"]["name"],
-                        "tag": "MOCK SOURCE",
+                        "tag": "simulated source",
                         "outcome": resp["outcome"],
                         "reason_code": resp["reason_code"],
                         "response_sha256": resp["response_sha256"],
@@ -411,8 +413,22 @@ class Workflow:
         }
 
     # ---- reads ---------------------------------------------------------------------------------
-    async def queue(self, regions_ok: Any) -> list[dict[str, Any]]:
+    async def queue(
+        self, regions_ok: Any, sort: str | None = None, direction: str | None = None
+    ) -> list[dict[str, Any]]:
+        """Queue rows, risk band groups first (High, Medium, Low), `sort` applied within each group.
+
+        `sort` is one of QUEUE_SORTS (default: undisposed_flags, descending); `direction` is
+        asc or desc (default asc, or desc for the default sort).
+        """
         disposed = await self.dispositions()
+        first: dict[str, str] = {}
+        last: dict[str, str] = {}
+        for row in await self.store.ledger_rows():
+            if row.case_id:
+                stamp = row.at.isoformat()
+                first.setdefault(row.case_id, stamp)
+                last[row.case_id] = stamp
         out = []
         for summary in await self.repo.list_cases():
             if not regions_ok(summary.regional_office):
@@ -439,12 +455,148 @@ class Workflow:
                     "label_counts": v["label_counts"],
                     "status": v["status"],
                     "manual_tasks": len(v["tasks"]),
+                    "submitted_at": first.get(summary.case_id) or self._fixture_time(v),
+                    "last_activity_at": last.get(summary.case_id) or self._fixture_time(v),
                 }
             )
-        return out
+        return sort_queue(out, sort, direction)
+
+    @staticmethod
+    def _fixture_time(view: dict[str, Any]) -> str:
+        """Fallback when the ledger holds nothing for a case: the time of its last check run."""
+        return str(view["checked_at"])
+
+    async def overview(
+        self, regions_ok: Any, ay: str, region: str | None, now: datetime | None = None
+    ) -> dict[str, Any]:
+        """Counts for the Overview page. Same case scope as the queue; derived, never typed in."""
+        now = now or datetime.now(UTC)
+        disposed = await self.dispositions()
+        rows = await self.store.ledger_rows()
+        task_at: dict[tuple[str, str], datetime] = {}
+        for row in rows:
+            if row.event_type == TASK and row.case_id and row.detail_json:
+                doc_id = json.loads(row.detail_json)["detail"].get("doc_id")
+                task_at.setdefault((row.case_id, str(doc_id)), row.at)
+        cases: dict[str, str] = {}
+        by_band = dict.fromkeys(BAND_RANK, 0)
+        status = dict.fromkeys(STATUSES, 0)
+        by_label = dict.fromkeys(LABELS, 0)
+        tasks: list[dict[str, Any]] = []
+        expiring: list[dict[str, Any]] = []
+        answers: dict[str, list[str]] = {}
+        for summary in await self.repo.list_cases():
+            if summary.ay != ay or not regions_ok(summary.regional_office):
+                continue
+            if region and region != "national" and summary.regional_office.casefold() != region:
+                continue
+            try:
+                v = await self.view(summary.case_id, disposed)
+                case, _, _ = await self.repo.case_files(summary.case_id)
+            except CaseError:
+                log.exception("case unusable", extra={"case_id": summary.case_id})
+                continue
+            cases[summary.case_id] = summary.application_id
+            by_band[v["risk"]["band"]] += 1
+            status[v["status"]] += 1
+            today = max(date.fromisoformat(d["uploaded_at"][:10]) for d in case["documents"])
+            for doc in v["documents"]:
+                by_label[doc["label"]] += 1
+                for check in doc["checks"]:
+                    src = check.get("source")
+                    if src:
+                        answers.setdefault(src["adapter_id"], []).append(check["outcome"])
+                left = [
+                    (date.fromisoformat(c["valid_to"]) - today).days
+                    for c in doc["checks"]
+                    if c.get("valid_to")
+                ]
+                days = min((d for d in left if d >= 0), default=None)
+                if days is not None and days <= EXPIRY_WINDOWS[-1]:
+                    valid_to = today + timedelta(days=days)
+                    expiring.append(
+                        {
+                            "doc_type": doc["slot"],
+                            "doc_title": doc["title"],
+                            "case_id": summary.case_id,
+                            "application_id": summary.application_id,
+                            "valid_to": valid_to.isoformat(),
+                            "days_left": days,
+                        }
+                    )
+            for task in v["tasks"]:
+                started = task_at.get((summary.case_id, task["doc_id"]))
+                tasks.append(
+                    {
+                        "case_id": summary.case_id,
+                        "application_id": summary.application_id,
+                        "reason_key": task["reason"],
+                        "age_days": max(0, (now - started).days) if started else 0,
+                    }
+                )
+        tasks.sort(key=lambda t: (-t["age_days"], t["application_id"]))
+        expiring.sort(key=lambda e: (e["days_left"], e["application_id"]))
+        decisions = []
+        for row in reversed(rows):
+            if row.event_type != DISPOSED or row.case_id not in cases or not row.detail_json:
+                continue
+            d = json.loads(row.detail_json)["detail"]
+            decisions.append(
+                {
+                    "at": row.at.isoformat(),
+                    "case_id": row.case_id,
+                    "application_id": cases[row.case_id],
+                    "flag_id": d["flag_id"],
+                    "action": d["action"],
+                    "by_role": d["by_role"],
+                    "ledger_no": row.seq,
+                }
+            )
+            if len(decisions) == OVERVIEW_RECENT:
+                break
+        return {
+            "as_of": now.isoformat(timespec="seconds"),
+            "ay": ay,
+            "region": region,
+            "route": "self_disclosure",
+            "cases": {"submitted": len(cases), "by_band": by_band},
+            "status": status,
+            "documents": {"total": sum(by_label.values()), "by_label": by_label},
+            "manual_tasks": {
+                "open": len(tasks),
+                "oldest_age_days": tasks[0]["age_days"] if tasks else 0,
+                "top": tasks[:OVERVIEW_TOP],
+            },
+            "expiring": {
+                **{
+                    f"d{w}": sum(1 for e in expiring if e["days_left"] <= w) for w in EXPIRY_WINDOWS
+                },
+                "top": expiring[:OVERVIEW_TOP],
+            },
+            "recent_decisions": decisions,
+            "sources": [
+                {
+                    "adapter_id": s["adapter_id"],
+                    "name_key": s["name_key"],
+                    "mode": s["mode"],
+                    "status": (
+                        "unavailable"
+                        if answers.get(s["adapter_id"])
+                        and all(o == "source_unavailable" for o in answers[s["adapter_id"]])
+                        else "answering"
+                    ),
+                }
+                for s in SOURCES
+            ],
+            "advisory": True,
+        }
 
     async def alerts(self, regions_ok: Any) -> list[dict[str, Any]]:
         out = []
+        checked_at: dict[str, str] = {}
+        for row in await self.store.ledger_rows():
+            if row.case_id and row.event_type == CHECKED:
+                checked_at[row.case_id] = row.at.isoformat()
         for summary in await self.repo.list_cases():
             if not regions_ok(summary.regional_office):
                 continue
@@ -453,7 +605,10 @@ class Workflow:
             today = max(date.fromisoformat(d["uploaded_at"][:10]) for d in case["documents"])
             out.extend(
                 alerts_for(
-                    {"case_id": summary.case_id, "application_id": summary.application_id}, v, today
+                    {"case_id": summary.case_id, "application_id": summary.application_id},
+                    v,
+                    today,
+                    checked_at.get(summary.case_id, ""),
                 )
             )
         rank = {"suspected_anomaly": 0, "expired": 1, "pending_source": 2}
@@ -493,6 +648,33 @@ class Workflow:
                 "payload_sha256": row.payload_sha256,
             }
         )
+
+
+OVERVIEW_TOP = 5
+OVERVIEW_RECENT = 8
+EXPIRY_WINDOWS = (30, 60, 90)
+LABELS = (
+    "mismatch_detected",
+    "expired",
+    "manual_review_required",
+    "source_unavailable",
+    "verification_pending",
+    "verified",
+)
+
+QUEUE_SORTS = ("application_id", "undisposed_flags", "submitted_at", "last_activity_at")
+QUEUE_DIRS = ("asc", "desc")
+
+
+def sort_queue(
+    rows: list[dict[str, Any]], sort: str | None, direction: str | None
+) -> list[dict[str, Any]]:
+    """Risk band groups in order, then `sort` inside each group (ties by application id)."""
+    key = sort or "undisposed_flags"
+    reverse = (direction == "desc") if direction else sort is None
+    ordered = sorted(rows, key=lambda r: str(r["application_id"]))
+    ordered = sorted(ordered, key=lambda r: r[key], reverse=reverse)
+    return sorted(ordered, key=lambda r: BAND_RANK[str(r["risk_band"])])
 
 
 def entry(row: LedgerRow) -> dict[str, Any]:

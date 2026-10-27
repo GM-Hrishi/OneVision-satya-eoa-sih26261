@@ -1,6 +1,6 @@
 // Acceptance 3 (slice 0) in a real browser on default settings: HTTPS without warnings (Caddy's
 // local CA trusted once, see docs/DEV-SETUP.md), redirect to Keycloak, sign in as rb.southern.demo,
-// RB shell with the queue (slice 1: the demo cases). Also: titles, one H1, no console errors, 403, 404, Hindi, mobile
+// RB shell, Overview landing page, validation queue (slice 1: the demo cases). Also: titles, one H1, no console errors, 403, 404, Hindi, mobile
 // width, 200% text, sign-out. Usage: node tests/e2e/workbench.cjs   (needs `make up`)
 const { chromium } = require("playwright");
 const fs = require("node:fs");
@@ -34,22 +34,31 @@ async function login(page, username) {
   page.on("pageerror", (e) => consoleErrors.push(`${page.url()}: ${e.message}`));
 
   await login(page, "rb.southern.demo");
+  await page.waitForURL(`${BASE}/overview`, { timeout: 20000 });
+  check(page.url() === `${BASE}/overview`, "signed in as rb.southern.demo lands on /overview");
+  // The Overview streams a skeleton (loading.tsx) while it calls the API; wait for its first panel.
+  await page.waitForSelector("#ov-bands", { timeout: 30000 }).catch(() => {});
+  const overviewBody = await page.textContent("body");
+  check(overviewBody.includes("Cases by risk band") && overviewBody.includes("Open validation queue"), "Overview shows its panels and the queue button");
+  const overviewCurrent = await page.getAttribute('nav[aria-label="Main navigation"] [aria-current="page"]', "href");
+  check(overviewCurrent === "/overview", "rail marks Overview as current page");
+  await page.screenshot({ path: path.join(shots, "overview.png"), fullPage: true });
+  await page.getByRole("link", { name: "Open validation queue" }).click();
   await page.waitForURL(`${BASE}/rb-queue`, { timeout: 20000 });
-  check(page.url() === `${BASE}/rb-queue`, "signed in as rb.southern.demo lands on /rb-queue");
-  // The queue streams a skeleton (loading.tsx) while it calls the API; wait for the list itself.
   await page.waitForSelector("#case-list", { timeout: 30000 }).catch(() => {});
   const body = await page.textContent("body");
   // Slice 1: the gateway serves the synthetic demo cases, so the queue lists them (the empty state
   // shows only when the gateway holds no case for the region).
   check(body.includes("Cases for review") && body.includes("1-90000004217"), "queue lists the synthetic demo cases");
-  check(body.includes("Prototype · connected to a mock approval portal · synthetic data only"), "prototype strip shown");
-  check(body.includes("Regulation Bureau · Southern"), "role + region chip shown");
+  check(!/prototype/i.test(body), "no prototype wording in the workbench");
+  check(body.includes("Regulation Bureau · Southern region") && body.includes("AY 2026-27"), "header shows plain role, region and AY text");
+  check(await page.getByRole("button", { name: /Account menu/ }).isVisible(), "user menu is in the header");
   const current = await page.getAttribute('nav[aria-label="Main navigation"] [aria-current="page"]', "href");
   check(current === "/rb-queue", "rail marks Validation queue as current page");
   await page.screenshot({ path: path.join(shots, "rb-queue.png"), fullPage: true });
 
   const titles = new Map();
-  for (const p of ["/rb-queue", "/rb-queue?view=overview", "/help", "/accessibility", "/about", "/policies", "/sitemap"]) {
+  for (const p of ["/overview", "/rb-queue", "/alerts", "/audit", "/help", "/accessibility", "/about", "/policies", "/sitemap"]) {
     const res = await page.goto(`${BASE}${p}`);
     const title = await page.title();
     const h1 = await page.locator("h1").count();
@@ -86,7 +95,7 @@ async function login(page, username) {
   await page.goto(`${BASE}/rb-queue`);
   const overflowMobile = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   check(overflowMobile <= 0, `360px width: no horizontal scroll (overflow ${overflowMobile}px)`);
-  await page.getByRole("button", { name: "Menu" }).click();
+  await page.getByRole("button", { name: "Menu", exact: true }).click();
   check(await page.getByRole("dialog").getByRole("link", { name: "Validation queue" }).isVisible(), "mobile menu opens with rail items");
   await page.keyboard.press("Escape");
   await page.screenshot({ path: path.join(shots, "rb-queue-mobile.png"), fullPage: true });
@@ -94,16 +103,19 @@ async function login(page, username) {
 
   // Hindi.
   await page.goto(`${BASE}/rb-queue`);
-  await page.locator("aside").getByRole("button", { name: "हिन्दी" }).click();
+  await page.getByRole("button", { name: /Account menu/ }).click();
+  await page.getByRole("menuitemradio", { name: "हिन्दी" }).click();
   await page.waitForFunction(() => document.documentElement.lang === "hi");
   await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("सत्यापन कतार"), null, { timeout: 15000 }).catch(() => {});
   check((await page.textContent("h1")).includes("सत्यापन कतार"), "switches to Hindi (lang=hi)");
   await page.screenshot({ path: path.join(shots, "rb-queue-hi.png"), fullPage: true });
-  await page.locator("aside").getByRole("button", { name: "English" }).click();
+  await page.getByRole("button", { name: /खाता मेनू/ }).click();
+  await page.getByRole("menuitemradio", { name: "English" }).click();
   await page.waitForFunction(() => document.documentElement.lang === "en");
 
   // Sign out goes through Keycloak and ends signed out.
-  await page.getByRole("button", { name: "Sign out" }).click();
+  await page.getByRole("button", { name: /Account menu/ }).click();
+  await page.getByRole("menuitem", { name: "Sign out" }).click();
   await page.waitForURL(/localhost\/(signin|$)|auth\.localhost/, { timeout: 20000 });
   await page.goto(`${BASE}/rb-queue`);
   await page.waitForURL(/auth\.localhost/, { timeout: 20000 });

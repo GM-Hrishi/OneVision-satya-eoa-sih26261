@@ -6,6 +6,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import styles from "@/components/demo/Demo.module.css";
 import diff from "@/components/diff/DiffView.module.css";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { SourceTag } from "@/components/ui/SourceTag";
 import { audit } from "@/lib/demo";
 import { requireSession } from "@/lib/session";
 import { forbidden } from "next/navigation";
@@ -61,7 +62,15 @@ export default async function AuditPage({ searchParams }: Props) {
                 <tr key={e.seq}>
                   <td className={diff.num}>{e.seq}</td>
                   <td>{fmt.format(new Date(e.at))}</td>
-                  <td>{t(`audit.event.${e.event_type.replace(".", "_")}` as never)}</td>
+                  <td>
+                    {t(`audit.event.${e.event_type.replace(".", "_")}` as never)}
+                    {e.event_type === "source.response" ? (
+                      <>
+                        {" "}
+                        <SourceTag kind="simulated" />
+                      </>
+                    ) : null}
+                  </td>
                   <td>{e.case_id ? <Link href={`/case/${e.case_id}`}>{e.case_id.slice(-4)}</Link> : t("audit.none")}</td>
                   <td className={styles.mono}>{e.hash.slice(0, 16)}</td>
                   <td>

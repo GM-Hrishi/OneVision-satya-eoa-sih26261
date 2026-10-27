@@ -32,7 +32,10 @@ const check = (ok, msg) => { console.log(`${ok ? "PASS" : "FAIL"} ${msg}`); if (
   await page.fill("#username", "rb.southern.demo");
   await page.fill("#password", env.DEMO_USER_PASSWORD);
   await page.click("#kc-login");
-  await page.waitForURL(`${BASE}/rb-queue`, { timeout: 20000 });
+  await page.waitForURL(`${BASE}/overview`, { timeout: 20000 });
+  await page.waitForSelector("#ov-bands", { timeout: 30000 });
+  check((await page.textContent("main")).includes("5 cases submitted"), "Overview is the landing page and counts the 5 seeded cases");
+  await page.goto(`${BASE}/rb-queue`);
   await page.waitForSelector("#case-list", { timeout: 30000 });
   check((await page.locator("tbody tr").count()) === 5, "queue lists the 5 seeded cases");
   const body = await page.textContent("tbody");
@@ -44,7 +47,7 @@ const check = (ok, msg) => { console.log(`${ok ? "PASS" : "FAIL"} ${msg}`); if (
   await page.goto(`${BASE}/case/${DIT03}`);
   await page.waitForSelector("#flags", { timeout: 30000 });
   const main = await page.textContent("main");
-  check(main.includes("MOCK SOURCE") && main.includes("TEST TRUST ANCHOR"), "mock sources and the test trust anchor are tagged");
+  check(main.includes("Simulated source") && main.includes("Test trust anchor"), "simulated sources and the test trust anchor are tagged");
   check(!(await page.locator("main button").allTextContents()).some((b) => /approve|reject/i.test(b)), "no approve or reject control");
   await page.locator("text=Show in document").nth(2).click();
   await page.waitForFunction(() => document.querySelector("canvas") && document.querySelector("canvas").width > 100, null, { timeout: 20000 });
@@ -71,8 +74,8 @@ const check = (ok, msg) => { console.log(`${ok ? "PASS" : "FAIL"} ${msg}`); if (
   await page.screenshot({ path: path.join(shots, "demo-audit.png"), fullPage: true });
 
   await page.goto(`${BASE}/alerts`);
-  await page.waitForSelector("text=New High band case", { timeout: 20000 });
-  check((await page.locator("li a:has-text('Open the case')").count()) >= 3, "alerts link to their cases");
+  await page.waitForSelector("text=Suspected anomaly", { timeout: 20000 });
+  check((await page.locator("li a:has-text('Open flag'), li a:has-text('Open document')").count()) >= 3, "alerts link to their flags or documents");
 
   const relevant = consoleErrors.filter((e) => !e.includes("status of 403") && !e.includes("status of 404"));
   check(relevant.length === 0, `no console errors${relevant.length ? ": " + relevant.join(" | ") : ""}`);

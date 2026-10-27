@@ -2,25 +2,30 @@
   "app": {
     "name": "SATYA-EoA कार्यपीठ",
     "short": "SATYA",
-    "description": "विनियमन ब्यूरो अधिकारियों के लिए SATYA-EoA कार्यपीठ: अनुमोदन विस्तार आवेदनों पर साक्ष्य-आधारित परामर्शी निष्कर्ष। कृत्रिम डेटा पर प्रोटोटाइप।"
+    "description": "विनियमन ब्यूरो अधिकारियों के लिए SATYA-EoA कार्यपीठ: अनुमोदन विस्तार आवेदनों पर साक्ष्य-आधारित परामर्शी निष्कर्ष। केवल कृत्रिम डेटा।"
   },
   "shell": {
-    "prototypeStrip": "प्रोटोटाइप · नकली अनुमोदन पोर्टल से जुड़ा · केवल कृत्रिम डेटा",
     "skipLink": "मुख्य सामग्री पर जाएँ",
     "railLabel": "मुख्य नेविगेशन",
-    "utilityLabel": "सहायता, भाषा और सुगम्यता",
+    "utilityLabel": "सहायता",
     "menu": "मेनू",
     "closeMenu": "मेनू बंद करें",
     "breadcrumbLabel": "ब्रेडक्रम्ब",
-    "roleChip": "{role} · {region}",
-    "ayChip": "शैक्षणिक वर्ष {ay}",
-    "signedInAs": "{user} के रूप में साइन इन",
     "signIn": "साइन इन",
     "signOut": "साइन आउट",
     "languageLabel": "भाषा",
     "english": "English",
     "hindi": "हिन्दी",
-    "brand": "SATYA-EoA"
+    "brand": "SATYA-EoA",
+    "regionName": "{region} क्षेत्र",
+    "contextRole": "{role} · {region}",
+    "contextAy": "शैक्षणिक वर्ष {ay}",
+    "contextAria": "{role}, {region}, शैक्षणिक वर्ष {ay}",
+    "searchLabel": "आवेदन खोजें",
+    "searchPlaceholder": "आवेदन आईडी या संस्थान",
+    "searchButton": "खोजें",
+    "userMenu": "खाता मेनू",
+    "accessibilitySettings": "सुगम्यता सेटिंग"
   },
   "nav": {
     "home": "मुखपृष्ठ",
@@ -57,26 +62,22 @@
   "footer": {
     "label": "साइट जानकारी",
     "about": "परिचय",
-    "policies": "नीतियाँ",
+    "policies": "वेबसाइट नीतियाँ",
     "help": "सहायता",
-    "accessibility": "सुगम्यता विवरण",
+    "accessibility": "सुगम्यता",
     "sitemap": "साइटमैप",
-    "lastUpdated": "अंतिम अद्यतन: {date}",
-    "disclaimer": "परामर्शी निर्णय-सहायता। निर्णय अधिकारी लेते हैं। नकली अनुमोदन पोर्टल और कृत्रिम डेटा पर चलता है। AICTE से संबद्ध या जुड़ा हुआ नहीं।",
-    "team": "© {year} टीम OneVision · स्मार्ट इंडिया हैकथॉन 2026 प्रोटोटाइप"
+    "advisory": "निष्कर्ष केवल सलाहकारी हैं। निर्णय AICTE अधिकारियों के हैं। · अद्यतन {date}"
   },
   "queue": {
     "title": "सत्यापन कतार",
-    "overviewTitle": "चक्र अवलोकन",
-    "description": "प्रारंभिक सत्यापन की प्रतीक्षा में आवेदन, जोखिम श्रेणी के अनुसार। कृत्रिम डेटा पर प्रोटोटाइप।",
-    "overviewDescription": "विनियमन ब्यूरो के लिए चक्र अवलोकन। कृत्रिम डेटा पर प्रोटोटाइप।",
-    "intro": "नकली अनुमोदन पोर्टल से जमा किया गया आवेदन आने पर वह यहाँ दिखता है। निष्कर्ष परामर्शी हैं; हर निर्णय अधिकारी दर्ज करते हैं।",
+    "description": "प्रथम-चरण सत्यापन की प्रतीक्षा में आवेदन, जोखिम श्रेणी के अनुसार।",
+    "intro": "अनुमोदन पोर्टल द्वारा प्रस्तुत आवेदन भेजे जाने के बाद वे यहाँ दिखते हैं। निष्कर्ष केवल सलाहकारी हैं; हर निर्णय एक अधिकारी दर्ज करता है।",
     "emptyTitle": "अभी कोई आवेदन नहीं।",
-    "emptyBody": "नकली पोर्टल से एक आवेदन जमा करें।",
-    "emptyLink": "नकली अनुमोदन पोर्टल खोलें",
+    "emptyBody": "अनुमोदन पोर्टल से एक प्रस्तुत करें।",
+    "emptyLink": "अनुमोदन पोर्टल खोलें",
     "loading": "सत्यापन कतार लोड हो रही है",
     "listHeading": "शपथ-पत्र जाँच वाले मामले",
-    "listIntro": "आपके क्षेत्र के लिए नकली अनुमोदन पोर्टल से आए मामले। निष्कर्ष केवल परामर्शी हैं; पोर्टल ड्राफ्ट के सामने शपथ-पत्र की समीक्षा के लिए मामला खोलें।",
+    "listIntro": "आपके क्षेत्र के लिए अनुमोदन पोर्टल से आए मामले। निष्कर्ष केवल परामर्शी हैं; पोर्टल ड्राफ्ट के सामने शपथ-पत्र की समीक्षा के लिए मामला खोलें।",
     "colApplication": "आवेदन आईडी",
     "colInstitution": "संस्थान",
     "colRegion": "क्षेत्र",
@@ -104,7 +105,7 @@
     "description": "पहुँच अस्वीकृत पृष्ठ।",
     "heading": "आपको सौंपा नहीं गया",
     "body": "आपके खाते को इस पृष्ठ की पहुँच नहीं है। पहुँच आपकी भूमिका और आपको सौंपे गए क्षेत्रों पर निर्भर है।",
-    "institution": "संस्थान नकली अनुमोदन पोर्टल का उपयोग करते हैं। कार्यपीठ अधिकारियों के लिए है।",
+    "institution": "संस्थान अनुमोदन पोर्टल का उपयोग करते हैं। कार्यपीठ अधिकारियों के लिए है।",
     "home": "अपने मुखपृष्ठ पर जाएँ"
   },
   "roleHome": {
@@ -131,22 +132,22 @@
   },
   "help": {
     "title": "सहायता",
-    "description": "SATYA-EoA कार्यपीठ प्रोटोटाइप का उपयोग कैसे करें।",
+    "description": "SATYA-EoA कार्यपीठ का उपयोग कैसे करें।",
     "heading": "सहायता",
     "whatHeading": "कार्यपीठ क्या करता है",
-    "whatBody": "SATYA-EoA नकली अनुमोदन पोर्टल से आए अनुमोदन विस्तार आवेदनों की जाँच करता है और साक्ष्य, लागू नियम और APH खंड के साथ परामर्शी निष्कर्ष दिखाता है। यह कभी कुछ अनुमोदित, अस्वीकृत या निपटाता नहीं है। हर निर्णय अधिकारी दर्ज करते हैं।",
+    "whatBody": "SATYA-EoA अनुमोदन पोर्टल से आए अनुमोदन विस्तार आवेदनों की जाँच करता है और साक्ष्य, लागू नियम और APH खंड के साथ परामर्शी निष्कर्ष दिखाता है। यह कभी कुछ अनुमोदित, अस्वीकृत या निपटाता नहीं है। हर निर्णय अधिकारी दर्ज करते हैं।",
     "labelsHeading": "सत्यापन लेबल",
     "labelsBody": "हर दस्तावेज़ पर ठीक एक लेबल दिखता है, हमेशा पाठ के रूप में: सत्यापित, असंगति पाई गई, समाप्त, सत्यापन लंबित, स्रोत अनुपलब्ध, मैनुअल समीक्षा आवश्यक।",
     "riskHeading": "जोखिम श्रेणी",
     "riskBody": "उच्च, मध्यम या निम्न केवल समीक्षा कतार का क्रम तय करता है। यह कोई निष्कर्ष नहीं है और संस्थान को कभी नहीं दिखाया जाता।",
-    "dataHeading": "इस प्रोटोटाइप में डेटा",
-    "dataBody": "सभी आवेदन, संस्थान और व्यक्ति कृत्रिम हैं। MOCK SOURCE चिह्नित जाँचें नकली एडेप्टर से आती हैं, और डेमो हस्ताक्षर TEST TRUST ANCHOR से जुड़ते हैं।",
+    "dataHeading": "डेटा के बारे में",
+    "dataBody": "सभी आवेदन, संस्थान और व्यक्ति कृत्रिम हैं। स्रोत उत्तरों पर अनुकरण स्रोत टैग और हस्ताक्षर श्रृंखलाओं पर परीक्षण ट्रस्ट एंकर टैग लगा है।",
     "keysHeading": "कीबोर्ड उपयोग",
     "keysBody": "आगे बढ़ने के लिए Tab, लिंक खोलने या बटन दबाने के लिए Enter, और मेनू बंद करने के लिए Escape दबाएँ। हर पृष्ठ पर पहला Tab मुख्य सामग्री पर जाने का लिंक देता है।"
   },
   "accessibility": {
     "title": "सुगम्यता विवरण",
-    "description": "SATYA-EoA कार्यपीठ प्रोटोटाइप का सुगम्यता विवरण (WCAG 2.1 AA, GIGW 3.0)।",
+    "description": "SATYA-EoA कार्यपीठ का सुगम्यता विवरण (WCAG 2.1 AA, GIGW 3.0)।",
     "heading": "सुगम्यता विवरण",
     "commitment": "हम SATYA-EoA कार्यपीठ को सभी के लिए उपयोगी बनाते हैं, जिनमें कीबोर्ड, स्क्रीन रीडर, आवर्धन या उच्च-कंट्रास्ट सेटिंग का उपयोग करने वाले लोग शामिल हैं।",
     "standardsHeading": "मानक",
@@ -159,24 +160,24 @@
     "feature5": "आपका सिस्टम कम गति माँगे तो एनिमेशन बंद हो जाते हैं",
     "feature6": "अंग्रेज़ी और हिन्दी",
     "limitsHeading": "ज्ञात सीमाएँ",
-    "limitsBody": "यह एक प्रोटोटाइप है। हिन्दी पाठ की समीक्षा अभी एक मूल वक्ता द्वारा की जा रही है, और किसी भी पायलट से पहले सहायक तकनीक के साथ पूरा ऑडिट नियोजित है।",
+    "limitsBody": "हिन्दी पाठ की समीक्षा अभी एक मूल वक्ता द्वारा की जा रही है, और किसी भी पायलट से पहले सहायक तकनीक के साथ पूरा ऑडिट नियोजित है।",
     "reportHeading": "समस्या की सूचना दें",
     "reportBody": "सुगम्यता की समस्याओं की सूचना परियोजना के इश्यू ट्रैकर के माध्यम से टीम OneVision को दें।"
   },
   "about": {
     "title": "परिचय",
-    "description": "SATYA-EoA प्रोटोटाइप का परिचय।",
+    "description": "SATYA-EoA का परिचय।",
     "heading": "SATYA-EoA का परिचय",
     "body1": "SATYA-EoA स्व-प्रकटीकरण आधारित अनुमोदन विस्तार के लिए वह प्रारंभिक संवीक्षा है जो अभी नहीं है, और उसके बाद की हर समिति के लिए साक्ष्य सहायक।",
     "body2": "यह AICTE के अपने टेम्पलेट को उसी तरह पढ़ता है जैसे वे बनाए गए थे, जहाँ आधिकारिक स्रोत उपलब्ध है वहाँ हर दस्तावेज़ की जाँच करता है, और शपथ-पत्र के दावों का पोर्टल डेटा और पिछले वर्षों से मिलान करता है। निष्कर्ष परामर्शी हैं; निर्णय अधिकारी लेते हैं।",
-    "body3": "यह प्रोटोटाइप टीम द्वारा बनाए गए नकली अनुमोदन पोर्टल पर, केवल कृत्रिम डेटा के साथ चलता है। यह AICTE से संबद्ध, समर्थित या जुड़ा हुआ नहीं है।"
+    "body3": "SATYA-EoA टीम द्वारा बनाए गए अनुकरणीय अनुमोदन पोर्टल पर, केवल कृत्रिम डेटा के साथ चलता है। यह AICTE से संबद्ध, समर्थित या जुड़ा हुआ नहीं है।"
   },
   "policies": {
     "title": "नीतियाँ",
-    "description": "SATYA-EoA प्रोटोटाइप की गोपनीयता, कुकी, सुरक्षा और उपयोग नीतियाँ।",
+    "description": "SATYA-EoA की गोपनीयता, कुकी, सुरक्षा और उपयोग नीतियाँ।",
     "heading": "नीतियाँ",
     "privacyHeading": "गोपनीयता",
-    "privacyBody": "प्रोटोटाइप में केवल कृत्रिम डेटा है। इसमें कोई वास्तविक नाम, संपर्क विवरण, पहचान संख्या या दस्तावेज़ संग्रहीत नहीं है।",
+    "privacyBody": "SATYA-EoA में केवल कृत्रिम डेटा है। इसमें कोई वास्तविक नाम, संपर्क विवरण, पहचान संख्या या दस्तावेज़ संग्रहीत नहीं है।",
     "cookiesHeading": "कुकी",
     "cookiesBody": "दो प्रकार की कुकी लगाई जाती हैं: साइन इन के बाद एक सुरक्षित, केवल-HTTP सत्र कुकी, और एक भाषा कुकी जो अंग्रेज़ी या हिन्दी याद रखती है। कोई ट्रैकिंग या विश्लेषण कुकी उपयोग नहीं होती।",
     "securityHeading": "सुरक्षा",
@@ -186,7 +187,7 @@
   },
   "sitemap": {
     "title": "साइटमैप",
-    "description": "SATYA-EoA कार्यपीठ प्रोटोटाइप के सभी पृष्ठ।",
+    "description": "SATYA-EoA कार्यपीठ के सभी पृष्ठ।",
     "heading": "साइटमैप",
     "workHeading": "कार्य",
     "infoHeading": "जानकारी"
@@ -363,7 +364,7 @@
     "duty": "स्टाम्प शुल्क",
     "dutyValue": "₹{amount}",
     "stampChecks": "स्टाम्प जाँच",
-    "stampStateNote": "स्टाम्प पृष्ठ पर प्रारूप जाँच। ई-स्टाम्प की स्वयं की जाँच (मॉक स्रोत) M7 (P-5) के साथ आएगी।",
+    "stampStateNote": "स्टांप पृष्ठ की प्रारूप जाँच। ई-स्टांप खोज स्वयं M7 (P-5) के साथ आएगी।",
     "noStamp": "टेक्स्ट लेयर में कोई स्टाम्प पृष्ठ नहीं मिला।",
     "orderHeading": "हस्ताक्षर का क्रम",
     "orderStep": "चरण",
@@ -433,19 +434,19 @@
   },
   "signature": {
     "issuer": {
-      "verified": "जारीकर्ता का हस्ताक्षर सत्यापित",
-      "image_only": "केवल चित्र, वास्तविक हस्ताक्षर नहीं",
-      "chain_broken": "शृंखला टूटी / हस्ताक्षर के बाद संपादित",
-      "edited_after_signing": "शृंखला टूटी / हस्ताक्षर के बाद संपादित",
-      "not_digital": "डिजिटल नहीं (गीली मुहर)",
-      "not_applicable": "लागू नहीं (स्रोत जाँच)"
+      "verified": "जारीकर्ता हस्ताक्षर सत्यापित",
+      "image_only": "केवल छवि, वास्तविक हस्ताक्षर नहीं",
+      "chain_broken": "हस्ताक्षर टूटा या हस्ताक्षर के बाद बदला गया",
+      "edited_after_signing": "हस्ताक्षर टूटा या हस्ताक्षर के बाद बदला गया",
+      "not_digital": "गीली मुहर, डिजिटल नहीं",
+      "not_applicable": "लागू नहीं, स्रोत खोज"
     },
     "uploader": {
-      "present": "अपलोडकर्ता का हस्ताक्षर मौजूद",
-      "absent_required": "अनुपस्थित, आवश्यक",
-      "image_only": "केवल चित्र"
+      "present": "अपलोडकर्ता हस्ताक्षर उपस्थित",
+      "absent_required": "अपलोडकर्ता हस्ताक्षर अनुपस्थित",
+      "image_only": "केवल छवि, वास्तविक हस्ताक्षर नहीं"
     },
-    "chainOk": "{anchor} तक शृंखला ठीक",
+    "chainOk": "श्रृंखला परीक्षण ट्रस्ट एंकर तक ठीक",
     "signerRole": {
       "chairman": "हस्ताक्षरकर्ता की भूमिका अध्यक्ष",
       "secretary": "हस्ताक्षरकर्ता की भूमिका सचिव",
@@ -480,7 +481,7 @@
     },
     "mode": {
       "live": "लाइव",
-      "mock": "मॉक स्रोत",
+      "mock": "अनुकरण स्रोत",
       "offline": "ऑफ़लाइन",
       "none": "कोई माध्यम नहीं"
     },
@@ -548,15 +549,15 @@
     "noEvidence": "पूरा दस्तावेज़",
     "legendHeading": "हस्ताक्षर छह लेबलों से कैसे जुड़ते हैं",
     "legend": {
-      "verified": "वास्तविक हस्ताक्षर (/ByteRange) जो {anchor} तक पहुँचता है: सत्यापित",
-      "mismatch": "शृंखला टूटी, हस्ताक्षर के बाद संपादित या प्रमाणपत्र रद्द: असंगति पाई गई",
+      "verified": "वास्तविक हस्ताक्षर (/ByteRange) जो ट्रस्ट एंकर तक जुड़ता है: सत्यापित",
+      "mismatch": "श्रृंखला टूटी, हस्ताक्षर के बाद बदला गया या प्रमाणपत्र रद्द: असंगति पाई गई",
       "expired": "हस्ताक्षर के समय प्रमाणपत्र समाप्त या अभी मान्य नहीं: समाप्त",
-      "manual": "केवल चित्र, अविश्वसनीय शृंखला, या हस्ताक्षरकर्ता अधिकृत अध्यक्ष या सचिव नहीं: मैनुअल समीक्षा आवश्यक",
-      "unavailable": "पुनः प्रयासों के बाद भी निरस्तीकरण सूची अनुपलब्ध: स्रोत अनुपलब्ध (मैनुअल कार्य)",
+      "manual": "केवल छवि, अविश्वसनीय श्रृंखला, या हस्ताक्षरकर्ता अधिकृत अध्यक्ष या सचिव नहीं: मानवीय समीक्षा आवश्यक",
+      "unavailable": "पुनर्प्रयासों के बाद निरस्तीकरण सूची उपलब्ध नहीं: स्रोत उपलब्ध नहीं (मानवीय कार्य)",
       "absent": "आवश्यक अपलोडकर्ता हस्ताक्षर अनुपस्थित: एक निष्कर्ष, लेबल नहीं"
     },
     "legendUploader": "अपलोडकर्ता का वैध हस्ताक्षर कभी किसी दस्तावेज़ को सत्यापित नहीं बनाता। केवल जारीकर्ता का हस्ताक्षर या आधिकारिक स्रोत ऐसा कर सकता है।",
-    "legendAnchor": "{anchor} कृत्रिम डेमो मूल है। उत्पादन में शृंखला CCA मूल तक बननी चाहिए।",
+    "legendAnchor": "हस्ताक्षर श्रृंखलाओं की जाँच एक परीक्षण रूट प्रमाणपत्र से होती है। उत्पादन में श्रृंखला CCA रूट तक बननी चाहिए।",
     "lastRun": "अंतिम पूर्ण जाँच: {at}",
     "noDocuments": "इस मामले में सत्यापन के लिए कोई दस्तावेज़ नहीं।"
   },
@@ -569,10 +570,11 @@
       "low": "Low"
     },
     "status": {
-      "awaiting_review": "Awaiting review",
-      "in_review": "In review",
-      "reviewed": "Reviewed",
-      "no_findings": "No findings"
+      "in_review": "समीक्षा में",
+      "not_started": "शुरू नहीं हुआ",
+      "waiting_on_institution": "संस्थान की प्रतीक्षा में",
+      "referred": "समिति या EVC को भेजा गया",
+      "all_flags_decided": "सभी फ़्लैग पर निर्णय हो चुका"
     },
     "action": {
       "accept": "ACCEPT · record as an official observation",
@@ -656,10 +658,10 @@
       "colSource": "Source checked",
       "colHash": "SHA-256 (start)",
       "manualTask": "Manual verification task open.",
-      "chainSource": "Signature chain: offline check against the {anchor}",
+      "chainSource": "हस्ताक्षर श्रृंखला: ऑफ़लाइन जाँच",
       "tasksHeading": "Manual verification tasks",
       "task": "{title}: no source answered ({reason}). Verify by hand.",
-      "mockNote": "Every source answer here is a MOCK SOURCE on synthetic data. No connection to SHCIL, ICAI or CCA exists. The portal is a mock."
+      "mockNote": "इस पृष्ठ के स्रोत उत्तर अनुकरणीय सेवाओं से आते हैं और अनुकरण स्रोत टैग रखते हैं। SHCIL, ICAI या CCA से कोई संपर्क नहीं है।"
     },
     "upload": {
       "title": "Add documents",
@@ -681,13 +683,13 @@
       "pickSubmit": "Use and check"
     },
     "queue": {
-      "intro": "Sorted by band, then findings. The band orders review only. Filter by band or status.",
+      "intro": "पहले जोखिम श्रेणी आती है; आपका चुना क्रम हर श्रेणी के भीतर लागू होता है। श्रेणी केवल समीक्षा का क्रम तय करती है। श्रेणी, लेबल या स्थिति से छाँटें।",
       "filters": "Filter the queue",
       "filterBand": "Risk band",
       "filterStatus": "Status",
       "all": "All",
       "apply": "Apply",
-      "clear": "Clear filters",
+      "clear": "फ़िल्टर रीसेट करें",
       "shown": "Showing {shown} of {total} cases.",
       "noMatch": "No case matches these filters.",
       "colBand": "Band",
@@ -696,10 +698,20 @@
       "colReasons": "Top reasons",
       "tasks": "{count, plural, one {# manual task} other {# manual tasks}}",
       "open": "Open case",
-      "openAria": "Open the case for application {aid}",
+      "openAria": "आवेदन {aid} का मामला खोलें",
       "asc": "ascending",
       "desc": "descending",
-      "bandNote": "The band orders review only. It is never shown to the institution."
+      "bandNote": "The band orders review only. It is never shown to the institution.",
+      "caption": "सत्यापन कतार, हर जोखिम श्रेणी के भीतर क्रमबद्ध",
+      "filterLabel": "दस्तावेज़ लेबल",
+      "colAwaiting": "प्रतीक्षित",
+      "colSubmitted": "प्रस्तुत",
+      "colLastActivity": "अंतिम गतिविधि",
+      "awaiting": "{total} में से {count}",
+      "awaitingAria": "{total} में से {count, plural, one {# निष्कर्ष} other {# निष्कर्ष}} निर्णय की प्रतीक्षा में",
+      "sortAnnounce": "{column} के अनुसार क्रमबद्ध, {dir}",
+      "resetSort": "क्रम रीसेट करें",
+      "searchNote": "खोज: {q}"
     },
     "audit": {
       "title": "Audit trail",
@@ -711,7 +723,7 @@
       "method": "Recomputed from the stored entries at",
       "filtered": "Showing one case.",
       "showAll": "Show all entries",
-      "empty": "No entries yet. Run make demo-reset.",
+      "empty": "अभी कोई प्रविष्टि नहीं।",
       "colNo": "No",
       "colTime": "Time (IST)",
       "colEvent": "Event",
@@ -727,7 +739,7 @@
       "event": {
         "document_uploaded": "Document stored",
         "check_run": "Checks run",
-        "source_response": "Source response (MOCK SOURCE)",
+        "source_response": "स्रोत उत्तर",
         "manual_task_created": "Manual task created",
         "disposition_recorded": "Decision recorded",
         "application_submitted": "Portal event received",
@@ -739,17 +751,114 @@
       "title": "Alerts",
       "description": "Alerts derived from stored dates, risk bands and source tasks, each linked to its case.",
       "heading": "Alerts",
-      "intro": "Derived from stored data. Certificate dates are judged as of the date the documents were uploaded.",
+      "intro": "संग्रहीत डेटा से निकाले गए। प्रमाणपत्र की तिथियाँ दस्तावेज़ अपलोड की तिथि के अनुसार आँकी जाती हैं। पहले अपठित, फिर उच्च, मध्यम और निम्न गंभीरता, फिर सबसे नए।",
       "empty": "No alerts.",
-      "open": "Open the case",
+      "open": "मामला खोलें",
       "type": {
-        "suspected_anomaly": "New High band case",
-        "expired": "Certificate date",
-        "pending_source": "Source unavailable",
+        "suspected_anomaly": "संदिग्ध विसंगति",
+        "expired": "समाप्ति",
+        "pending_source": "स्रोत उपलब्ध नहीं",
         "missing_info": "Missing information",
         "unresolved": "Unresolved",
         "role": "Role"
-      }
+      },
+      "severity": {
+        "high": "उच्च गंभीरता",
+        "med": "मध्यम गंभीरता",
+        "low": "निम्न गंभीरता"
+      },
+      "ago": {
+        "now": "अभी",
+        "min": "{n} मिनट पहले",
+        "hour": "{n} घंटे पहले",
+        "day": "{n} दिन पहले"
+      },
+      "unread": "अपठित",
+      "unreadHeading": "अपठित ({count})",
+      "earlierHeading": "पहले के ({count})",
+      "openFlag": "फ़्लैग खोलें",
+      "openDocument": "दस्तावेज़ खोलें",
+      "actionAria": "आवेदन {aid} के लिए {action}",
+      "railLabel": "नवीनतम अलर्ट",
+      "viewAll": "सभी अलर्ट देखें ({count} अपठित)"
+    }
+  },
+  "status": {
+    "label": {
+      "verified": "सत्यापित",
+      "mismatch_detected": "असंगति पाई गई",
+      "expired": "समाप्त",
+      "verification_pending": "सत्यापन लंबित",
+      "source_unavailable": "स्रोत उपलब्ध नहीं",
+      "manual_review_required": "मानवीय समीक्षा आवश्यक"
+    },
+    "short": {
+      "verified": "सत्यापित",
+      "mismatch_detected": "असंगति",
+      "expired": "समाप्त",
+      "verification_pending": "लंबित",
+      "source_unavailable": "अनुपलब्ध",
+      "manual_review_required": "मानवीय समीक्षा"
+    },
+    "countAria": "{label}: {count, plural, one {# दस्तावेज़} other {# दस्तावेज़}}",
+    "notApplicable": "लागू नहीं"
+  },
+  "source": {
+    "simulated": "अनुकरण स्रोत",
+    "simulatedTip": "यह उत्तर इस परिनियोजन के लिए बनाई गई एक अनुकरणीय जारीकर्ता-प्राधिकरण सेवा से आया। किसी वास्तविक प्राधिकरण से संपर्क नहीं किया गया।",
+    "simulatedPrint": "(अनुकरण स्रोत)",
+    "testAnchor": "परीक्षण ट्रस्ट एंकर",
+    "testAnchorTip": "हस्ताक्षर श्रृंखला की जाँच एक परीक्षण रूट प्रमाणपत्र से की गई, CCA रूट से नहीं।",
+    "testAnchorPrint": "(परीक्षण ट्रस्ट एंकर)"
+  },
+  "overview": {
+    "title": "अवलोकन",
+    "description": "विनियमन ब्यूरो के लिए जोखिम श्रेणी, मामलों की स्थिति, दस्तावेज़ लेबल, खुले मानवीय कार्य, समाप्त होते प्रमाणपत्र, हाल के निर्णय और स्रोतों की स्थिति।",
+    "heading": "अवलोकन",
+    "loading": "अवलोकन लोड हो रहा है",
+    "context": "स्व-घोषणा मार्ग · शैक्षणिक वर्ष {ay} · {region} क्षेत्र · {asOf} IST तक",
+    "openQueue": "सत्यापन कतार खोलें",
+    "bandsHeading": "जोखिम श्रेणी के अनुसार मामले",
+    "bandsTotal": "{count, plural, =0 {कोई मामला प्रस्तुत नहीं} one {# मामला प्रस्तुत} other {# मामले प्रस्तुत}}",
+    "bandsEmpty": "इस श्रेणी में अभी कोई मामला नहीं।",
+    "statusHeading": "मामले की स्थिति",
+    "labelsHeading": "लेबल के अनुसार दस्तावेज़",
+    "labelsTotal": "{count, plural, =0 {कोई दस्तावेज़ जाँचा नहीं गया} one {# दस्तावेज़ जाँचा गया} other {# दस्तावेज़ जाँचे गए}}",
+    "tasksHeading": "खुले मानवीय कार्य",
+    "tasksOpen": "{count, plural, =0 {कोई खुला कार्य नहीं} one {# खुला कार्य} other {# खुले कार्य}}।",
+    "tasksOldest": "सबसे पुराना {days, plural, =0 {आज का है} one {# दिन पुराना है} other {# दिन पुराना है}}।",
+    "tasksEmpty": "कोई मानवीय कार्य खुला नहीं है।",
+    "tasksAll": "स्रोत उपलब्ध न होने वाले दस्तावेज़",
+    "ageDays": "{days, plural, =0 {आज} one {1 दिन} other {# दिन}}",
+    "reason": {
+      "SRC_NO_CHANNEL": "कोई स्वचालित चैनल नहीं",
+      "SRC_NO_IDENTIFIER": "खोजने के लिए कोई पहचान नहीं"
+    },
+    "expiringHeading": "समाप्त होते प्रमाणपत्र",
+    "withinDays": "{days} दिनों के भीतर",
+    "expiringEmpty": "90 दिनों में कोई प्रमाणपत्र समाप्त नहीं होता।",
+    "daysLeft": "{days, plural, =0 {आज समाप्त} one {1 दिन शेष} other {# दिन शेष}}",
+    "decisionsHeading": "हाल के निर्णय",
+    "decisionsEmpty": "अभी कोई निर्णय दर्ज नहीं।",
+    "decisionsAll": "ऑडिट ट्रेल खोलें",
+    "action": {
+      "accept": "स्वीकार करें",
+      "override": "अधिरोहित करें",
+      "escalate_clarify": "संस्थान से स्पष्टीकरण मांगें",
+      "escalate_refer": "जाँच समिति या EVC को भेजें",
+      "escalate_manual": "मानवीय सत्यापन के लिए भेजें"
+    },
+    "sourcesHeading": "स्रोत",
+    "sourcesAnswering": "{m} में से {n} उत्तर दे रहे हैं",
+    "sourcesSimulated": "अनुकरण स्रोत के रूप में चल रहे: {names}।",
+    "source": {
+      "cca_offline_chain": "हस्ताक्षर श्रृंखला जाँच",
+      "shcil_estamp": "ई-स्टांप खोज",
+      "icai_udin": "UDIN खोज"
+    },
+    "sourceStatus": {
+      "answering": "उत्तर दे रहा है",
+      "unavailable": "उत्तर नहीं दे रहा"
     }
   }
 }

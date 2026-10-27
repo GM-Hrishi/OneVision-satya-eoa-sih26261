@@ -1,4 +1,5 @@
 import "@fontsource/public-sans/400.css";
+import "@fontsource/public-sans/500.css";
 import "@fontsource/public-sans/600.css";
 import "@fontsource/public-sans/700.css";
 import "@fontsource/public-sans/800.css";
@@ -30,7 +31,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   // Per-request CSP nonce from src/proxy.ts; React Aria reads it from this meta element.
   const nonce = (await headers()).get("x-nonce") ?? undefined;
   // Client components only need the navigation labels.
-  const clientMessages = { nav: messages.nav, error: messages.error, demo: messages.demo };
+  const clientMessages = { nav: messages.nav, error: messages.error, demo: messages.demo, status: messages.status, source: messages.source };
   return (
     <html lang={locale}>
       <head>

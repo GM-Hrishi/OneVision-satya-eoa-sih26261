@@ -11,6 +11,7 @@ import asyncio
 import hashlib
 import json
 import logging
+import re
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -48,7 +49,7 @@ from satya_api.problems import ProblemError, problem_response
 from satya_api.ratelimit import RateLimiter
 from satya_api.signature import HEADER, verify
 from satya_api.store import EventStore, InboundEvent, PostgresStore
-from satya_api.workflow import FLAG_ID, Workflow, WorkflowError
+from satya_api.workflow import FLAG_ID, QUEUE_DIRS, QUEUE_SORTS, Workflow, WorkflowError
 from satya_forensics.engine import ENGINE_VERSION as M6_ENGINE_VERSION
 from satya_forensics.rules import load_ruleset as load_m6_ruleset
 from satya_shared_types import constants, validator
@@ -59,6 +60,7 @@ security = logging.getLogger("satya.security")
 CheckFn = Callable[[], Awaitable[None]]
 MAX_REPORTED_ERRORS = 20
 RISK_BANDS = ("high", "medium", "low")
+REGION_NAME = re.compile(r"[a-z][a-z_]{1,19}")
 
 
 def _schema_errors(name: str, data: Any, prefix: str = "") -> list[dict[str, str]]:
@@ -112,6 +114,8 @@ def create_app(
     user_limiter = RateLimiter(redis, user_limit, user_window, "user")
     upload_limit, upload_window = parse_rate(settings.upload_rate_limit)
     upload_limiter = RateLimiter(redis, upload_limit, upload_window, "upload")
+    overview_limit, overview_window = parse_rate(settings.overview_rate_limit)
+    overview_limiter = RateLimiter(redis, overview_limit, overview_window, "overview")
     hmac_keys = settings.hmac_key_map()
 
     @asynccontextmanager
@@ -264,7 +268,7 @@ def create_app(
             "adapters": [],
             "adapters_note": (
                 "No source adapters in slice 0. TN Form D and TN fire licence adapters arrive "
-                "in mock mode with M7 (P-5); every mock result is labelled MOCK SOURCE."
+                "in mock mode with M7 (P-5); every mock result is tagged as a simulated source."
             ),
             "advisory": True,
             "regulatory_effect": "none",
@@ -381,11 +385,21 @@ def create_app(
             raise ProblemError(403, "SCOPE_DENIED")
 
     @app.get("/v1/cases")
-    async def list_cases(request: Request) -> JSONResponse:
-        """The queue (RB-02): one row per case with its risk band, label counts and status."""
+    async def list_cases(
+        request: Request, sort: str | None = None, dir: str | None = None
+    ) -> JSONResponse:
+        """The queue (RB-02): one row per case with its risk band, label counts and status.
+
+        `sort` (application_id | undisposed_flags | submitted_at | last_activity_at) and `dir`
+        (asc | desc) order the rows inside each risk band group; the active sort is echoed.
+        """
         principal = await official(request)
+        if (sort is not None and sort not in QUEUE_SORTS) or (
+            dir is not None and dir not in QUEUE_DIRS
+        ):
+            raise ProblemError(422, "VALIDATION_FAILED")
         flow: Workflow = request.app.state.workflow
-        items = await flow.queue(principal.can_see_region)
+        items = await flow.queue(principal.can_see_region, sort, dir)
         body = {
             "items": items,
             "totals": {
@@ -393,8 +407,52 @@ def create_app(
                 "by_band": {b: sum(1 for i in items if i["risk_band"] == b) for b in RISK_BANDS},
                 "sources_unavailable": sum(i["manual_tasks"] for i in items),
             },
+            "sort": {
+                "key": sort or "undisposed_flags",
+                "dir": dir or ("asc" if sort else "desc"),
+                "default": sort is None,
+                "within": "risk_band",
+            },
             "advisory": True,
         }
+        return JSONResponse(body, headers={"Cache-Control": "no-store"})
+
+    @app.get("/v1/overview")
+    async def overview(
+        request: Request, ay: str | None = None, region: str | None = None
+    ) -> JSONResponse:
+        """Overview counts (RB): same role and region scope as the queue, plus a stricter quota.
+
+        `ay` must be a supported academic year (default: the latest) and `region` a lower-case
+        region name the official may see (default: everything the official may see).
+        """
+        principal = await official(request)
+        retry_after = await overview_limiter.hit(principal.subject)
+        if retry_after is not None:
+            security.warning(
+                "rate limited", extra={"trace_id": trace(request), "scope": "overview"}
+            )
+            raise ProblemError(429, "RATE_LIMITED", headers={"Retry-After": str(retry_after)})
+        if ay is not None and ay not in SUPPORTED_AYS:
+            raise ProblemError(422, "UNSUPPORTED_AY")
+        if region is not None:
+            if not REGION_NAME.fullmatch(region):
+                raise ProblemError(422, "VALIDATION_FAILED")
+            if region != "national" and not principal.can_see_region(region):
+                security.warning(
+                    "overview outside region scope",
+                    extra={"trace_id": trace(request), "sub": principal.subject},
+                )
+                raise ProblemError(403, "SCOPE_DENIED")
+            if region == "national" and "national" not in principal.regions:
+                raise ProblemError(403, "SCOPE_DENIED")
+        scope = region or ("national" if "national" in principal.regions else None)
+        body = await flow_of(request).overview(
+            principal.can_see_region, ay or SUPPORTED_AYS[-1], region
+        )
+        if scope is None:
+            scope = ",".join(sorted(principal.regions))
+        body["region"] = scope
         return JSONResponse(body, headers={"Cache-Control": "no-store"})
 
     async def scoped_case(request: Request, case_id: str) -> tuple[Principal, CaseRepository]:

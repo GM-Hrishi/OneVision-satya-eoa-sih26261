@@ -2,25 +2,30 @@
   "app": {
     "name": "SATYA-EoA workbench",
     "short": "SATYA",
-    "description": "SATYA-EoA workbench for Regulation Bureau officials: advisory, evidence-linked findings on Extension of Approval applications. Prototype on synthetic data."
+    "description": "SATYA-EoA workbench for Regulation Bureau officials: advisory, evidence-linked findings on Extension of Approval applications. Synthetic data only."
   },
   "shell": {
-    "prototypeStrip": "Prototype · connected to a mock approval portal · synthetic data only",
     "skipLink": "Skip to main content",
     "railLabel": "Main navigation",
-    "utilityLabel": "Help, language and accessibility",
+    "utilityLabel": "Help",
     "menu": "Menu",
     "closeMenu": "Close menu",
     "breadcrumbLabel": "Breadcrumb",
-    "roleChip": "{role} · {region}",
-    "ayChip": "AY {ay}",
-    "signedInAs": "Signed in as {user}",
     "signIn": "Sign in",
     "signOut": "Sign out",
     "languageLabel": "Language",
     "english": "English",
     "hindi": "हिन्दी",
-    "brand": "SATYA-EoA"
+    "brand": "SATYA-EoA",
+    "regionName": "{region} region",
+    "contextRole": "{role} · {region}",
+    "contextAy": "AY {ay}",
+    "contextAria": "{role}, {region}, academic year {ay}",
+    "searchLabel": "Search applications",
+    "searchPlaceholder": "Application ID",
+    "searchButton": "Search",
+    "userMenu": "Account menu",
+    "accessibilitySettings": "Accessibility settings"
   },
   "nav": {
     "home": "Home",
@@ -57,27 +62,23 @@
   "footer": {
     "label": "Site information",
     "about": "About",
-    "policies": "Policies",
+    "policies": "Website policies",
     "help": "Help",
-    "accessibility": "Accessibility statement",
+    "accessibility": "Accessibility",
     "sitemap": "Sitemap",
-    "lastUpdated": "Last updated: {date}",
-    "disclaimer": "Advisory decision support. Officials decide. Runs against a mock approval portal on synthetic data. Not affiliated with or connected to AICTE.",
-    "team": "© {year} Team OneVision · Smart India Hackathon 2026 prototype"
+    "advisory": "Findings are advisory. Decisions rest with AICTE officials. · Updated {date}"
   },
   "queue": {
     "title": "Validation queue",
-    "overviewTitle": "Cycle overview",
-    "description": "Applications awaiting first-pass validation, grouped by risk band. Prototype on synthetic data.",
-    "overviewDescription": "Cycle overview for the Regulation Bureau. Prototype on synthetic data.",
-    "intro": "Applications appear here after the mock approval portal sends a submitted application. Findings are advisory; every decision is recorded by an official.",
+    "description": "Applications awaiting first-pass validation, grouped by risk band.",
+    "intro": "Applications appear here after the approval portal sends a submitted application. Findings are advisory; every decision is recorded by an official.",
     "emptyTitle": "No applications yet.",
-    "emptyBody": "Submit one from the mock portal.",
-    "emptyLink": "Open the mock approval portal",
+    "emptyBody": "Submit one from the approval portal.",
+    "emptyLink": "Open the approval portal",
     "loading": "Loading the validation queue",
     "listHeading": "Cases for review",
-    "listIntro": "Cases from the mock approval portal for your region. Findings are advisory; open a case to review its sworn affidavit against the portal draft.",
-    "colApplication": "Application ID",
+    "listIntro": "Cases from the approval portal for your region. Findings are advisory; open a case to review its sworn affidavit against the portal draft.",
+    "colApplication": "Application",
     "colInstitution": "Institution",
     "colRegion": "Region",
     "colAy": "AY",
@@ -104,7 +105,7 @@
     "description": "Access denied page.",
     "heading": "Not assigned to you",
     "body": "Your account does not have access to this page. Access depends on your role and the regions assigned to you.",
-    "institution": "Institutions use the mock approval portal. The workbench is for officials.",
+    "institution": "Institutions use the approval portal. The workbench is for officials.",
     "home": "Go to your home page"
   },
   "roleHome": {
@@ -131,22 +132,22 @@
   },
   "help": {
     "title": "Help",
-    "description": "How to use the SATYA-EoA workbench prototype.",
+    "description": "How to use the SATYA-EoA workbench.",
     "heading": "Help",
     "whatHeading": "What the workbench does",
-    "whatBody": "SATYA-EoA checks Extension of Approval applications sent by the mock approval portal and shows advisory findings with evidence, the rule applied and the APH clause. It never approves, rejects or clears anything. An official records every decision.",
+    "whatBody": "SATYA-EoA checks Extension of Approval applications sent by the approval portal and shows advisory findings with evidence, the rule applied and the APH clause. It never approves, rejects or clears anything. An official records every decision.",
     "labelsHeading": "Verification labels",
     "labelsBody": "Every document shows exactly one label, always as text: Verified, Mismatch detected, Expired, Verification pending, Source unavailable, Manual review required.",
     "riskHeading": "Risk band",
     "riskBody": "High, Medium or Low orders the review queue only. It is not a finding and is never shown to the institution.",
-    "dataHeading": "Data in this prototype",
-    "dataBody": "All applications, institutions and people are synthetic. Source checks marked MOCK SOURCE come from mock adapters, and demo signatures chain to a TEST TRUST ANCHOR.",
+    "dataHeading": "About the data",
+    "dataBody": "All applications, institutions and people are synthetic. Source answers carry a Simulated source tag, and signature chains carry a Test trust anchor tag.",
     "keysHeading": "Keyboard use",
     "keysBody": "Press Tab to move, Enter to follow a link or press a button, and Escape to close the menu. The first Tab on every page offers a link that skips to the main content."
   },
   "accessibility": {
     "title": "Accessibility statement",
-    "description": "Accessibility statement for the SATYA-EoA workbench prototype (WCAG 2.1 AA, GIGW 3.0).",
+    "description": "Accessibility statement for the SATYA-EoA workbench (WCAG 2.1 AA, GIGW 3.0).",
     "heading": "Accessibility statement",
     "commitment": "We build the SATYA-EoA workbench to be usable by everyone, including people who use a keyboard, a screen reader, magnification or high-contrast settings.",
     "standardsHeading": "Standards",
@@ -159,24 +160,24 @@
     "feature5": "Animations are turned off when your system asks for reduced motion",
     "feature6": "English and Hindi",
     "limitsHeading": "Known limitations",
-    "limitsBody": "This is a prototype. Hindi text is still being reviewed by a native speaker, and a full audit with assistive technology is planned before any pilot.",
+    "limitsBody": "Hindi text is still being reviewed by a native speaker, and a full audit with assistive technology is planned before any pilot.",
     "reportHeading": "Report a problem",
     "reportBody": "Report accessibility problems to Team OneVision through the project's issue tracker."
   },
   "about": {
     "title": "About",
-    "description": "About the SATYA-EoA prototype.",
+    "description": "About SATYA-EoA.",
     "heading": "About SATYA-EoA",
     "body1": "SATYA-EoA is the missing first-pass scrutiny for self-disclosure Extension of Approval, and an evidence assistant for every committee after it.",
     "body2": "It reads AICTE's own templates the way they were designed, checks each document at its official source where one exists, and reconciles sworn claims against portal data and past years. Findings are advisory; officials decide.",
-    "body3": "This prototype runs against a mock approval portal built by the team, on synthetic data only. It is not affiliated with, endorsed by or connected to AICTE."
+    "body3": "SATYA-EoA runs against a simulated approval portal built by the team, on synthetic data only. It is not affiliated with, endorsed by or connected to AICTE."
   },
   "policies": {
     "title": "Policies",
-    "description": "Privacy, cookie, security and use policies for the SATYA-EoA prototype.",
+    "description": "Privacy, cookie, security and use policies for SATYA-EoA.",
     "heading": "Policies",
     "privacyHeading": "Privacy",
-    "privacyBody": "The prototype holds synthetic data only. It stores no real names, contact details, identity numbers or documents.",
+    "privacyBody": "SATYA-EoA holds synthetic data only. It stores no real names, contact details, identity numbers or documents.",
     "cookiesHeading": "Cookies",
     "cookiesBody": "Two kinds of cookie are set: a secure, HTTP-only session cookie after you sign in, and a language cookie that remembers English or Hindi. No tracking or analytics cookies are used.",
     "securityHeading": "Security",
@@ -186,7 +187,7 @@
   },
   "sitemap": {
     "title": "Sitemap",
-    "description": "All pages of the SATYA-EoA workbench prototype.",
+    "description": "All pages of the SATYA-EoA workbench.",
     "heading": "Sitemap",
     "workHeading": "Work",
     "infoHeading": "Information"
@@ -363,7 +364,7 @@
     "duty": "Stamp duty",
     "dutyValue": "Rs {amount}",
     "stampChecks": "Stamp checks",
-    "stampStateNote": "Format checks on the stamp page. The e-stamp lookup itself (mock source) arrives with M7 (P-5).",
+    "stampStateNote": "Format checks on the stamp page. The e-stamp lookup itself arrives with M7 (P-5).",
     "noStamp": "No stamp page was found in the text layer.",
     "orderHeading": "Signing order",
     "orderStep": "Step",
@@ -433,19 +434,19 @@
   },
   "signature": {
     "issuer": {
-      "verified": "ISSUER SIGNATURE VERIFIED",
-      "image_only": "IMAGE ONLY, NOT A REAL SIGNATURE",
-      "chain_broken": "CHAIN BROKEN / EDITED AFTER SIGNING",
-      "edited_after_signing": "CHAIN BROKEN / EDITED AFTER SIGNING",
-      "not_digital": "NOT DIGITAL (WET SEAL)",
-      "not_applicable": "N/A (SOURCE LOOKUP)"
+      "verified": "Issuer signature verified",
+      "image_only": "Image only, not a real signature",
+      "chain_broken": "Signature broken or edited after signing",
+      "edited_after_signing": "Signature broken or edited after signing",
+      "not_digital": "Wet seal, not digital",
+      "not_applicable": "Not applicable, source lookup"
     },
     "uploader": {
-      "present": "UPLOADER SIGNATURE PRESENT",
-      "absent_required": "ABSENT, REQUIRED",
-      "image_only": "IMAGE ONLY"
+      "present": "Uploader signature present",
+      "absent_required": "Uploader signature missing",
+      "image_only": "Image only, not a real signature"
     },
-    "chainOk": "Chain to {anchor} ok",
+    "chainOk": "Chain to the test trust anchor ok",
     "signerRole": {
       "chairman": "signer role Chairman",
       "secretary": "signer role Secretary",
@@ -480,7 +481,7 @@
     },
     "mode": {
       "live": "LIVE",
-      "mock": "MOCK SOURCE",
+      "mock": "Simulated source",
       "offline": "OFFLINE",
       "none": "NO CHANNEL"
     },
@@ -548,15 +549,15 @@
     "noEvidence": "Whole document",
     "legendHeading": "How signatures map to the six labels",
     "legend": {
-      "verified": "Real signature (/ByteRange) that chains to the {anchor}: VERIFIED",
-      "mismatch": "Chain broken, edited after signing or certificate revoked: MISMATCH DETECTED",
-      "expired": "Certificate expired or not yet valid at signing: EXPIRED",
-      "manual": "Image only, untrusted chain, or signer not the authorised Chairman or Secretary: MANUAL REVIEW REQUIRED",
-      "unavailable": "Revocation list unreachable after retries: SOURCE UNAVAILABLE (manual task)",
+      "verified": "Real signature (/ByteRange) that chains to the trust anchor: Verified",
+      "mismatch": "Chain broken, edited after signing or certificate revoked: Mismatch detected",
+      "expired": "Certificate expired or not yet valid at signing: Expired",
+      "manual": "Image only, untrusted chain, or signer not the authorised Chairman or Secretary: Manual review required",
+      "unavailable": "Revocation list unreachable after retries: Source unavailable (manual task)",
       "absent": "Required uploader signature absent: a finding, not a label"
     },
     "legendUploader": "A valid uploader signature never makes a document verified. Only the issuer's signature or an official source can.",
-    "legendAnchor": "{anchor} is the synthetic demo root. In production the chain must build to the CCA root.",
+    "legendAnchor": "Signature chains are checked against a test root certificate. In production the chain must build to the CCA root.",
     "lastRun": "Last full run: {at}",
     "noDocuments": "No documents to verify in this case."
   },
@@ -569,10 +570,11 @@
       "low": "Low"
     },
     "status": {
-      "awaiting_review": "Awaiting review",
       "in_review": "In review",
-      "reviewed": "Reviewed",
-      "no_findings": "No findings"
+      "not_started": "Not started",
+      "waiting_on_institution": "Waiting on institution",
+      "referred": "Referred to committee or EVC",
+      "all_flags_decided": "All flags decided"
     },
     "action": {
       "accept": "ACCEPT · record as an official observation",
@@ -656,10 +658,10 @@
       "colSource": "Source checked",
       "colHash": "SHA-256 (start)",
       "manualTask": "Manual verification task open.",
-      "chainSource": "Signature chain: offline check against the {anchor}",
+      "chainSource": "Signature chain: offline check",
       "tasksHeading": "Manual verification tasks",
       "task": "{title}: no source answered ({reason}). Verify by hand.",
-      "mockNote": "Every source answer here is a MOCK SOURCE on synthetic data. No connection to SHCIL, ICAI or CCA exists. The portal is a mock."
+      "mockNote": "Source answers on this page come from simulated services and carry a Simulated source tag. No connection to SHCIL, ICAI or CCA exists."
     },
     "upload": {
       "title": "Add documents",
@@ -681,13 +683,13 @@
       "pickSubmit": "Use and check"
     },
     "queue": {
-      "intro": "Sorted by band, then findings. The band orders review only. Filter by band or status.",
+      "intro": "Risk bands come first; the sort you choose applies inside each band. The band orders review only. Filter by band, label or status.",
       "filters": "Filter the queue",
       "filterBand": "Risk band",
       "filterStatus": "Status",
       "all": "All",
       "apply": "Apply",
-      "clear": "Clear filters",
+      "clear": "Reset filters",
       "shown": "Showing {shown} of {total} cases.",
       "noMatch": "No case matches these filters.",
       "colBand": "Band",
@@ -696,10 +698,20 @@
       "colReasons": "Top reasons",
       "tasks": "{count, plural, one {# manual task} other {# manual tasks}}",
       "open": "Open case",
-      "openAria": "Open the case for application {aid}",
+      "openAria": "Open case for application {aid}",
       "asc": "ascending",
       "desc": "descending",
-      "bandNote": "The band orders review only. It is never shown to the institution."
+      "bandNote": "The band orders review only. It is never shown to the institution.",
+      "caption": "Validation queue, sorted within each risk band",
+      "filterLabel": "Document label",
+      "colAwaiting": "Awaiting",
+      "colSubmitted": "Submitted",
+      "colLastActivity": "Last activity",
+      "awaiting": "{count} of {total}",
+      "awaitingAria": "{count, plural, one {# finding} other {# findings}} awaiting a decision, of {total}",
+      "sortAnnounce": "Sorted by {column}, {dir}",
+      "resetSort": "Reset sort",
+      "searchNote": "Search: {q}"
     },
     "audit": {
       "title": "Audit trail",
@@ -711,7 +723,7 @@
       "method": "Recomputed from the stored entries at",
       "filtered": "Showing one case.",
       "showAll": "Show all entries",
-      "empty": "No entries yet. Run make demo-reset.",
+      "empty": "No entries yet.",
       "colNo": "No",
       "colTime": "Time (IST)",
       "colEvent": "Event",
@@ -727,7 +739,7 @@
       "event": {
         "document_uploaded": "Document stored",
         "check_run": "Checks run",
-        "source_response": "Source response (MOCK SOURCE)",
+        "source_response": "Source response",
         "manual_task_created": "Manual task created",
         "disposition_recorded": "Decision recorded",
         "application_submitted": "Portal event received",
@@ -739,17 +751,114 @@
       "title": "Alerts",
       "description": "Alerts derived from stored dates, risk bands and source tasks, each linked to its case.",
       "heading": "Alerts",
-      "intro": "Derived from stored data. Certificate dates are judged as of the date the documents were uploaded.",
+      "intro": "Derived from stored data. Certificate dates are judged as of the date the documents were uploaded. Unread alerts come first, then High, Medium and Low severity, then the newest.",
       "empty": "No alerts.",
       "open": "Open the case",
       "type": {
-        "suspected_anomaly": "New High band case",
-        "expired": "Certificate date",
+        "suspected_anomaly": "Suspected anomaly",
+        "expired": "Expiry",
         "pending_source": "Source unavailable",
         "missing_info": "Missing information",
         "unresolved": "Unresolved",
         "role": "Role"
-      }
+      },
+      "severity": {
+        "high": "High severity",
+        "med": "Medium severity",
+        "low": "Low severity"
+      },
+      "ago": {
+        "now": "just now",
+        "min": "{n} min ago",
+        "hour": "{n} h ago",
+        "day": "{n} d ago"
+      },
+      "unread": "unread",
+      "unreadHeading": "Unread ({count})",
+      "earlierHeading": "Earlier ({count})",
+      "openFlag": "Open flag",
+      "openDocument": "Open document",
+      "actionAria": "{action} for application {aid}",
+      "railLabel": "Latest alert",
+      "viewAll": "{count, plural, one {View all alerts (# unread)} other {View all alerts (# unread)}}"
+    }
+  },
+  "status": {
+    "label": {
+      "verified": "Verified",
+      "mismatch_detected": "Mismatch detected",
+      "expired": "Expired",
+      "verification_pending": "Verification pending",
+      "source_unavailable": "Source unavailable",
+      "manual_review_required": "Manual review required"
+    },
+    "short": {
+      "verified": "Verified",
+      "mismatch_detected": "Mismatch",
+      "expired": "Expired",
+      "verification_pending": "Pending",
+      "source_unavailable": "Unavailable",
+      "manual_review_required": "Manual review"
+    },
+    "countAria": "{label}: {count, plural, one {# document} other {# documents}}",
+    "notApplicable": "Not applicable"
+  },
+  "source": {
+    "simulated": "Simulated source",
+    "simulatedTip": "This answer came from a simulated issuing-authority service set up for this deployment. No live authority was contacted.",
+    "simulatedPrint": "(simulated source)",
+    "testAnchor": "Test trust anchor",
+    "testAnchorTip": "The signature chain was checked against a test root certificate, not the CCA root.",
+    "testAnchorPrint": "(test trust anchor)"
+  },
+  "overview": {
+    "title": "Overview",
+    "description": "Cases by risk band, case status, document labels, open manual tasks, expiring certificates, recent decisions and source status for the Regulation Bureau.",
+    "heading": "Overview",
+    "loading": "Loading the overview",
+    "context": "Self-disclosure route · AY {ay} · {region} region · as of {asOf} IST",
+    "openQueue": "Open validation queue",
+    "bandsHeading": "Cases by risk band",
+    "bandsTotal": "{count, plural, =0 {No cases submitted} one {# case submitted} other {# cases submitted}}",
+    "bandsEmpty": "No cases in this band yet.",
+    "statusHeading": "Case status",
+    "labelsHeading": "Documents by label",
+    "labelsTotal": "{count, plural, =0 {No documents checked} one {# document checked} other {# documents checked}}",
+    "tasksHeading": "Open manual tasks",
+    "tasksOpen": "{count, plural, =0 {No open tasks} one {# open task} other {# open tasks}}.",
+    "tasksOldest": "Oldest is {days, plural, =0 {from today} one {# day old} other {# days old}}.",
+    "tasksEmpty": "No manual tasks are open.",
+    "tasksAll": "Documents with an unavailable source",
+    "ageDays": "{days, plural, =0 {today} one {1 day} other {# days}}",
+    "reason": {
+      "SRC_NO_CHANNEL": "No automated channel",
+      "SRC_NO_IDENTIFIER": "No identifier to look up"
+    },
+    "expiringHeading": "Certificates expiring",
+    "withinDays": "within {days} days",
+    "expiringEmpty": "No certificates expire within 90 days.",
+    "daysLeft": "{days, plural, =0 {ends today} one {1 day left} other {# days left}}",
+    "decisionsHeading": "Recent decisions",
+    "decisionsEmpty": "No decisions recorded yet.",
+    "decisionsAll": "Open the audit trail",
+    "action": {
+      "accept": "Accept",
+      "override": "Override",
+      "escalate_clarify": "Ask institution to clarify",
+      "escalate_refer": "Refer to Scrutiny or EVC",
+      "escalate_manual": "Send for manual verification"
+    },
+    "sourcesHeading": "Sources",
+    "sourcesAnswering": "{n} of {m} answering",
+    "sourcesSimulated": "Running as simulated sources: {names}.",
+    "source": {
+      "cca_offline_chain": "Signature chain check",
+      "shcil_estamp": "e-Stamp lookup",
+      "icai_udin": "UDIN lookup"
+    },
+    "sourceStatus": {
+      "answering": "answering",
+      "unavailable": "not answering"
     }
   }
 }

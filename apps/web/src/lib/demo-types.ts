@@ -3,9 +3,12 @@
 import type { Flag, SignatureCheck, VerificationLabel } from "@satya/shared-types";
 
 export type Band = "high" | "medium" | "low";
-export type Status = "awaiting_review" | "in_review" | "reviewed" | "no_findings";
+export type Status = "not_started" | "in_review" | "waiting_on_institution" | "referred" | "all_flags_decided";
 export const BANDS: readonly Band[] = ["high", "medium", "low"];
-export const STATUSES: readonly Status[] = ["awaiting_review", "in_review", "reviewed", "no_findings"];
+export const STATUSES: readonly Status[] = ["not_started", "in_review", "waiting_on_institution", "referred", "all_flags_decided"];
+export type SortKey = "application_id" | "undisposed_flags" | "submitted_at" | "last_activity_at";
+export const SORT_KEYS: readonly SortKey[] = ["application_id", "undisposed_flags", "submitted_at", "last_activity_at"];
+export type SortDir = "asc" | "desc";
 export const ACTIONS = ["accept", "override", "escalate_clarify", "escalate_refer", "escalate_manual"] as const;
 export type Action = (typeof ACTIONS)[number];
 
@@ -24,6 +27,8 @@ export interface QueueRow {
   label_counts: Record<VerificationLabel, number>;
   status: Status;
   manual_tasks: number;
+  submitted_at: string;
+  last_activity_at: string;
 }
 
 export interface Disposition {
@@ -72,12 +77,22 @@ export interface Review {
   undisposed_flags: number;
 }
 
+export type AlertSeverity = "critical" | "warning" | "info";
+
 export interface AlertItem {
   case_id: string;
   application_id: string;
   type: string;
   subtype: string;
+  severity: AlertSeverity;
   text: string;
+  created_at: string;
+  alert_key: string;
+  doc_id: string | null;
+  label: VerificationLabel | null;
+  flag_id: string | null;
+  aph_clause: string | null;
+  source: { mode: string } | null;
 }
 
 export interface AuditEntry {
@@ -96,3 +111,26 @@ export interface Audit {
   entries: AuditEntry[];
 }
 
+
+export interface Overview {
+  as_of: string;
+  ay: string;
+  region: string | null;
+  route: "self_disclosure";
+  cases: { submitted: number; by_band: Record<Band, number> };
+  status: Record<Status, number>;
+  documents: { total: number; by_label: Record<VerificationLabel, number> };
+  manual_tasks: {
+    open: number;
+    oldest_age_days: number;
+    top: { case_id: string; application_id: string; reason_key: string; age_days: number }[];
+  };
+  expiring: {
+    d30: number;
+    d60: number;
+    d90: number;
+    top: { doc_type: string; doc_title: string; case_id: string; application_id: string; valid_to: string; days_left: number }[];
+  };
+  recent_decisions: { at: string; case_id: string; application_id: string; flag_id: string; action: Action; by_role: string; ledger_no: number }[];
+  sources: { adapter_id: string; name_key: string; mode: "mock" | "offline" | "live" | "none"; status: "answering" | "unavailable" }[];
+}

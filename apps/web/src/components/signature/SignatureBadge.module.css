@@ -1,6 +1,5 @@
-/* SignatureBadge (UI spec §4.3): outlined caps chip, Public Sans 800, 10.5px, 1.5px border, white
-   fill. Verified/present green or chrome blue, image-only violet (as MANUAL REVIEW REQUIRED), failed
-   red, absent red dashed. Tokens only. */
+/* SignatureBadge (v0.8 neutral variant): icon plus sentence-case text on a neutral pill, 1px border,
+   6px radius. The text carries the meaning, so there is no colour coding. Tokens only. */
 .wrap {
   display: inline-flex;
   flex-direction: column;
@@ -10,40 +9,19 @@
 }
 
 .badge {
-  display: inline-block;
-  padding: 0 var(--space-1);
-  border: 1.5px solid currentColor;
-  background: var(--color-surface);
-  font-size: 0.65625rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 1px 8px 1px 6px;
+  border: 1px solid var(--badge-neutral-border);
+  border-radius: 6px;
+  background: var(--badge-neutral-bg);
+  color: #374151;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
   line-height: 1.5;
   overflow-wrap: anywhere;
-}
-
-.badge[data-tone="verified"] {
-  color: var(--color-label-verified);
-}
-
-.badge[data-tone="present"] {
-  color: var(--color-chrome);
-}
-
-.badge[data-tone="image"] {
-  color: var(--color-label-manual-review);
-}
-
-.badge[data-tone="broken"] {
-  color: var(--color-label-mismatch);
-}
-
-.badge[data-tone="absent"] {
-  color: var(--color-label-mismatch);
-  border-style: dashed;
-}
-
-.badge[data-tone="neutral"] {
-  color: var(--color-label-source-unavailable);
 }
 
 .detail {

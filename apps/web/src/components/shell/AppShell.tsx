@@ -1,15 +1,16 @@
-// AppShell (UI spec §3.1): prototype strip, top strip (breadcrumb, role + region chip, AY chip),
-// left rail per role with the saffron current-page bar, GIGW footer.
+// AppShell (UI spec §3.1, v0.8): one-row header (breadcrumb, plain context text, search, user menu),
+// left rail per role with the saffron current-page bar, one-line footer.
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { currentSession, primaryRole } from "@/lib/session";
 import { RAIL, UTILITY } from "@/lib/rail";
-import { setLocale } from "@/app/actions/shell";
 import { Suspense } from "react";
 import { BreadcrumbTrail } from "./BreadcrumbTrail";
 import { MobileMenu } from "./MobileMenu";
 import { RailNav } from "./RailNav";
+import { UserMenu } from "./UserMenu";
+import { RailAlert } from "@/components/alerts/RailAlert";
 import styles from "./AppShell.module.css";
 
 const CURRENT_AY = "2026-27";
@@ -29,7 +30,8 @@ export async function AppShell({ children, path = "/" }: { children: ReactNode; 
   const items = rail.map((i) => ({ href: i.href, label: tNav(i.labelKey) }));
   const utility = UTILITY.map((i) => ({ href: i.href, label: tNav(i.labelKey) }));
   const region = session?.user.regions[0];
-  const regionLabel = region === "southern" || region === "national" ? tRegions(region) : tRegions("none");
+  const regionLabel = region === "southern" || region === "national" ? t("regionName", { region: tRegions(region) }) : tRegions("none");
+  const roleLabel = role ? tRoles(role) : "";
   const buildDate = process.env.SATYA_BUILD_DATE ?? new Date().toISOString().slice(0, 10);
 
   return (
@@ -37,7 +39,6 @@ export async function AppShell({ children, path = "/" }: { children: ReactNode; 
       <a className={styles.skip} href="#main">
         {t("skipLink")}
       </a>
-      <p className={styles.prototype}>{t("prototypeStrip")}</p>
       <header className={styles.top}>
         <Link className={styles.brand} href="/">
           {t("brand")}
@@ -46,18 +47,43 @@ export async function AppShell({ children, path = "/" }: { children: ReactNode; 
         <Suspense>
           <BreadcrumbTrail label={t("breadcrumbLabel")} />
         </Suspense>
-        <div className={styles.chips}>
+        <div className={styles.headRight}>
           {role && (
-            <span className={styles.chip}>{t("roleChip", { role: tRoles(role), region: regionLabel })}</span>
+            <div className={styles.context} role="group" aria-label={t("contextAria", { role: roleLabel, region: regionLabel, ay: CURRENT_AY })}>
+              <span>{t("contextRole", { role: roleLabel, region: regionLabel })}</span>
+              <span className={styles.bar} aria-hidden="true">
+                |
+              </span>
+              <span>{t("contextAy", { ay: CURRENT_AY })}</span>
+            </div>
           )}
-          <span className={styles.chip}>{t("ayChip", { ay: CURRENT_AY })}</span>
-          {session ? (
-            <form method="post" action="/signout" className={styles.inline}>
-              <span className={styles.user}>{t("signedInAs", { user: session.user.name })}</span>
-              <button type="submit" className={styles.textButton}>
-                {t("signOut")}
+          {role === "RB" && (
+            <form role="search" action="/rb-queue" method="get" className={styles.search}>
+              <label className={styles.visuallyHidden} htmlFor="site-search">
+                {t("searchLabel")}
+              </label>
+              <input id="site-search" className={styles.searchInput} type="search" name="q" maxLength={40} placeholder={t("searchPlaceholder")} autoComplete="off" />
+              <button type="submit" className={styles.searchButton}>
+                {t("searchButton")}
               </button>
             </form>
+          )}
+          {session ? (
+            <UserMenu
+              name={session.user.name}
+              locale={locale === "hi" ? "hi" : "en"}
+              path={path}
+              text={{
+                menu: t("userMenu"),
+                role: roleLabel,
+                region: regionLabel,
+                language: t("languageLabel"),
+                english: t("english"),
+                hindi: t("hindi"),
+                accessibility: t("accessibilitySettings"),
+                signOut: t("signOut"),
+              }}
+            />
           ) : (
             <Link className={styles.textButton} href="/signin">
               {t("signIn")}
@@ -67,12 +93,18 @@ export async function AppShell({ children, path = "/" }: { children: ReactNode; 
       </header>
       <div className={styles.body}>
         <aside className={styles.rail}>
-          <Suspense>{items.length > 0 && <RailNav label={t("railLabel")} items={items} />}</Suspense>
+          <div>
+            <Suspense>{items.length > 0 && <RailNav label={t("railLabel")} items={items} />}</Suspense>
+            {role === "RB" && (
+              <Suspense>
+                <RailAlert />
+              </Suspense>
+            )}
+          </div>
           <div className={styles.railBottom}>
             <Suspense>
               <RailNav label={t("utilityLabel")} items={utility} />
             </Suspense>
-            <LanguageSwitcher path={path} locale={locale} label={t("languageLabel")} english={t("english")} hindi={t("hindi")} />
           </div>
         </aside>
         <main id="main" className={styles.main} tabIndex={-1}>
@@ -82,35 +114,22 @@ export async function AppShell({ children, path = "/" }: { children: ReactNode; 
       <footer className={styles.footer}>
         <nav aria-label={tFooter("label")}>
           <ul className={styles.footerLinks}>
-            <li><Link href="/about">{tFooter("about")}</Link></li>
-            <li><Link href="/policies">{tFooter("policies")}</Link></li>
-            <li><Link href="/help">{tFooter("help")}</Link></li>
-            <li><Link href="/accessibility">{tFooter("accessibility")}</Link></li>
-            <li><Link href="/sitemap">{tFooter("sitemap")}</Link></li>
+            <li>
+              <Link href="/policies">{tFooter("policies")}</Link>
+            </li>
+            <li>
+              <Link href="/accessibility">{tFooter("accessibility")}</Link>
+            </li>
+            <li>
+              <Link href="/help">{tFooter("help")}</Link>
+            </li>
+            <li>
+              <Link href="/sitemap">{tFooter("sitemap")}</Link>
+            </li>
           </ul>
         </nav>
-        <div className={styles.footerLang}>
-          <LanguageSwitcher path={path} locale={locale} label={t("languageLabel")} english={t("english")} hindi={t("hindi")} />
-        </div>
-        <p className={styles.footerMeta}>{tFooter("lastUpdated", { date: buildDate })}</p>
-        <p className={styles.footerMeta}>{tFooter("disclaimer")}</p>
-        <p className={styles.footerMeta}>{tFooter("team", { year: new Date().getFullYear() })}</p>
+        <p className={styles.footerMeta}>{tFooter("advisory", { date: buildDate })}</p>
       </footer>
     </div>
-  );
-}
-
-function LanguageSwitcher(props: { path: string; locale: string; label: string; english: string; hindi: string }) {
-  return (
-    <form action={setLocale} className={styles.lang} aria-label={props.label}>
-      <input type="hidden" name="back" value={props.path} />
-      <button type="submit" name="locale" value="en" lang="en" aria-pressed={props.locale === "en"} className={styles.langButton}>
-        {props.english}
-      </button>
-      <span aria-hidden="true">|</span>
-      <button type="submit" name="locale" value="hi" lang="hi" aria-pressed={props.locale === "hi"} className={styles.langButton}>
-        {props.hindi}
-      </button>
-    </form>
   );
 }

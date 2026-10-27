@@ -35,9 +35,10 @@ async function login(page, username, start = `${BASE}/`) {
   page.on("pageerror", (e) => consoleErrors.push(`${page.url()}: ${e.message}`));
 
   await login(page, "rb.southern.demo");
-  await page.waitForURL(`${BASE}/rb-queue`, { timeout: 20000 });
+  await page.waitForURL(`${BASE}/overview`, { timeout: 20000 });
+  await page.goto(`${BASE}/rb-queue`);
   await page.waitForSelector("#case-list", { timeout: 30000 });
-  await page.getByRole("link", { name: "Open the case for application 1-90000004217" }).click();
+  await page.getByRole("link", { name: "Open case for application 1-90000004217" }).click();
   await page.waitForURL(`${BASE}/case/${DIT03}`, { timeout: 30000 });
   await page.getByRole("link", { name: "Verification" }).first().click();
   await page.waitForURL(`${BASE}/case/${DIT03}/verification`, { timeout: 30000 });
@@ -51,11 +52,11 @@ async function login(page, username, start = `${BASE}/`) {
   check((await page.locator('nav[aria-label="Case views"] a[aria-current="page"]').textContent()) === "Verification", "case tabs mark Verification as current");
   const main = await page.textContent("main");
   check(main.includes("Affidavit 2 (sworn copy)") && main.includes("Audited statement of accounts FY 2025-26"), "one row per document");
-  check(main.includes("MANUAL REVIEW REQUIRED") && main.includes("SOURCE UNAVAILABLE"), "labels as text: affidavit manual review, accounts source unavailable");
-  check(main.includes("IMAGE ONLY, NOT A REAL SIGNATURE"), "issuer badge IMAGE ONLY on the affidavit (F5)");
-  check((main.match(/UPLOADER SIGNATURE PRESENT/g) || []).length === 2, "uploader badge PRESENT on both documents (F6)");
-  check(main.includes("NOT DIGITAL (WET SEAL)"), "audited statement issuer badge NOT DIGITAL (WET SEAL)");
-  check(main.includes("Chain to TEST TRUST ANCHOR ok"), "demo chain shown as TEST TRUST ANCHOR");
+  check(main.includes("Manual review required") && main.includes("Source unavailable"), "labels as text: affidavit manual review, accounts source unavailable");
+  check(main.includes("Image only, not a real signature"), "issuer badge IMAGE ONLY on the affidavit (F5)");
+  check((main.match(/Uploader signature present/g) || []).length === 2, "uploader badge PRESENT on both documents (F6)");
+  check(main.includes("Wet seal, not digital"), "audited statement issuer badge NOT DIGITAL (WET SEAL)");
+  check(main.includes("Chain to the test trust anchor ok") && main.includes("Test trust anchor"), "chain checked against the test trust anchor and tagged");
   check(main.includes("ICAI UDIN: no automated channel") && main.includes("NO CHANNEL"), "accounts source: no ICAI channel (F10)");
   check(main.includes("A valid uploader signature never makes a document verified."), "mapping legend states the uploader rule");
   check(main.includes("How signatures map to the six labels"), "mapping legend on screen");
@@ -74,7 +75,7 @@ async function login(page, username, start = `${BASE}/`) {
   await page.goto(`${BASE}/case/${DCE05}/verification`);
   await page.waitForSelector("#ver-docs");
   const clean = await page.textContent("main");
-  check(clean.includes("VERIFIED") && clean.includes("ISSUER SIGNATURE VERIFIED"), "clean control DCE 05: affidavit VERIFIED, issuer signature verified");
+  check(clean.includes("Verified") && clean.includes("Issuer signature verified"), "clean control DCE 05: affidavit VERIFIED, issuer signature verified");
   await page.screenshot({ path: path.join(shots, "rb06-dce05.png"), fullPage: true });
 
   const nf = await page.goto(`${BASE}/case/cas_01JD3M5A00000000000000ZZ99/verification`);
@@ -97,12 +98,14 @@ async function login(page, username, start = `${BASE}/`) {
   await big.close();
 
   await page.goto(`${BASE}/case/${DIT03}/verification`);
-  await page.locator("aside").first().getByRole("button", { name: "हिन्दी" }).click();
+  await page.getByRole("button", { name: /Account menu/ }).click();
+  await page.getByRole("menuitemradio", { name: "हिन्दी" }).click();
   await page.waitForFunction(() => document.documentElement.lang === "hi");
   await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("सत्यापन"), null, { timeout: 15000 }).catch(() => {});
   check((await page.textContent("h1")).includes("सत्यापन"), "RB-06 in Hindi");
   await page.screenshot({ path: path.join(shots, "rb06-hi.png"), fullPage: true });
-  await page.locator("aside").first().getByRole("button", { name: "English" }).click();
+  await page.getByRole("button", { name: /खाता मेनू/ }).click();
+  await page.getByRole("menuitemradio", { name: "English" }).click();
   await page.waitForFunction(() => document.documentElement.lang === "en");
 
   const ctx2 = await browser.newContext();

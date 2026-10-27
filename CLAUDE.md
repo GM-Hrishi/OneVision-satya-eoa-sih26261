@@ -13,7 +13,7 @@ SATYA-EoA is a decision-support platform for AICTE Extension of Approval (EoA) s
 7. **No foreign LLM APIs in the product.** Self-hosted, India-hosted in production. (Claude Code as a dev tool is fine.)
 8. **Never duplicate the portal's own checks (design D2):** Deficiency Report norm arithmetic, within-portal faculty duplicate flag, PAN validation. Import their results; never recompute or claim them.
 9. **Never colour alone:** every status shows its text label.
-10. Demo signatures are tagged "TEST TRUST ANCHOR"; mock adapter results are tagged "MOCK SOURCE".
+10. Signature chains in the workbench carry the "Test trust anchor" tag; mock adapter results carry the "Simulated source" tag (SourceTag component; no upper-case MOCK SOURCE / TEST TRUST ANCHOR strings in the UI).
 
 ## Repo map
 ```
@@ -75,7 +75,7 @@ URLs: workbench `https://localhost` · API `https://localhost/api/v1/health` · 
 | Signature header (§2.2) | `X-SATYA-Signature: t=<unix>,kid=<key-id>,v1=<hex HMAC-SHA256 of "t.body">`, window 300 s |
 Generated code: `packages/shared-types/ts/src/generated/` and `packages/shared-types/python/satya_shared_types/generated/`.
 
-Workbench API (slices 1–2, Slice D adds `/v1/cases` queue rows with `risk_band`, `/v1/cases/{id}/review`, `POST /v1/cases/{id}/documents`, `.../documents/pick`, `.../documents/{doc}/file`, `POST .../flags/{flag}/disposition`, `/v1/audit`, `/v1/alerts`): `GET /v1/cases`, `GET /v1/cases/{case_id}/affidavit-diff`, `GET /v1/cases/{case_id}/verification`, `GET /v1/cases/{case_id}/documents/{doc_id}/verification` (Keycloak access token from `satya-web` as Bearer; RB role; region scope from `/regions/*`; per-user quota). Contracts: `AffidavitDiff`, `CaseVerification`, `VerificationResult`.
+Workbench API (slices 1–2, Slice D adds `/v1/cases` queue rows with `risk_band`, `/v1/cases/{id}/review`, `POST /v1/cases/{id}/documents`, `.../documents/pick`, `.../documents/{doc}/file`, `POST .../flags/{flag}/disposition`, `/v1/audit`, `/v1/alerts`; UI polish v0.8 adds `GET /v1/overview?ay=&region=`, sort params `sort`/`dir` on `/v1/cases`, and severity, time, label and source fields on alerts): `GET /v1/cases`, `GET /v1/cases/{case_id}/affidavit-diff`, `GET /v1/cases/{case_id}/verification`, `GET /v1/cases/{case_id}/documents/{doc_id}/verification` (Keycloak access token from `satya-web` as Bearer; RB role; region scope from `/regions/*`; per-user quota). Contracts: `AffidavitDiff`, `CaseVerification`, `VerificationResult`.
 
 ## Resume protocol (short)
 - Each slice has a prompt in `docs/prompts/` (or the session request) and a progress table (`docs/progress/PROGRESS.md` for slice 0, `docs/progress/PROGRESS-SLICE-<n>.md` after). Continue from the first step not `done`/`done-with-note`; re-verify, never redo a done step blindly.
@@ -85,7 +85,7 @@ Workbench API (slices 1–2, Slice D adds `/v1/cases` queue rows with `risk_band
 - Every non-obvious choice: one line in `docs/progress/DECISIONS-SLICE-<n>.md`.
 
 ## Current status
-Built on synthetic data: slice 0 foundation, slice 1 M5 affidavit diff (P-3), slice 2 M6 signatures/stamp/UDIN (P-4, P-18). All planted cases are detected on the synthetic test sets (no accuracy percentages are claimed). Everything else is planned.
+Built on synthetic data: UI polish v0.8 (StatusLabel, SourceTag, sortable queue, Overview, severity alerts, user menu), slice 0 foundation, slice 1 M5 affidavit diff (P-3), slice 2 M6 signatures/stamp/UDIN (P-4, P-18). All planted cases are detected on the synthetic test sets (no accuracy percentages are claimed). Everything else is planned.
 
 ## Build order for later slices
 1. Intake + vault (P-19).

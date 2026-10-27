@@ -139,7 +139,7 @@ services:
       SATYA_HMAC_KEYS: ${PORTAL_HMAC_KID:?}=${PORTAL_HMAC_SECRET:?}
       SATYA_CORS_ORIGINS: ${SATYA_WEB_ORIGIN:-https://localhost},${SATYA_PORTAL_ORIGIN:-https://portal.localhost}
       SATYA_MAX_BODY_BYTES: ${SATYA_MAX_BODY_BYTES:-1048576}
-      SATYA_RATE_LIMIT: ${SATYA_RATE_LIMIT:-120/minute}
+      SATYA_RATE_LIMIT: ${SATYA_RATE_LIMIT:-600/minute}
       # Workbench API: access tokens from the workbench client, checked against the public issuer.
       SATYA_KEYCLOAK_ISSUER: ${SATYA_AUTH_ORIGIN:-https://auth.localhost}/realms/satya
       SATYA_TOKENISATION_KEY: ${SATYA_TOKENISATION_KEY:?}

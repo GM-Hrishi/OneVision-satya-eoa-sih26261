@@ -1,0 +1,14 @@
+.rail {
+  display: grid;
+  gap: var(--space-1);
+  margin: var(--space-3) var(--space-3) 0;
+}
+
+.all {
+  color: var(--color-chrome-muted);
+  font-size: 0.8125rem;
+}
+
+.all:hover {
+  color: var(--color-surface);
+}

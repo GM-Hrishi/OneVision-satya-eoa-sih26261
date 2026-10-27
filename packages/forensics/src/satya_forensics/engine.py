@@ -124,9 +124,9 @@ def _signature_items(
         checks.append(check)
     if rule is not None:
         expected = {
-            "SIG-IMAGE": f"real CMS signature (/ByteRange) chaining to {trust_label}",
+            "SIG-IMAGE": "real CMS signature (/ByteRange) chaining to the trust anchor",
             "SIG-SIGNER": "authorised Chairman/Secretary (signatory token)",
-            "SIG-UNTRUSTED": f"chain to {trust_label}",
+            "SIG-UNTRUSTED": "chain to the trust anchor",
             "SIG-CERT-EXPIRED": "certificate valid at the signing time",
             "SIG-UPLOADER-MISSING": "institution's DSC on the uploaded file (2.3.4a)",
             "SIG-REVOCATION": "CRL of the issuing CA reachable",
