@@ -113,11 +113,14 @@ class PaddleOcrEngine:
             raise FileNotFoundError("OCR models not found in the model directory")
         try:  # 3.x
             return paddle_ocr(
+                text_detection_model_name="PP-OCRv5_mobile_det",
                 text_detection_model_dir=det,
+                text_recognition_model_name="en_PP-OCRv5_mobile_rec",
                 text_recognition_model_dir=rec,
                 use_doc_orientation_classify=False,
                 use_doc_unwarping=False,
                 use_textline_orientation=False,
+                enable_mkldnn=False,
             )
         except TypeError:  # 2.x
             return paddle_ocr(

@@ -158,7 +158,7 @@ services:
     depends_on:
       migrate: { condition: service_completed_successfully }
       valkey: { condition: service_healthy }
-    mem_limit: 1536m
+    mem_limit: 2560m
     networks: [backend, edge]
 
   worker:

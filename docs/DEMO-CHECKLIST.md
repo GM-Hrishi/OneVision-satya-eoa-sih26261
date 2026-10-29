@@ -30,7 +30,7 @@ The cloud session could not download the OCR models, so the real engine was neve
 - [ ] Offline at runtime: stop the network (or `docker network disconnect`) and run `docker compose --env-file .env -f infra/docker-compose.yml exec api python -c "from satya_ocr.engine import PaddleOcrEngine; print(PaddleOcrEngine().available())"`. It prints `True`.
 - [ ] Real engine test, from the repo (the tests are not in the image): copy the models out with `docker create --name ocrm satya/api:dev && docker cp ocrm:/opt/ocr-models ./.logs/ocr-models && docker rm ocrm`, then `uv sync --all-packages && uv pip install -r packages/ocr/requirements-ocr.txt && SATYA_OCR_MODEL_DIR=$PWD/.logs/ocr-models uv run pytest packages/ocr/tests/test_real_engine.py -v`. It must not be skipped.
 - [ ] After `make demo-reset`, open `1-90000013113`: the affidavit says "read by OCR (confidence NN%)" for every page. Open `1-90000015115`: it says the text is not reliable (OCR_LOW_CONFIDENCE). If both say "not available", the image was built without the engine or the models are missing.
-- [ ] Memory: the api container now has 1536 MB (`make mem-check` shows the total under 8 GiB). First OCR after start is slower while the models load.
+- [ ] Memory: the api container now has 2560 MB (`make mem-check` shows the total under 8 GiB). First OCR after start is slower while the models load.
 - [ ] Record what you saw (confidence figures, any misread) in `docs/progress/OCR-SLICE-PROGRESS.md` under "Real engine verification".
 
 ## Console and data

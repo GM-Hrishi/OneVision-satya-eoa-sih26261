@@ -35,6 +35,7 @@ RUN --mount=type=secret,id=extra_ca,target=/run/secrets/extra_ca \
     sh -c 'if [ -s /run/secrets/extra_ca ]; then export SSL_CERT_FILE=/run/secrets/extra_ca; fi; \
            uv sync --frozen --no-dev --no-editable --package satya-api'
 ARG WITH_OCR
+RUN if [ "$WITH_OCR" = "1" ]; then apt-get update && apt-get install -y --no-install-recommends libgl1 libglib2.0-0 libgomp1 && rm -rf /var/lib/apt/lists/*; fi
 RUN --mount=type=secret,id=extra_ca,target=/run/secrets/extra_ca \
     --mount=type=cache,target=/root/.cache/uv \
     sh -c 'if [ "$WITH_OCR" = "1" ]; then \
