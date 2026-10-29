@@ -24,7 +24,7 @@ The demo password for every synthetic user is in `.env` (`grep DEMO_USER_PASSWOR
    Then run `wsl --shutdown` in PowerShell and restart Docker Desktop. The stack's limits add up to 5.6 GB; 10 GB leaves room for builds.
 4. **Clone inside the WSL filesystem**, not under `/mnt/c` (bind mounts and builds are many times faster there):
    ```bash
-   cd ~ && git clone https://github.com/GM-Hrishi/satya-eoa.git && cd satya-eoa
+   cd ~ && git clone <repository-url> satya-eoa && cd satya-eoa
    sudo apt-get update && sudo apt-get install -y make python3
    ```
 5. **Start it**:

@@ -1,111 +1,156 @@
 # SATYA-EoA
-**Decision support for AICTE Extension of Approval (EoA) scrutiny.** SATYA-EoA reads the documents an institution submits, checks each one at its official source where one exists, and compares what was sworn with the portal's own data and earlier years. It gives officials evidence-linked, advisory findings. Officials make every decision.
 
-Smart India Hackathon 2026 · problem statement **SIH26261** · **Team OneVision**
+**Decision support for AICTE Extension of Approval (EoA) scrutiny.**
 
-## What this prototype is, and is not
-- **Advisory decision support.** There is no approve, reject or auto-clear control anywhere; every outbound event carries `advisory: true`, `regulatory_effect: "none"`.
-- **Officials decide.** Every finding needs a recorded human disposition with a reason.
-- **Runs against a mock portal** that the team built ("Approval Portal (Mock, for demo)"). It shows the hooks a real portal would need; it is not a real integration.
-- **Synthetic data only.** No real institutions, people, IDs or documents.
-- **Not affiliated with, endorsed by or connected to AICTE.**
+SATYA-EoA is a decision-support platform that helps AICTE officials check Extension of Approval applications and the documents that come with them. It reads the affidavit and supporting documents, checks signatures, stamp dates and UDINs, compares what was sworn with the approval portal's own data, and shows officials findings with the evidence behind each one. It only advises: every decision is made and recorded by an official.
 
-## Architecture
-```mermaid
-```mermaid
-flowchart LR
-  subgraph EXT[Outside SATYA]
-    MP[Mock approval portal<br/>demo stand-in, synthetic data]
-    AP[AICTE portal<br/>future, same hooks]:::proposed
-  end
-  subgraph SATYA[SATYA-EoA, self-hosted in India]
-    WB[Workbench<br/>Next.js + PDF.js]
-    GW[Gateway FastAPI + Keycloak SSO<br/>router, pseudonymise, signed webhooks]
-    subgraph WK[Workers: Celery + Valkey]
-      M2[M2 Vault + redact] --> M3[M3 Template parse]
-      M3 --> M5[M5 Affidavit diff]
-      M3 --> M6[M6 DSC + stamp]
-      M3 --> M4[M4 APH rules]
-      M3 --> M7[M7 Source checks]
-      M3 --> M8[M8 Identity graph]
-      M3 --> M13[M13 Year-over-year]
-      M3 --> M9[M9 Location]
-      M5 & M6 & M4 & M7 & M8 & M13 & M9 --> M10[M10 Risk band]
-    end
-    DB[(PostgreSQL<br/>pgvector, NetworkX)]
-    LG[(M12 audit ledger<br/>hash-chained)]
-  end
-  subgraph SRC[Issuing sources]
-    CCA[CCA / DSC chain]
-    SH[SHCIL e-Stamp]:::proposed
-    FD[TN Form D]:::proposed
-    FI[TN fire licence]:::proposed
-    UD[ICAI UDIN]:::proposed
-  end
-  MP -- SSO link --> WB
-  MP -- signed events --> GW
-  GW --> WK
-  WB <--> GW
-  M10 --> DB
-  WK --> LG
-  M7 --> CCA & SH & FD & FI & UD
-  classDef proposed stroke-dasharray: 5 4
-```
-```
-Legend: dashed = mock adapter or proposed hook in the demo. CCA/DSC is a real offline check (against a test anchor on synthetic documents).
+Built by Team OneVision for Smart India Hackathon 2026, problem statement SIH26261. It is a prototype that runs against a mock approval portal on synthetic data.
 
-Slice 0 runtime details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+![Validation queue on synthetic cases, listing five applications with a risk band, document labels and top reasons](docs/screens/ui-polish/queue-colour.png)
 
-## Quick start
-Needs Docker (with Compose), `make` and `python3`. On Windows use WSL2: see [docs/DEV-SETUP.md](docs/DEV-SETUP.md).
-```bash
-make secrets     # random secrets into .env (git-ignored)
-make up          # build, start all services, wait until healthy
-make trust-ca    # export the local HTTPS root CA once, then trust it (DEV-SETUP)
-```
-Then open **https://localhost** and sign in as `rb.southern.demo`: run `make demo-reset` first; the queue lists eight synthetic cases (five original, three scans); open `1-90000004217` and its *Affidavit diff* tab to see RB-05 (`docs/DEMO-NOTES.md` has the click path) (password: `grep DEMO_USER_PASSWORD .env`). The mock portal is at **https://portal.localhost**: press *Send test event* and watch the signed event get a receipt.
+*The validation queue, on synthetic cases only (screenshot from an earlier build; wording may differ from the current screens).*
 
-## Demo flow (Slice D)
-`make demo-reset` (after `make up`) loads the same eight synthetic cases every time and records their intake and first checks in the ledger. Sign in as `rb.southern.demo`: the queue shows each case with a High, Medium or Low band, label counts and status; a case shows its documents with one of the six labels, source answers, findings with the rule, APH clause, extracted and expected values and a fixed-template reason, and a PDF viewer that opens at the finding. An official records one of five dispositions with a reason. `/audit` shows the hash chain with a recomputed "chain verified" status; `/alerts` lists alerts derived from stored data.
+## The gap it targets
 
-What is real and what is not: all data is synthetic; the approval portal is a mock; every source answer (SHCIL e-stamp, ICAI UDIN) is a simulated source (tagged "Simulated source" in the workbench); the signature chain is checked offline against a TEST TRUST ANCHOR that proves nothing outside this repository. SATYA advises; officials decide; there is no approve or reject control. Results are "all planted cases detected on synthetic test sets"; the generator and the rules were written together, so this says nothing about real documents. Scanned and image-only PDFs never crash the system: each page is classified, scans are read by OCR where an engine is installed, and anything that cannot be read with confidence becomes manual review required with a plain reason. OCR text is advisory and never makes a document verified. The real OCR engine (PaddleOCR) is wired into the image build but has not been run in the cloud session; see the laptop steps in [docs/DEMO-CHECKLIST.md](docs/DEMO-CHECKLIST.md). Not built: template-aware extraction beyond Affidavit 2, intake vault, identity graph, year-over-year, EVC, the full mock portal, Hindi for these screens. See [docs/DEMO-NOTES.md](docs/DEMO-NOTES.md) and [docs/DEMO-CHECKLIST.md](docs/DEMO-CHECKLIST.md).
+Under the Approval Process Handbook 2024-27 (Table 2.3), an Extension of Approval based on self-disclosure has no Scrutiny Committee, Expert Visit Committee or Standing Hearing Committee before approval. SATYA-EoA is meant to give that path a first-pass scrutiny of the sworn documents, and to give any committee that comes later the evidence already gathered.
 
-## Evaluation and replay
+## What is built, what is simulated, what is planned
 
-**Replay (P-11).** Any case can be re-run later at a named rule pack and compared with what was recorded at the time. `GET /api/v1/cases/{case_id}/replay?rule_version=<pack id>` (roles RB and AU, region scoped) loads the stored documents after checking their SHA-256, uses the source answers stored in the ledger (no lookup is repeated), re-runs the M5 and M6 rules and returns the original flags, the replayed flags, a diff (added, removed, changed, each with rule id and evidence reference) and `reproducible` with reasons. A document or ledger link that no longer matches its hash gives `reproducible: false`, reason `HASH_MISMATCH` and the offending id. The only write is one `case.replay` ledger entry. From the terminal: `make replay CASE=<id> [RULE_VERSION=<pack id>]`. Rule pack ids look like `m5-affidavit@0.1.0+m6-signatures@0.1.0`; earlier packs go in `packages/rules/archive/<pack id>/`. Ledger entries written before this feature read as `unknown` and are not replayable. The local register of stamp numbers and UDINs is read as it is now, so a changed register shows up as a difference.
+| Status | Feature |
+|---|---|
+| Built | Affidavit comparison against the portal draft (24 declarations) |
+| Built | Real versus printed digital signatures, edited-after-signing detection and stamp-paper date order |
+| Built | UDIN structure checks |
+| Built | Evidence-linked flags with five dispositions |
+| Built | Risk bands, queue, alerts and overview |
+| Built | Hash-chained audit trail with deterministic replay |
+| Built | Scan fallback with OCR in English (reason codes; OCR text never decides anything) |
+| Built | Seven automated CI checks |
+| Partial | Six verification labels, with e-Stamp, UDIN and signature-chain sources that are simulated (tagged "Simulated source" and "Test trust anchor") |
+| Partial | Mock approval portal with webhooks and single sign-on |
+| Planned, not built | Tamil and Hindi OCR |
+| Planned, not built | Tamil Nadu building-licence and fire-licence adapters |
+| Planned, not built | Issuer-profile checks |
+| Planned, not built | Handbook date rules |
+| Planned, not built | Land rule |
+| Planned, not built | Year-over-year checks |
+| Planned, not built | Faculty identity checks |
+| Planned, not built | Infrastructure evidence review (photo reuse, GPS, floor-plan area) |
+| Planned, not built | Redaction and tokenisation vault |
+| Planned, not built | QR-code decoding |
+| Planned, not built | Ranked expert-visit selection |
 
-**Blind test set (B-17).** Pending in this branch; see `docs/progress/BLIND-REPLAY-PROGRESS.md`.
+## Simulated and not connected
 
-## Status
-| Slice | Scope | Status |
-|---|---|---|
-| 0 Foundation | Monorepo, compose stack with HTTPS, shared contracts, signed event gateway + hash-chained ledger, Keycloak SSO, workbench shell, mock portal test event, CI with secret scan and real-data guard | Built |
-| 1 M5 | Affidavit 2 diff and reconciliation (P-3), RB-05 DiffView; all planted cases detected on synthetic test sets | Built on synthetic data |
-| 2 M6 | Real signature vs image, test trust anchor, stamp chronology, UDIN (P-4, P-18), RB-05/RB-06 badges; all planted cases detected on synthetic test sets | Built on synthetic data |
-| Intake + vault | Document intake and vault (P-19) | Planned |
-| Demo flow (Slice D) | Seed and reset, upload, six labels with mock sources, queue with risk band, flags with evidence viewer, five dispositions, audit with chain check, alerts (P-10, P-11, P-12 first cut) | Built on synthetic data |
-| Workbench | Remaining screens (manual tasks RB-09, case replay, Hindi) | Planned |
-| Mock portal | Complete screens and events (P-17) | Planned |
-| M3 scan fallback (B-28) | Page classifier, hardening for damaged files, OCR engine interface with a self-hosted PaddleOCR image option, scan cases with reason codes and manual tasks; all planted scan cases handled on synthetic test sets | Built on synthetic data; real engine to be verified on the laptop |
-| M3 | Template-aware extraction beyond Affidavit 2 (P-2, P-6) | Planned |
-| M13, M7, M4, M8 | Year-over-year (P-8), source adapters (P-5), APH date rules (P-7), identity graph (P-9) | Planned |
-| M1 / M9 | Category router, coordinates (P-1, P-13) | Planned |
+- No connection to AICTE, CCA, SHCIL, ICAI or any issuer exists. SATYA-EoA is designed to integrate through REST, signed webhooks and single sign-on, but none of that has been connected to a real system.
+- The approval portal is a mock that this project builds ("Approval Portal (Mock, for demo)").
+- Source answers (e-Stamp, UDIN) are simulated and tagged "Simulated source" in the workbench.
+- The signature chain is checked against a test certificate authority that exists only in this repository (tagged "Test trust anchor"). It proves nothing outside this repository.
+- All data is synthetic. SATYA-EoA is not affiliated with, endorsed by or connected to AICTE.
 
-Build order follows decision #40 (hardest first). The backlog is in [docs/ISSUES.md](docs/ISSUES.md).
+## How it works
 
-## Repository
-| Path | Contents |
+1. **Receive.** The mock portal sends a signed event (HMAC-SHA256, with replay protection and de-duplication) when an application is ready. The gateway verifies it and records it.
+2. **Identify.** Each uploaded file is hashed and each page is classified as text or scan.
+3. **Read.** Text pages are read from their text layer; scanned pages are read by OCR in English. Anything that cannot be read with confidence becomes "manual review required" with a plain reason.
+4. **Check.** The affidavit is compared with the portal draft; signatures, stamp-paper dates and UDIN structure are checked. Each finding names its rule, the Handbook clause and the extracted and expected values.
+5. **Verify.** Each document gets one of six labels (verified, mismatch detected, expired, verification pending, source unavailable, manual review required) from simulated sources.
+6. **Review.** An official sees the case with a risk band, opens each finding in the PDF at the place it came from, and records one of five dispositions (accept, override, or escalate for clarification, referral or manual verification) with a written reason. Every step is a hash-chained audit entry, and a case can be replayed later.
+
+The risk band orders the review queue only; it is never shown to the institution.
+
+## Stack
+
+- Workbench and mock portal: Next.js, React, TypeScript, PDF.js, React Aria Components, next-intl (English and Hindi)
+- Gateway: FastAPI (Python 3.13), PostgreSQL with pgvector
+- Worker: Celery on Valkey
+- Sign-in: Keycloak (OIDC)
+- Document checks: pdfplumber, pyHanko; optional PaddleOCR for scans
+- Edge: Caddy with local HTTPS
+- Contracts: JSON Schema, with generated TypeScript types and Pydantic models
+- Packaging: Docker Compose, pnpm and uv workspaces
+
+Exact versions are in [docs/STACK-VERSIONS.md](docs/STACK-VERSIONS.md).
+
+## Repository layout
+
+| Path | Purpose |
 |---|---|
 | `apps/web` | SATYA workbench (Next.js) |
-| `apps/mock-portal` | Approval Portal (Mock, for demo) |
-| `packages/affidavit` | M5 affidavit diff engine + synthetic Affidavit 2 generator (`satya_affidavit`) |
-| `services/api` | FastAPI gateway |
-| `services/worker` | Celery worker on Valkey |
-| `packages/shared-types` | JSON Schema contracts → TypeScript + Pydantic |
-| `infra` | Docker Compose, Caddy, Keycloak realm, scripts |
-| `docs` | Specs, setup, architecture, versions, decisions, backlog |
+| `apps/mock-portal` | Mock approval portal ("Approval Portal (Mock, for demo)") |
+| `services/api` | FastAPI gateway: signed events, workbench API, audit ledger, replay |
+| `services/worker` | Celery worker and scheduler on Valkey |
+| `packages/shared-types` | JSON Schema contracts, with generated TypeScript and Pydantic code |
+| `packages/affidavit` | Affidavit extraction, normalisation and comparison, with a synthetic affidavit generator |
+| `packages/forensics` | Signature, stamp-date and UDIN checks, with a synthetic signed-document generator and a test certificate authority |
+| `packages/ocr` | Scan fallback: page classifier, hardening for damaged files, OCR engine interface |
+| `packages/rules` | Versioned YAML rules with Handbook clause references |
+| `packages/templates` | Year-versioned template profiles |
+| `packages/blindgen` | Independent generator and evaluator for synthetic test sets |
+| `packages/issuers` | Placeholder for planned issuer profiles |
+| `data/synthetic` | Synthetic demo cases, prior-filings register and the public test certificates |
+| `infra` | Docker Compose, Caddy, Keycloak realm, helper scripts |
+| `docs` | Specs, architecture, setup, decision logs ([index](docs/README.md)) |
+| `tests` | Cross-service smoke tests and browser acceptance scripts |
 
-Working on the code: start with [CLAUDE.md](CLAUDE.md) (rules and commands), then [docs/DEV-SETUP.md](docs/DEV-SETUP.md).
+## Quick start
+
+Prerequisites: Docker with Compose, `make`, `python3` and [`uv`](https://docs.astral.sh/uv/) (the demo reset uses it). The service memory limits in `infra/docker-compose.yml` add up to under 8 GiB (checked by `make mem-check`), so give Docker at least that much. On Windows use WSL2; see [docs/DEV-SETUP.md](docs/DEV-SETUP.md) for Windows, Linux and macOS steps.
+
+```bash
+make secrets       # writes .env (git-ignored) with random secrets
+make up            # builds and starts every service, waits until healthy
+make trust-ca      # exports the local HTTPS root CA; trust it once (see docs/DEV-SETUP.md)
+make demo-reset    # loads eight synthetic cases with an empty audit trail
+```
+
+`make up` builds the API image with the OCR engine by default (`WITH_OCR=1`; network is needed at build time only). Use `WITH_OCR=0 make up` for a faster build without it; scans then report that OCR is not available.
+
+Then open:
+
+| URL | What |
+|---|---|
+| https://localhost | SATYA workbench |
+| https://portal.localhost | Mock approval portal |
+| https://localhost/api/v1/health | Gateway health |
+
+Demo users are synthetic accounts (for example `rb.southern.demo`, a Regulation Bureau official) created by the sign-in service when the stack starts. They all share one password, generated randomly by `make secrets` and stored as `DEMO_USER_PASSWORD` in your local `.env`. No password is committed to this repository. [docs/DEMO-NOTES.md](docs/DEMO-NOTES.md) has a click path through the demo cases.
+
+Checks you can run without the stack:
+
+```bash
+pnpm install --frozen-lockfile && uv sync --all-packages --frozen
+make lint
+make typecheck
+make test
+```
+
+## Data policy
+
+Synthetic data only. The repository contains no real documents, institutions, people, identifiers or credentials. Demo institutions are named "Demo Institute of Technology NN" and similar; application IDs use the reserved `1-9...` range; emails use `example.invalid`. Two automated checks run in CI on every push: a real-data guard (`make guard`) that fails on personal-data patterns or tracked real samples, and a secret scan with gitleaks (`make secret-scan`). See [data/synthetic/README.md](data/synthetic/README.md).
+
+## Safeguards
+
+- SATYA-EoA advises; officials decide. There is no approve, reject or auto-clear control anywhere.
+- Every outbound event is marked `advisory: true` and `regulatory_effect: "none"`.
+- A disposition is recorded by an official with a written reason of at least 10 characters.
+- Findings that point to possible forgery are labelled "Preliminary indicator. Needs human verification."
+- Status is never shown by colour alone; each status has a text label.
+
+## Known limitations
+
+- Scanned documents are read by OCR and compared with low confidence; the wording shown for scans is still being improved.
+- The tests use synthetic documents that were written together with the rules, so passing them says nothing about real documents.
+- Blind-set evaluation is incomplete and unpublished.
+- Everything listed as planned above is not built.
 
 ## Licence
-None yet. The team plans Apache-2.0 when the repository goes public, if the SIH rules allow it.
+
+Apache License 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE). Third-party components are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+## References
+
+- AICTE Approval Process Handbook 2024-27 (Table 2.3 on the self-disclosure path). A digest of the clauses used by the rules is in [docs/specs/03-APH-digest.md](docs/specs/03-APH-digest.md).
+- Smart India Hackathon 2026, problem statement SIH26261; a copy is in [docs/specs/02-problem-statement-SIH26261.md](docs/specs/02-problem-statement-SIH26261.md).
+
+Contributing: [CONTRIBUTING.md](CONTRIBUTING.md). Reporting a vulnerability: [SECURITY.md](SECURITY.md).
