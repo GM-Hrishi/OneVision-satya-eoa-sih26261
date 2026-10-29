@@ -62,9 +62,10 @@
   --badge-neutral-bg: #F4F6F9;
   --badge-neutral-border: #D5DAE2;
   --menu-hover: #EEF1F6;
-  --font-sans: "Public Sans", "Noto Sans Devanagari", system-ui, sans-serif;
+  --font-sans: "Noto Sans", "Noto Sans Devanagari", system-ui, sans-serif;
   --font-mono: "Noto Sans Mono", ui-monospace, monospace;
-  --font-devanagari: "Noto Sans Devanagari", "Public Sans", sans-serif;
+  --font-caps: "Public Sans", "Noto Sans", system-ui, sans-serif;
+  --font-devanagari: "Noto Sans Devanagari", "Noto Sans", sans-serif;
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;

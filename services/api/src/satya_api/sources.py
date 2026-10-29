@@ -70,6 +70,7 @@ def apply_hub(
     application_id: str,
     ay: str,
     checked_at: str,
+    ocr_number: bool = False,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     """Returns (document verification with hub checks and the final label, source responses)."""
     verification = copy.deepcopy(doc)
@@ -84,7 +85,7 @@ def apply_hub(
                 "SRC_NO_IDENTIFIER",
                 checked_at,
             )
-        elif registry.stamp_reused(stamp_no, application_id, ay):
+        elif not ocr_number and registry.stamp_reused(stamp_no, application_id, ay):
             new = _check(
                 SHCIL,
                 {"certificate_no": stamp_no},

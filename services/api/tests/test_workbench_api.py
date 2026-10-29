@@ -127,14 +127,14 @@ def test_wrong_role_is_403(wb: TestClient) -> None:
 def test_case_list_is_scoped_to_the_officials_region(wb: TestClient) -> None:
     body = wb.get("/v1/cases", headers=auth(token())).json()
     assert {i["case_id"] for i in body["items"]} >= {DIT03, DCE05}
-    assert len(body["items"]) == 5  # Slice D seed set
+    assert len(body["items"]) == 8  # five Slice D cases + three B-28 scan cases
     flags = {i["case_id"]: i["open_flags"] for i in body["items"]}
     assert flags[DIT03] == 7  # M5 (5) + M6 (2: image-only mark, mark after notary)
     assert flags[DCE05] == 0
     other = wb.get("/v1/cases", headers=auth(token(groups=["/regions/northern"]))).json()
     assert other["items"] == []
     national = wb.get("/v1/cases", headers=auth(token(groups=["/regions/national"]))).json()
-    assert len(national["items"]) == 5
+    assert len(national["items"]) == 8
 
 
 def test_affidavit_diff_matches_the_contract_and_the_planted_findings(wb: TestClient) -> None:

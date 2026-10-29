@@ -6,11 +6,13 @@ requires-python = ">=3.12"
 dependencies = [
     "pdfplumber==0.11.10",
     "pyyaml==6.0.3",
+    "satya-ocr",
     "satya-shared-types",
 ]
 
 [tool.uv.sources]
 satya-shared-types = { workspace = true }
+satya-ocr = { workspace = true }
 
 [build-system]
 requires = ["hatchling==1.32.4"]

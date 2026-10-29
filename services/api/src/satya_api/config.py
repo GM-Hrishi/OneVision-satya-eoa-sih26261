@@ -39,6 +39,11 @@ class Settings(BaseSettings):
     upload_max_bytes: int = Field(default=5 * 1024 * 1024, gt=0)
     upload_rate_limit: str = "20/minute"
     overview_rate_limit: str = "30/minute"
+    # B-28 OCR: engine "paddle" (real, needs the WITH_OCR image) or "none"; OCR is expensive, so
+    # every upload also counts against a tighter per-user limit. Page, time and confidence limits
+    # are read from SATYA_OCR_* by satya_ocr.OcrSettings.
+    ocr_engine: str = "paddle"
+    ocr_rate_limit: str = "10/minute"
     # Run the M5/M6 checks of every demo case once at start so the first queue load is fast.
     warm_cache: bool = False
 

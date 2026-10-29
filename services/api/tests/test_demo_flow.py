@@ -31,6 +31,9 @@ from .test_workbench_api import (
 DCE07 = "cas_01JD3M5A00000000000000CE07"
 DT11 = "cas_01JD3M5A00000000000000DT11"
 DCE09 = "cas_01JD3M5A00000000000000CE09"
+DT13 = "cas_01JD3M5A00000000000000DT13"  # B-28 scan: clean, read by OCR when an engine exists
+DCE15 = "cas_01JD3M5A00000000000000CE15"  # B-28 scan: noisy, low confidence
+DT17 = "cas_01JD3M5A00000000000000DT17"  # B-28 scan: mixed text and image pages
 
 
 @pytest.fixture
@@ -63,8 +66,18 @@ def rb() -> dict[str, str]:
 def test_queue_has_five_cases_with_a_deterministic_band(flow: TestClient) -> None:
     body = flow.get("/v1/cases", headers=rb()).json()
     bands = {i["case_id"]: i["risk_band"] for i in body["items"]}
-    assert bands == {DIT03: "high", DT11: "high", DCE07: "medium", DCE09: "medium", DCE05: "low"}
-    assert body["totals"]["by_band"] == {"high": 2, "medium": 2, "low": 1}
+    assert bands == {
+        DIT03: "high",
+        DT11: "high",
+        DCE07: "medium",
+        DCE09: "medium",
+        DCE05: "low",
+        # B-28: a scan, even an unreadable one, does not raise the band (decision O-5)
+        DT13: "low",
+        DCE15: "low",
+        DT17: "low",
+    }
+    assert body["totals"]["by_band"] == {"high": 2, "medium": 2, "low": 4}
     assert all(set(i["label_counts"]) >= {"verified", "source_unavailable"} for i in body["items"])
     assert flow.get("/v1/cases", headers=rb()).json() == body  # same data every time
 
@@ -144,7 +157,11 @@ def test_upload_rules_and_rerun(flow: TestClient) -> None:
     bad_body = flow.post(url + "x.pdf", content=b"MZ not a pdf", headers=pdf_headers)
     assert bad_body.json()["code"] == "UPLOAD_CONTENT_REJECTED"
     junk = flow.post(url + "x.pdf", content=b"%PDF-1.7\njunk\n%%EOF", headers=pdf_headers)
-    assert junk.status_code == 422 and junk.json()["code"] == "UPLOAD_UNREADABLE"
+    # B-28: a damaged PDF is never a 5xx and is not thrown away; it lands on manual review
+    assert junk.status_code == 201
+    accounts = next(d for d in junk.json()["documents"] if d["slot"].endswith("audited accounts"))
+    assert accounts["label"] == "manual_review_required"
+    assert accounts["read"]["reason_code"] == "DOC_UNREADABLE"
     wrong_type = flow.post(
         url + "x.pdf", content=b"x", headers={**rb(), "Content-Type": "text/plain"}
     )
@@ -250,7 +267,7 @@ async def test_seed_writes_a_verifiable_chain_and_is_repeatable(tmp_path: Path) 
 
     store = MemoryStore()
     workflow = Workflow(FixtureCaseRepository(CASES, TOKEN_KEY), store, tmp_path)
-    assert len(await seed_all(workflow)) == 5
+    assert len(await seed_all(workflow)) == 8
     assert await seed_all(workflow) == []  # already seeded
     rows = await store.ledger_rows()
     assert verify_chain(rows).ok
@@ -337,7 +354,7 @@ def test_overview_has_the_agreed_shape_and_matches_the_queue(flow: TestClient) -
     assert body["ay"] == "2026-27" and body["route"] == "self_disclosure" and body["as_of"]
     assert body["advisory"] is True
     queue = flow.get("/v1/cases", headers=rb()).json()
-    assert body["cases"]["submitted"] == queue["totals"]["submitted"] == 5
+    assert body["cases"]["submitted"] == queue["totals"]["submitted"] == 8
     assert body["cases"]["by_band"] == queue["totals"]["by_band"]
     assert set(body["status"]) == {
         "not_started",
@@ -346,11 +363,11 @@ def test_overview_has_the_agreed_shape_and_matches_the_queue(flow: TestClient) -
         "referred",
         "all_flags_decided",
     }
-    # DCE05 has no flags (all decided), the other four have findings and no decisions yet
-    assert body["status"]["all_flags_decided"] == 1 and body["status"]["not_started"] == 4
+    # DCE05 and the three scan cases have no flags (all decided); the other four have findings
+    assert body["status"]["all_flags_decided"] == 4 and body["status"]["not_started"] == 4
     assert sum(body["status"].values()) == body["cases"]["submitted"]
     assert set(body["documents"]["by_label"]) == LABELS_SIX
-    assert body["documents"]["total"] == sum(body["documents"]["by_label"].values()) == 10
+    assert body["documents"]["total"] == sum(body["documents"]["by_label"].values()) == 16
     assert body["manual_tasks"]["open"] == sum(i["manual_tasks"] for i in queue["items"])
     assert len(body["manual_tasks"]["top"]) <= 5
     assert set(body["expiring"]) == {"d30", "d60", "d90", "top"}
@@ -402,10 +419,10 @@ def test_overview_is_scoped_by_role_and_region(flow: TestClient) -> None:
     denied = flow.get("/v1/overview?region=northern", headers=rb())
     assert denied.status_code == 403 and denied.json()["code"] == "SCOPE_DENIED"
     assert flow.get("/v1/overview?region=national", headers=rb()).status_code == 403
-    assert overview(flow, "?region=southern")["cases"]["submitted"] == 5
+    assert overview(flow, "?region=southern")["cases"]["submitted"] == 8
     national = auth(token(groups=["/regions/national"]))
-    assert overview(flow, "", **national)["cases"]["submitted"] == 5
-    assert overview(flow, "?region=southern", **national)["cases"]["submitted"] == 5
+    assert overview(flow, "", **national)["cases"]["submitted"] == 8
+    assert overview(flow, "?region=southern", **national)["cases"]["submitted"] == 8
     assert overview(flow, "?region=northern", **national)["cases"]["submitted"] == 0
 
 

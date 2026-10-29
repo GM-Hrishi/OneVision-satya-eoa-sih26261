@@ -12,10 +12,12 @@ import { StatusLabel } from "@/components/ui/StatusLabel";
 import diff from "@/components/diff/DiffView.module.css";
 import { SignatureBadge } from "@/components/signature/SignatureBadge";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { ReadNotes } from "@/components/demo/ReadNotes";
 import { caseVerification } from "@/lib/cases";
 import { caseReview } from "@/lib/demo";
 import { LABEL_ORDER } from "@/lib/labels";
 import { requireRole } from "@/lib/session";
+import { Note } from "@/components/ui/Note";
 
 const cat = (...parts: string[]): string => parts.join("");
 
@@ -34,13 +36,14 @@ export default async function CasePage({ params }: Props) {
   const [review, verification] = await Promise.all([caseReview(id, base), caseVerification(id, base)]);
   const t = await getTranslations("demo");
   const td = await getTranslations("diff");
+  const tv = await getTranslations("verification");
   return (
     <>
       <PageHeader title={t("case.heading")}>
         <p className={diff.caseLine}>
           {verification.documents.length > 0 ? t("case.line", { count: verification.documents.length, id: id.slice(-4) }) : null}
         </p>
-        <p className={diff.advisory}>{td("advisory")}</p>
+        <Note>{td("advisory")}</Note>
         <CaseTabs caseId={id} current="overview" />
       </PageHeader>
 
@@ -96,6 +99,7 @@ export default async function CasePage({ params }: Props) {
                   <td>
                     <StatusLabel label={d.label} />
                     {d.manual_task ? <p className={diff.note}>{t("case.manualTask")}</p> : null}
+                    <ReadNotes read={d.read} />
                   </td>
                   <td>
                     <SignatureBadge sig={d.issuer_sig} />
@@ -129,7 +133,7 @@ export default async function CasePage({ params }: Props) {
             <h3>{t("case.tasksHeading")}</h3>
             <ul>
               {review.tasks.map((task) => (
-                <li key={task.doc_id}>{t("case.task", { title: task.title, reason: task.reason })}</li>
+                <li key={task.doc_id}>{t("case.task", { title: task.title, reason: tv.has(`reason.${task.reason}` as never) ? tv(`reason.${task.reason}` as never) : task.reason })}</li>
               ))}
             </ul>
           </>

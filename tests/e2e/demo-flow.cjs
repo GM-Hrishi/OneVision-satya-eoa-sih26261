@@ -34,10 +34,10 @@ const check = (ok, msg) => { console.log(`${ok ? "PASS" : "FAIL"} ${msg}`); if (
   await page.click("#kc-login");
   await page.waitForURL(`${BASE}/overview`, { timeout: 20000 });
   await page.waitForSelector("#ov-bands", { timeout: 30000 });
-  check((await page.textContent("main")).includes("5 cases submitted"), "Overview is the landing page and counts the 5 seeded cases");
+  check((await page.textContent("main")).includes("8 cases submitted"), "Overview is the landing page and counts the 8 seeded cases");
   await page.goto(`${BASE}/rb-queue`);
   await page.waitForSelector("#case-list", { timeout: 30000 });
-  check((await page.locator("tbody tr").count()) === 5, "queue lists the 5 seeded cases");
+  check((await page.locator("tbody tr").count()) === 8, "queue lists the 8 seeded cases");
   const body = await page.textContent("tbody");
   check(/HIGH/i.test(body) && /MEDIUM/i.test(body) && /LOW/i.test(body), "bands High, Medium and Low are shown as text");
   await page.goto(`${BASE}/rb-queue?band=high`);

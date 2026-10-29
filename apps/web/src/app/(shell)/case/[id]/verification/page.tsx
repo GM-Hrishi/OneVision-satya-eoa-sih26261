@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { VerificationPanel } from "@/components/verification/VerificationPanel";
 import { affidavitDiff, caseVerification } from "@/lib/cases";
 import { requireRole } from "@/lib/session";
+import { Note } from "@/components/ui/Note";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -40,7 +41,7 @@ export default async function VerificationPage({ params }: Props) {
             categories: c.category_set.join("; "),
           })}
         </p>
-        <p className={styles.advisory}>{td("advisory")}</p>
+        <Note>{td("advisory")}</Note>
         <CaseTabs caseId={id} current="verification" />
       </PageHeader>
       <VerificationPanel data={data} />

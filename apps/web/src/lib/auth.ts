@@ -15,6 +15,7 @@ export type Role = (typeof ROLES)[number];
 interface KeycloakProfile {
   sub: string;
   preferred_username?: string;
+  name?: string; // display name from the realm's `profile` scope, e.g. "RB Officer 01"
   roles?: string[];
   groups?: string[];
 }
@@ -49,6 +50,7 @@ export function authOptions(): NextAuthOptions {
         if (account && profile) {
           const kc = profile as KeycloakProfile;
           token.username = kc.preferred_username ?? kc.sub;
+          token.displayName = kc.name;
           token.roles = (kc.roles ?? []).filter((r): r is Role => (ROLES as readonly string[]).includes(r));
           token.regions = (kc.groups ?? [])
             .filter((g) => g.startsWith("/regions/"))
@@ -64,7 +66,7 @@ export function authOptions(): NextAuthOptions {
         return {
           expires: session.expires,
           user: {
-            name: String(token.username ?? ""),
+            name: String(token.displayName ?? token.username ?? ""),
             roles: (token.roles as Role[] | undefined) ?? [],
             regions: (token.regions as string[] | undefined) ?? [],
           },

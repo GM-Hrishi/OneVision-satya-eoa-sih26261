@@ -29,7 +29,7 @@ lint: ## ESLint + ruff
 
 typecheck: ## tsc + mypy
 	pnpm -r typecheck
-	uv run mypy services/api/src services/worker/src packages/shared-types/python/satya_shared_types packages/affidavit/src packages/forensics/src
+	uv run mypy services/api/src services/worker/src packages/shared-types/python/satya_shared_types packages/affidavit/src packages/forensics/src packages/ocr/src
 
 test: ## Unit tests (no running stack needed)
 	pnpm -r test
@@ -38,6 +38,7 @@ test: ## Unit tests (no running stack needed)
 	uv run pytest services/worker
 	uv run pytest packages/affidavit
 	uv run pytest packages/forensics
+	uv run pytest packages/ocr
 
 synth: ## Regenerate the synthetic demo cases, registers and public test PKI (data/synthetic)
 	uv run python -m satya_forensics.synth
@@ -81,7 +82,7 @@ mem-check: ## Check every service has a memory limit and the sum is <= 8 GiB
 config: ## Validate the compose file
 	$(COMPOSE) config --quiet && echo "compose config OK"
 
-demo-reset: ## Reset the demo to the same 5 synthetic cases, empty ledger plus seed (needs make up)
+demo-reset: ## Reset the demo to the same 8 synthetic cases, empty ledger plus seed (needs make up)
 	bash infra/scripts/demo-reset.sh
 
 ledger-verify: ## Recompute the ledger hash chain inside the api container
@@ -103,6 +104,7 @@ e2e: ## Browser acceptance (Playwright/Chromium): workbench sign-in + shell, moc
 	NODE_PATH=$$(npm root -g) node tests/e2e/verification.cjs
 	NODE_PATH=$$(npm root -g) node tests/e2e/demo-flow.cjs
 	NODE_PATH=$$(npm root -g) node tests/e2e/polish.cjs
+	NODE_PATH=$$(npm root -g) node tests/e2e/ocr-scan.cjs
 	$(COMPOSE) exec -T api python -m satya_api.ledger_verify
 
 test-db: ## Postgres-backed API tests in a throwaway pgvector container

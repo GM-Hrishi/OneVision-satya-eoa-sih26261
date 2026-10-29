@@ -421,7 +421,8 @@
       "second_party": "Second Party on the e-stamp is not the Council",
       "duty_low": "Stamp duty below Rs 100",
       "not_e_stamp": "Not on an e-stamp certificate",
-      "certificate_reused": "E-stamp certificate number used on another filing"
+      "certificate_reused": "E-stamp certificate number used on another filing",
+      "ocr_match": "Stamp number read by OCR matches another case. Needs human verification."
     },
     "notary": {
       "seal_expired": "Notary seal expired before the notarisation date"
@@ -543,7 +544,13 @@
       "UDIN_UNIQUE": "UDIN not seen on another filing",
       "UDIN_REUSED": "UDIN already on another filing",
       "SRC_NO_CHANNEL": "No automated channel to the issuing source; a manual verification task is needed",
-      "SRC_NO_IDENTIFIER": "No identifier printed to look up; a manual verification task is needed"
+      "SRC_NO_IDENTIFIER": "No identifier printed to look up; a manual verification task is needed",
+      "SCAN_IMAGE_ONLY": "Scanned file, no digital signature; an official must verify it",
+      "OCR_LOW_CONFIDENCE": "Scan could not be read reliably by OCR",
+      "OCR_UNAVAILABLE": "Scan could not be read; OCR is not available",
+      "DOC_UNREADABLE": "File could not be opened or has no readable pages",
+      "SRC_READ_BY_OCR": "Identifier was read by OCR; confirm it against the document before relying on the source answer",
+      "STAMP_NO_OCR_MATCH": "Stamp number read by OCR matches another case; needs human verification"
     },
     "evidencePage": "page {page}",
     "noEvidence": "Whole document",
@@ -660,7 +667,7 @@
       "manualTask": "Manual verification task open.",
       "chainSource": "Signature chain: offline check",
       "tasksHeading": "Manual verification tasks",
-      "task": "{title}: no source answered ({reason}). Verify by hand.",
+      "task": "{title}: {reason}. Verify by hand.",
       "mockNote": "Source answers on this page come from simulated services and carry a Simulated source tag. No connection to SHCIL, ICAI or CCA exists."
     },
     "upload": {
@@ -781,6 +788,29 @@
       "actionAria": "{action} for application {aid}",
       "railLabel": "Latest alert",
       "viewAll": "{count, plural, one {View all alerts (# unread)} other {View all alerts (# unread)}}"
+    },
+    "ocr": {
+      "heading": "Reading of the file",
+      "scanPage": "Page {page}: scanned page. Text read by OCR (confidence {confidence}%).",
+      "scanPageNotRead": "Page {page}: scanned page. Not read by OCR.",
+      "scanPageEmpty": "Page {page}: scanned page. OCR found no text.",
+      "nativePage": "Page {page}: text layer.",
+      "skippedPage": "Page {page}: skipped, beyond the page limit.",
+      "advisory": "Text read by OCR is advisory. Findings that rest on it are preliminary indicators and need human verification.",
+      "noRegion": "No region is shown for this finding because OCR gave no position for the text.",
+      "readByOcr": "Read by OCR",
+      "why": {
+        "scan_read": "This file is a scan. {count, plural, one {Page {pages} was} other {Pages {pages} were}} read by OCR (confidence {confidence}%). A scan carries no digital signature, so an official must verify it.",
+        "scan_not_attempted": "This file is a scan and was not read by OCR. An official must read it.",
+        "scan_timeout": "This file is a scan and OCR did not finish in the time allowed. An official must read it.",
+        "low_confidence": "This file is a scan and the text read by OCR is not reliable (confidence {confidence}%, needs {threshold}%). An official must read it.",
+        "unavailable": "This file is a scan and the OCR engine is not available on this system. An official must read it.",
+        "encrypted": "This file is password protected and cannot be opened. Ask the institution for an unprotected copy.",
+        "corrupt": "This file is damaged and cannot be opened. Ask the institution to upload it again.",
+        "no_pages": "This file has no pages. Ask the institution to upload it again.",
+        "blank": "Every page of this file is blank. Ask the institution to upload it again.",
+        "too_large": "This file is too large to read automatically (more than {max_pages} pages). An official must read it."
+      }
     }
   },
   "status": {
@@ -832,7 +862,11 @@
     "ageDays": "{days, plural, =0 {today} one {1 day} other {# days}}",
     "reason": {
       "SRC_NO_CHANNEL": "No automated channel",
-      "SRC_NO_IDENTIFIER": "No identifier to look up"
+      "SRC_NO_IDENTIFIER": "No identifier to look up",
+      "SCAN_IMAGE_ONLY": "Scanned file",
+      "OCR_LOW_CONFIDENCE": "Scan not readable by OCR",
+      "OCR_UNAVAILABLE": "OCR not available",
+      "DOC_UNREADABLE": "File unreadable"
     },
     "expiringHeading": "Certificates expiring",
     "withinDays": "within {days} days",

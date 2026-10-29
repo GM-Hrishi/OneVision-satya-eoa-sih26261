@@ -13,6 +13,7 @@ members = [
     "satya-api",
     "satya-eoa-workspace",
     "satya-forensics",
+    "satya-ocr",
     "satya-shared-types",
     "satya-worker",
 ]
@@ -2680,6 +2681,7 @@ source = { editable = "packages/affidavit" }
 dependencies = [
     { name = "pdfplumber" },
     { name = "pyyaml" },
+    { name = "satya-ocr" },
     { name = "satya-shared-types" },
 ]
 
@@ -2687,6 +2689,7 @@ dependencies = [
 requires-dist = [
     { name = "pdfplumber", specifier = "==0.11.10" },
     { name = "pyyaml", specifier = "==6.0.3" },
+    { name = "satya-ocr", editable = "packages/ocr" },
     { name = "satya-shared-types", editable = "packages/shared-types/python" },
 ]
 
@@ -2705,6 +2708,7 @@ dependencies = [
     { name = "redis" },
     { name = "satya-affidavit" },
     { name = "satya-forensics" },
+    { name = "satya-ocr" },
     { name = "satya-shared-types" },
     { name = "sqlalchemy", extra = ["asyncio"] },
     { name = "uvicorn", extra = ["standard"] },
@@ -2722,6 +2726,7 @@ requires-dist = [
     { name = "redis", specifier = "==6.4.0" },
     { name = "satya-affidavit", editable = "packages/affidavit" },
     { name = "satya-forensics", editable = "packages/forensics" },
+    { name = "satya-ocr", editable = "packages/ocr" },
     { name = "satya-shared-types", editable = "packages/shared-types/python" },
     { name = "sqlalchemy", extras = ["asyncio"], specifier = "==2.1.6" },
     { name = "uvicorn", extras = ["standard"], specifier = "==0.54.0" },
@@ -2768,6 +2773,7 @@ dependencies = [
     { name = "pyhanko" },
     { name = "pyyaml" },
     { name = "satya-affidavit" },
+    { name = "satya-ocr" },
     { name = "satya-shared-types" },
 ]
 
@@ -2778,7 +2784,25 @@ requires-dist = [
     { name = "pyhanko", specifier = "==0.38.0" },
     { name = "pyyaml", specifier = "==6.0.3" },
     { name = "satya-affidavit", editable = "packages/affidavit" },
+    { name = "satya-ocr", editable = "packages/ocr" },
     { name = "satya-shared-types", editable = "packages/shared-types/python" },
+]
+
+[[package]]
+name = "satya-ocr"
+version = "0.1.0"
+source = { editable = "packages/ocr" }
+dependencies = [
+    { name = "pikepdf" },
+    { name = "pillow" },
+    { name = "pypdfium2" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "pikepdf", specifier = "==10.17.0" },
+    { name = "pillow", specifier = "==13.0.0" },
+    { name = "pypdfium2", specifier = "==5.14.0" },
 ]
 
 [[package]]

@@ -165,6 +165,7 @@ class AffidavitStampResult:
     findings: list[Finding]
     stamp: dict[str, Any] | None
     chronology: dict[str, Any]
+    ocr_match: Finding | None = None  # OCR-read number found on another filing (O-23)
 
 
 def evaluate(
@@ -224,22 +225,39 @@ def evaluate(
                 MIN_DUTY_RUPEES,
             )
         )
+    ocr_match: Finding | None = None
     if stamp is not None and stamp.certificate_no:
         others = registry.stamp_reused(stamp.certificate_no, application_id, ay)
         where = sorted({f"{o.application_id or 'another filing'} ({o.year})" for o in others})
-        findings.append(
-            Finding(
-                "STAMP-REUSE",
-                "stamp:certificate_no",
-                "format",
-                bool(others),
-                stamp.page,
-                box(stamp, "certificate_no"),
-                mask(stamp.certificate_no),
-                "certificate number not used on any other filing",
-                extra={"seen_on": where},
+        if pages[stamp.page - 1].from_ocr:
+            # O-23: a number read by OCR is never a reuse finding, only a low-trust note.
+            if others:
+                ocr_match = Finding(
+                    "STAMP-OCR-MATCH",
+                    "stamp:certificate_no_ocr",
+                    "format",
+                    True,
+                    stamp.page,
+                    box(stamp, "certificate_no"),
+                    mask(stamp.certificate_no),
+                    "number read by OCR; confirm against the document",
+                    confidence=0.5,
+                    extra={"seen_on": where},
+                )
+        else:
+            findings.append(
+                Finding(
+                    "STAMP-REUSE",
+                    "stamp:certificate_no",
+                    "format",
+                    bool(others),
+                    stamp.page,
+                    box(stamp, "certificate_no"),
+                    mask(stamp.certificate_no),
+                    "certificate number not used on any other filing",
+                    extra={"seen_on": where},
+                )
             )
-        )
     # NOTARY-EXPIRY
     if notary is not None and notary.notarised and notary.seal_valid_till:
         findings.append(
@@ -333,7 +351,7 @@ def evaluate(
             "issue_date": stamp.issued.isoformat() if stamp.issued else None,
             "page": stamp.page,
         }
-    return AffidavitStampResult(findings, stamp_section, chronology)
+    return AffidavitStampResult(findings, stamp_section, chronology, ocr_match)
 
 
 def certificate_number(pages: list[Page]) -> str | None:

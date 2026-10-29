@@ -9,6 +9,7 @@ import { RiskBand } from "@/components/demo/RiskBand";
 import demo from "@/components/demo/Demo.module.css";
 import styles from "@/components/diff/DiffView.module.css";
 import { QueueTable, type QueueTableRow } from "@/components/queue/QueueTable";
+import { FilterSelect } from "@/components/ui/FilterSelect";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { LABEL_ORDER } from "@/lib/labels";
 import { BANDS, SORT_KEYS, STATUSES, type Band, type QueueRow, type SortDir, type SortKey, type Status } from "@/lib/demo-types";
@@ -127,39 +128,27 @@ export async function CaseList({ items, total, query }: { items: QueueRow[]; tot
             <input type="hidden" name="dir" value={query.sort.dir} />
           </>
         ) : null}
-        <label>
-          {tq("queue.filterBand")}
-          <select name="band" defaultValue={query.band}>
-            <option value="">{tq("queue.all")}</option>
-            {BANDS.map((b) => (
-              <option key={b} value={b}>
-                {tq(`band.${b}`)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          {tq("queue.filterLabel")}
-          <select name="label" defaultValue={query.label}>
-            <option value="">{tq("queue.all")}</option>
-            {LABEL_ORDER.map((l) => (
-              <option key={l} value={l}>
-                {ts(`label.${l}`)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          {tq("queue.filterStatus")}
-          <select name="status" defaultValue={query.status}>
-            <option value="">{tq("queue.all")}</option>
-            {STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {tq(`status.${s}`)}
-              </option>
-            ))}
-          </select>
-        </label>
+        <FilterSelect
+          name="band"
+          label={tq("queue.filterBand")}
+          value={query.band}
+          testId="filter-band"
+          options={[{ value: "", label: tq("queue.all") }, ...BANDS.map((b) => ({ value: b, label: tq(`band.${b}`) }))]}
+        />
+        <FilterSelect
+          name="label"
+          label={tq("queue.filterLabel")}
+          value={query.label}
+          testId="filter-label"
+          options={[{ value: "", label: tq("queue.all") }, ...LABEL_ORDER.map((l) => ({ value: l, label: ts(`label.${l}`) }))]}
+        />
+        <FilterSelect
+          name="status"
+          label={tq("queue.filterStatus")}
+          value={query.status}
+          testId="filter-status"
+          options={[{ value: "", label: tq("queue.all") }, ...STATUSES.map((s) => ({ value: s, label: tq(`status.${s}`) }))]}
+        />
         <button type="submit" className={demo.button}>
           {tq("queue.apply")}
         </button>

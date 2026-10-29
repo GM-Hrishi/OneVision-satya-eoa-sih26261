@@ -114,6 +114,10 @@ services:
       context: ..
       dockerfile: services/api/Dockerfile
       secrets: [extra_ca]
+      # WITH_OCR=1 (default for the laptop) bakes PaddleOCR and its models into the image.
+      # CI sets WITH_OCR=0 to keep image builds fast; scans then fall back to OCR_UNAVAILABLE.
+      args:
+        WITH_OCR: ${WITH_OCR:-1}
     image: satya/api:dev
     <<: *logging
     working_dir: /app/services/api
@@ -146,12 +150,15 @@ services:
       # Slice D: uploaded synthetic PDFs (named by SHA-256) live on their own volume.
       SATYA_UPLOAD_DIR: /var/lib/satya/uploads
       SATYA_WARM_CACHE: "true"
+      # B-28: "paddle" uses the baked-in engine when the image was built with WITH_OCR=1 and falls
+      # back to OCR_UNAVAILABLE when it is absent; "none" never tries.
+      SATYA_OCR_ENGINE: ${SATYA_OCR_ENGINE:-paddle}
     volumes:
       - uploads:/var/lib/satya/uploads
     depends_on:
       migrate: { condition: service_completed_successfully }
       valkey: { condition: service_healthy }
-    mem_limit: 512m
+    mem_limit: 1536m
     networks: [backend, edge]
 
   worker:

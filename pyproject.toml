@@ -9,7 +9,7 @@ dependencies = []
 package = false
 
 [tool.uv.workspace]
-members = ["services/api", "services/worker", "packages/shared-types/python", "packages/affidavit", "packages/forensics"]
+members = ["services/api", "services/worker", "packages/shared-types/python", "packages/affidavit", "packages/forensics", "packages/ocr"]
 
 [dependency-groups]
 dev = [
@@ -34,7 +34,7 @@ select = ["E", "F", "I", "B", "UP", "S", "N", "SIM", "RUF"]
 ignore = ["S101"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["satya_shared_types", "satya_api", "satya_worker", "satya_affidavit", "satya_forensics"]
+known-first-party = ["satya_shared_types", "satya_api", "satya_worker", "satya_affidavit", "satya_forensics", "satya_ocr"]
 
 [tool.ruff.lint.per-file-ignores]
 "**/tests/**" = ["S105", "S106", "S311"]
@@ -47,6 +47,7 @@ known-first-party = ["satya_shared_types", "satya_api", "satya_worker", "satya_a
 # Seeded random is the point of a reproducible synthetic generator.
 "packages/affidavit/src/satya_affidavit/synth/**" = ["RUF001", "S311"]
 "packages/forensics/src/satya_forensics/synth/**" = ["RUF001", "S311"]
+"packages/ocr/src/satya_ocr/synth.py" = ["S311"]
 
 [tool.mypy]
 python_version = "3.12"

@@ -52,6 +52,8 @@ from satya_api.store import EventStore, InboundEvent, PostgresStore
 from satya_api.workflow import FLAG_ID, QUEUE_DIRS, QUEUE_SORTS, Workflow, WorkflowError
 from satya_forensics.engine import ENGINE_VERSION as M6_ENGINE_VERSION
 from satya_forensics.rules import load_ruleset as load_m6_ruleset
+from satya_ocr import OcrSettings
+from satya_ocr.engine import PaddleOcrEngine
 from satya_shared_types import constants, validator
 
 log = logging.getLogger("satya.api")
@@ -114,6 +116,8 @@ def create_app(
     user_limiter = RateLimiter(redis, user_limit, user_window, "user")
     upload_limit, upload_window = parse_rate(settings.upload_rate_limit)
     upload_limiter = RateLimiter(redis, upload_limit, upload_window, "upload")
+    ocr_limit, ocr_window = parse_rate(settings.ocr_rate_limit)
+    ocr_limiter = RateLimiter(redis, ocr_limit, ocr_window, "ocr")
     overview_limit, overview_window = parse_rate(settings.overview_rate_limit)
     overview_limiter = RateLimiter(redis, overview_limit, overview_window, "overview")
     hmac_keys = settings.hmac_key_map()
@@ -139,7 +143,14 @@ def create_app(
             if not settings.token_key():
                 log.error("no tokenisation key (>= 32 chars); land tables cannot be reconciled")
             root = Path(settings.demo_cases_dir) if settings.demo_cases_dir else None
-            app.state.cases = FixtureCaseRepository(root, settings.token_key())
+            engine = PaddleOcrEngine() if settings.ocr_engine == "paddle" else None
+            app.state.cases = FixtureCaseRepository(
+                root,
+                settings.token_key(),
+                ocr_engine=engine,
+                ocr_settings=OcrSettings.from_env(),
+                ocr_cache_dir=Path(settings.upload_dir) / "_ocr" if settings.upload_dir else None,
+            )
         app.state.workflow = Workflow(
             app.state.cases,
             app.state.store,
@@ -550,6 +561,8 @@ def create_app(
 
     async def upload_guard(request: Request, principal: Principal) -> None:
         retry_after = await upload_limiter.hit(principal.subject)
+        if retry_after is None:
+            retry_after = await ocr_limiter.hit(principal.subject)
         if retry_after is not None:
             security.warning("rate limited", extra={"trace_id": trace(request), "scope": "upload"})
             raise ProblemError(429, "RATE_LIMITED", headers={"Retry-After": str(retry_after)})

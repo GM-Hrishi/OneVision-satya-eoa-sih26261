@@ -15,6 +15,8 @@ from satya_api.cases import FixtureCaseRepository
 from satya_api.config import get_settings
 from satya_api.store import EventStore, PostgresStore
 from satya_api.workflow import Workflow
+from satya_ocr import OcrSettings
+from satya_ocr.engine import PaddleOcrEngine
 
 SEED_ACTOR = "seed.demo"
 
@@ -34,7 +36,14 @@ async def seed_all(workflow: Workflow) -> list[str]:
 def build(store: EventStore) -> Workflow:
     settings = get_settings()
     root = Path(settings.demo_cases_dir) if settings.demo_cases_dir else None
-    repo = FixtureCaseRepository(root, settings.token_key())
+    engine = PaddleOcrEngine() if settings.ocr_engine == "paddle" else None
+    repo = FixtureCaseRepository(
+        root,
+        settings.token_key(),
+        ocr_engine=engine,
+        ocr_settings=OcrSettings.from_env(),
+        ocr_cache_dir=Path(settings.upload_dir) / "_ocr" if settings.upload_dir else None,
+    )
     return Workflow(repo, store, Path(settings.upload_dir) if settings.upload_dir else None)
 
 

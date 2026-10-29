@@ -242,8 +242,8 @@
       "enabled": true,
       "email": "rb.southern.demo@example.invalid",
       "emailVerified": true,
-      "firstName": "Demo",
-      "lastName": "Regulation Bureau Southern",
+      "firstName": "RB",
+      "lastName": "Officer 01",
       "realmRoles": [
         "RB"
       ],

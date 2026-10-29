@@ -36,7 +36,7 @@ from satya_api.triage import (
     top_reasons,
     why_sentence,
 )
-from satya_forensics.labels import label_counts
+from satya_forensics.labels import document_label, label_counts
 from satya_forensics.stamp import certificate_number
 from satya_forensics.textlayer import read_pages
 from satya_forensics.udin import read_accounts
@@ -49,12 +49,14 @@ FLAG_ID = re.compile(r"^flg_[0-9A-HJKMNP-TV-Z]{26}$")
 MAX_UPLOAD_BYTES = 5 * 1024 * 1024
 MIN_REASON = 10
 
-UPLOADED, CHECKED, SOURCE, TASK, DISPOSED = (
+UPLOADED, CHECKED, SOURCE, TASK, DISPOSED, READ, NOTE = (
     "document.uploaded",
     "check.run",
     "source.response",
     "manual_task.created",
     "disposition.recorded",
+    "document.read",
+    "document.note",
 )
 
 
@@ -132,21 +134,38 @@ class Workflow:
         m6, checked_at, _ = await self.repo.m6(case_id)
         merged = await self.repo.affidavit_diff(case_id)
         registry = await self.repo.registry()
-        docs, tasks = [], []
+        docs: list[dict[str, Any]] = []
+        tasks: list[dict[str, Any]] = []
+        reads = {res.doc_id: self.repo.read_of(files[res.doc_id]) for res in m6.documents}
+        responses: list[dict[str, Any]]
         for res in m6.documents:
-            pages = read_pages(files[res.doc_id])
-            stamp_no = certificate_number(pages) if res.slot == AFFIDAVIT_SLOT else None
-            acc = read_accounts(pages) if res.slot == ACCOUNTS_SLOT else None
-            verification, responses = apply_hub(
-                res.verification,
-                res.slot,
-                stamp_no,
-                acc.udin if acc else None,
-                registry,
-                case["application_id"],
-                case["ay"],
-                checked_at,
-            )
+            read = reads[res.doc_id]
+            if read.blocked:  # nothing was read, so no identifier can be looked up at a source
+                verification, responses = res.verification, []
+                stamp_no, acc = None, None
+            else:
+                pages = read_pages(files[res.doc_id], read.layers() or None)
+                stamp_no = certificate_number(pages) if res.slot == AFFIDAVIT_SLOT else None
+                acc = read_accounts(pages) if res.slot == ACCOUNTS_SLOT else None
+                verification, responses = apply_hub(
+                    res.verification,
+                    res.slot,
+                    stamp_no,
+                    acc.udin if acc else None,
+                    registry,
+                    case["application_id"],
+                    case["ay"],
+                    checked_at,
+                    ocr_number=stamp_no is not None
+                    and certificate_number([p for p in pages if not p.from_ocr]) is None,
+                )
+            if read.status == "ocr_read":
+                # The identifier was read by OCR, so a matching source answer cannot verify it.
+                for check in verification["checks"]:
+                    if check["kind"] == "source_lookup" and check["outcome"] == "verified":
+                        check["outcome"] = "manual_review_required"
+                        check["reason_code"] = "SRC_READ_BY_OCR"
+                verification["label"] = document_label(verification["checks"])
             label = verification["label"]
             source = dict(res.source)
             if responses:
@@ -165,11 +184,14 @@ class Workflow:
                 "uploader_sig": res.uploader_sig,
                 "checks": verification["checks"],
                 "responses": responses,
-                "manual_task": label == "source_unavailable",
+                "manual_task": label == "source_unavailable" or read.needs_review,
+                "read": read.summary(),
                 "checked_at": checked_at,
             }
             docs.append(doc)
-            if doc["manual_task"]:
+            if read.needs_review:
+                tasks.append({"doc_id": res.doc_id, "title": res.title, "reason": read.reason_code})
+            elif doc["manual_task"]:
                 tasks.append(
                     {
                         "doc_id": res.doc_id,
@@ -193,8 +215,18 @@ class Workflow:
             flags.append(
                 {**flag, "why": why_sentence(flag), "doc_title": titles.get(flag["doc_id"], "")}
             )
+        # A scan is not evidence of wrongdoing: its manual review label and the signature findings
+        # that follow from having no signature do not raise the band (decision O-5).
+        scans = {d["doc_id"] for d in docs if d["read"]["reason_code"]}
         labels = [d["label"] for d in docs]
-        reasons = top_reasons(flags)
+        band_labels = [d["label"] for d in docs if d["doc_id"] not in scans]
+        band_flags = [
+            f
+            for f in flags
+            if f["rule_id"] != "STAMP-OCR-MATCH"  # O-23: a low-trust note, never a band reason
+            and not (f["doc_id"] in scans and f["rule_id"].startswith("SIG-"))
+        ]
+        reasons = top_reasons(band_flags)
         view = {
             "case_id": case_id,
             "documents": docs,
@@ -203,7 +235,7 @@ class Workflow:
             "label_counts": label_counts(labels),
             "checked_at": checked_at,
             "risk": {
-                "band": risk_band(flags, labels),
+                "band": risk_band(band_flags, band_labels),
                 "reasons": reasons,
                 "note": "The band orders review only. It is not a finding.",
             },
@@ -263,6 +295,28 @@ class Workflow:
                         "reason_code": resp["reason_code"],
                         "response_sha256": resp["response_sha256"],
                     },
+                )
+        for flag in view["flags"]:
+            if flag["rule_id"] == "STAMP-OCR-MATCH":  # O-23: low-trust note, not a reuse finding
+                await self.store.append(
+                    NOTE,
+                    case_id,
+                    actor,
+                    {
+                        "doc_id": flag["doc_id"],
+                        "rule_id": flag["rule_id"],
+                        "note": "Stamp number read by OCR matches another case. "
+                        "Needs human verification.",
+                        "preliminary_indicator": True,
+                    },
+                )
+        for doc in view["documents"]:
+            if doc["read"]["reason_code"]:  # scans and unreadable files: page classes, reason
+                await self.store.append(
+                    READ,
+                    case_id,
+                    actor,
+                    {"doc_id": doc["doc_id"], "sha256": doc["sha256"], **doc["read"]},
                 )
         await self.store.append(
             CHECKED,

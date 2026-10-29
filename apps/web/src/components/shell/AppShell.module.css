@@ -32,6 +32,7 @@
 }
 
 .brand {
+  font-family: var(--font-caps);
   font-weight: 800;
   letter-spacing: 0.02em;
   color: var(--color-chrome);
@@ -63,14 +64,14 @@
 
 .crumb [aria-current="page"] {
   color: var(--color-text);
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
 }
 
 .textButton {
   font: inherit;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-accent);
   background: none;
   border: 0;
@@ -105,7 +106,6 @@
 .railLink {
   display: block;
   padding: var(--space-2) var(--space-4);
-  border-left: var(--size-saffron-bar) solid transparent;
   color: var(--color-chrome-muted);
   text-decoration: none;
   font-size: 0.9375rem;
@@ -117,7 +117,6 @@
 }
 
 .railLink[aria-current="page"] {
-  border-left-color: var(--color-saffron-rule);
   color: var(--color-surface);
   font-weight: 700;
   background: var(--color-chrome-2);
@@ -191,7 +190,7 @@
 
 .menuButton {
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   padding: var(--space-1) var(--space-3);
   background: var(--color-chrome);
   color: var(--color-surface);
@@ -264,7 +263,7 @@
 }
 
 .bar {
-  color: #c9d0da;
+  color: var(--tag-neutral-border);
 }
 
 .search {
@@ -295,7 +294,7 @@
   color: var(--color-accent);
   font: inherit;
   font-size: 0.8125rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
 }
 

@@ -50,6 +50,17 @@ export interface ReviewCheck {
   checked_at?: string;
 }
 
+export interface ReadSummary {
+  status: "native" | "ocr_read" | "blocked";
+  reason_code: "SCAN_IMAGE_ONLY" | "OCR_LOW_CONFIDENCE" | "OCR_UNAVAILABLE" | "DOC_UNREADABLE" | null;
+  variant: string | null;
+  why: string | null;
+  values: Record<string, string | number>;
+  page_count: number;
+  ocr_mean_confidence: number | null;
+  pages: { page: number; kind: string; chars: number; ocr_confidence?: number; ocr_words?: number; note?: string }[];
+}
+
 export interface ReviewDocument {
   doc_id: string;
   slot: string;
@@ -62,6 +73,7 @@ export interface ReviewDocument {
   uploader_sig: SignatureCheck | null;
   checks: ReviewCheck[];
   manual_task: boolean;
+  read: ReadSummary;
   checked_at: string;
 }
 

@@ -9,6 +9,7 @@ import styles from "@/components/diff/DiffView.module.css";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { affidavitDiff } from "@/lib/cases";
 import { requireRole } from "@/lib/session";
+import { Note } from "@/components/ui/Note";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ all?: string }> };
 
@@ -44,7 +45,7 @@ export default async function AffidavitDiffPage({ params, searchParams }: Props)
             categories: c.category_set.join("; "),
           })}
         </p>
-        <p className={styles.advisory}>{t("advisory")}</p>
+        <Note>{t("advisory")}</Note>
         <CaseTabs caseId={id} current="affidavit" />
       </PageHeader>
       <DiffView

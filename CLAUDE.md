@@ -23,7 +23,8 @@ services/api/             FastAPI gateway: /v1/health, /v1/meta, /v1/portal-even
 services/worker/          Celery worker + beat on Valkey (ping task; feature tasks come in later slices)
 packages/shared-types/    JSON Schema (source of truth) -> generated TS types + Pydantic v2 models
 packages/affidavit/       M5 (P-3) satya_affidavit: extract, normalise, diff, reconcile, flags, engine, eval; synth/ = synthetic PDF generator
-packages/forensics/       M6 (P-4, P-18) satya_forensics: pki (TEST TRUST ANCHOR), signatures, stamp, udin, engine, eval; synth/ = signed fixtures
+packages/forensics/       M6 (P-4, P-18) satya_forensics: pki (TEST TRUST ANCHOR), signatures, stamp, udin, engine, eval; synth/ = signed fixtures + 3 scan cases
+packages/ocr/             M3 scan fallback (B-28) satya_ocr: page classifier, hardening, OcrEngine (Fake, PaddleOCR via WITH_OCR), reason codes, synth/ = Pillow scans
 packages/templates/       year-versioned template profiles (affidavit-2/aff2-portal-2024-27.yaml; more with M3)
 packages/rules/           versioned YAML rules with APH clauses (m5-affidavit.yaml, m6-signatures.yaml; more with M4)
 packages/issuers/         placeholder: Annexure-14 issuer profiles (M3/M4 slice)
@@ -52,10 +53,11 @@ tests/                    cross-service smoke tests (need the running stack)
 | Integration/smoke | `make smoke` (needs `make up`; `make trust-ca` first for verified TLS) |
 | Browser acceptance | `make e2e` (Playwright/Chromium; Caddy CA trusted in NSS, see DEV-SETUP) |
 | Ledger chain check | `make ledger-verify` |
-| Demo reset (5 synthetic cases, empty ledger, seed) | `make demo-reset` (needs `make up`; demo database only) |
+| Demo reset (8 synthetic cases, empty ledger, seed) | `make demo-reset` (needs `make up`; demo database only) |
 | Synthetic demo cases · check | `make synth` · `make synth-check` (CI fails if stale) |
 | M5 metrics (104 synthetic affidavits) | `make eval-m5` (also printed by `uv run pytest packages/affidavit`) |
 | M6/P-18 metrics (256 synthetic cases) | `make eval-m6` (also printed by `uv run pytest packages/forensics`) |
+| M3 scan fallback tests | `uv run pytest packages/ocr` (FakeOcrEngine; the real-engine test skips without models) |
 | Real-data guard · secret scan | `make guard` · `make secret-scan` (same as CI) |
 | Memory budget | `make mem-check` (every service limited, total ≤ 8 GB) |
 
@@ -85,7 +87,7 @@ Workbench API (slices 1–2, Slice D adds `/v1/cases` queue rows with `risk_band
 - Every non-obvious choice: one line in `docs/progress/DECISIONS-SLICE-<n>.md`.
 
 ## Current status
-Built on synthetic data: UI polish v0.8 (StatusLabel, SourceTag, sortable queue, Overview, severity alerts, user menu), slice 0 foundation, slice 1 M5 affidavit diff (P-3), slice 2 M6 signatures/stamp/UDIN (P-4, P-18). All planted cases are detected on the synthetic test sets (no accuracy percentages are claimed). Everything else is planned.
+Built on synthetic data: slice A (B-28 scan fallback with reason codes SCAN_IMAGE_ONLY, OCR_LOW_CONFIDENCE, OCR_UNAVAILABLE, DOC_UNREADABLE; B-31 UI fixes), UI polish v0.8 (StatusLabel, SourceTag, sortable queue, Overview, severity alerts, user menu), slice 0 foundation, slice 1 M5 affidavit diff (P-3), slice 2 M6 signatures/stamp/UDIN (P-4, P-18). All planted cases are detected on the synthetic test sets (no accuracy percentages are claimed). Everything else is planned.
 
 ## Build order for later slices
 1. Intake + vault (P-19).

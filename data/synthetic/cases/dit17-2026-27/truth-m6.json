@@ -1,0 +1,39 @@
+{
+  "_synthetic": "SYNTHETIC FIXTURE. Invented values for the SATYA-EoA demo and tests. Not a real institution, person, application or document.",
+  "case": "dt17-2026-27-m6-clean",
+  "profile": 17,
+  "variant": "scan_mixed",
+  "control": false,
+  "timeline": {
+    "application": "2026-11-10",
+    "stamp_issued": "2026-11-11T11:05:00+05:30",
+    "notarised": "2026-11-12",
+    "issuer_dsc": "2026-11-13T10:15:00+05:30",
+    "mark": null,
+    "uploader_dsc": "2026-11-13T16:30:00+05:30",
+    "uploaded": "2026-11-13T16:40:00+05:30"
+  },
+  "expected_flags": [],
+  "expected_checks": [],
+  "expected_document_labels": {
+    "doc_NHD5FQBT6QP57QBF3DPBV505A7": "manual_review_required"
+  },
+  "printed": {
+    "stamp.certificate_no": "IN-TN91726111004234Q",
+    "stamp.second_party": "AICTE NEW DELHI",
+    "stamp.duty": 100,
+    "stamp.issued": "2026-11-11",
+    "notary.date": "2026-11-12",
+    "notary.valid_till": "2027-12-31",
+    "mark.date": null,
+    "udin": "26991719GYSYYG7628",
+    "udin.membership_no": "991719"
+  },
+  "scan": {
+    "kind": "scan_mixed",
+    "dpi": 150,
+    "skew_deg": 0.4,
+    "noise": 0.0,
+    "blur": 0.0
+  }
+}

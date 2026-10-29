@@ -16,7 +16,7 @@
   border: 1px solid var(--badge-neutral-border);
   border-radius: 6px;
   background: var(--badge-neutral-bg);
-  color: #374151;
+  color: var(--th-fg);
   font-family: var(--font-sans);
   font-size: 0.75rem;
   font-weight: 500;

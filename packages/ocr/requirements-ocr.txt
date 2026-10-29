@@ -1,0 +1,6 @@
+# The "ocr" dependency group: the real engine, installed only when the image is built with WITH_OCR=1.
+# Kept out of the uv workspace lock because paddlex pins pyyaml==6.0.2 (the workspace pins 6.0.3);
+# installing these after `uv sync` is harmless (pyyaml 6.0.2 is API compatible).
+# Licences: paddleocr 3.7.0 Apache-2.0, paddlepaddle 3.3.1 Apache-2.0, paddlex 3.7.2 Apache-2.0.
+paddlepaddle==3.3.1
+paddleocr==3.7.0

@@ -6,10 +6,13 @@ spec §2.6.4).
 """
 
 import io
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any
 
 import pdfplumber
+
+from satya_ocr.model import OcrLayer
 
 STRIKE_MIN = 0.3  # a strike line crosses a glyph between 30 % and 80 % of its height (from the top)
 STRIKE_MAX = 0.8
@@ -117,6 +120,7 @@ class Page:
 class Extracted:
     pages: list[Page]
     text_layer_pages: int
+    ocr_pages: dict[int, float] = field(default_factory=dict)  # page number -> mean OCR confidence
 
     @property
     def page_count(self) -> int:
@@ -164,13 +168,25 @@ def _lines(page_no: int, words: list[Word]) -> list[Line]:
     return lines
 
 
-def extract(data: bytes) -> Extracted:
+def _ocr_words(layer: OcrLayer) -> list[Word]:
+    """OCR words as extractor words (no strike-through information on a scan)."""
+    return [
+        Word(w.text, w.text, Box(w.x0, w.top, w.x1, w.bottom), 0)
+        for w in layer.words
+        if w.text.strip()
+    ]
+
+
+def extract(data: bytes, ocr: Mapping[int, OcrLayer] | None = None) -> Extracted:
+    """Words, lines and ruled tables per page. Pages with no text layer take their words from the
+    OCR layer when one is given; tables are not read from OCR pages (no ruled-line geometry)."""
     try:
         pdf = pdfplumber.open(io.BytesIO(data))
     except Exception as exc:  # pdfminer raises several types for broken files
         raise ExtractionError("not a readable PDF") from exc
     pages: list[Page] = []
     text_pages = 0
+    ocr_pages: dict[int, float] = {}
     with pdf:
         for number, page in enumerate(pdf.pages, start=1):
             found = page.find_tables(table_settings=TABLE_SETTINGS)
@@ -188,6 +204,10 @@ def extract(data: bytes) -> Extracted:
                 struck = [_is_struck(c, strikes) for c in chars]
                 kept = "".join(c["text"] for c, s in zip(chars, struck, strict=True) if not s)
                 words.append(Word(kept, w["text"], box, sum(struck)))
+            if not words and not found and ocr and number in ocr:
+                words = _ocr_words(ocr[number])
+                if words:
+                    ocr_pages[number] = ocr[number].mean_confidence
             if words or found:
                 text_pages += 1
             tables = [
@@ -197,4 +217,4 @@ def extract(data: bytes) -> Extracted:
             pages.append(
                 Page(number, float(page.width), float(page.height), _lines(number, words), tables)
             )
-    return Extracted(pages=pages, text_layer_pages=text_pages)
+    return Extracted(pages=pages, text_layer_pages=text_pages, ocr_pages=ocr_pages)

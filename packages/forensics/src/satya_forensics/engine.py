@@ -32,6 +32,7 @@ from satya_forensics.textlayer import Page, find_marks, read_pages
 from satya_forensics.udin import evaluate as evaluate_udin
 from satya_forensics.udin import read_accounts
 from satya_forensics.udin import source_check as udin_source_check
+from satya_ocr.model import DocumentRead
 
 ENGINE_VERSION = "0.1.0"
 AFFIDAVIT_SLOT = "annex2.1(i) affidavit"
@@ -50,6 +51,7 @@ class M6Input:
     revocation: RevocationSource
     registry: Registry
     checked_at: str  # RFC 3339; when this run happened
+    reads: dict[str, DocumentRead] | None = None  # doc_id -> satya_ocr read (scans, unreadable)
 
 
 @dataclass
@@ -73,6 +75,36 @@ class M6Result:
     flags: list[dict[str, Any]]
     engine_version: str = ENGINE_VERSION
     ruleset_version: str = ""
+
+
+def scan_check(read: DocumentRead) -> dict[str, Any]:
+    """The one check a scan or an unreadable file gets from M3: always manual review."""
+    return {
+        "kind": "format",
+        "outcome": "manual_review_required",
+        "reason_code": read.reason_code or "SCAN_IMAGE_ONLY",
+        "check_ref": f"m3:OCR-READ:{read.variant}",
+    }
+
+
+def _blocked_result(doc: dict[str, Any], read: DocumentRead) -> DocumentResult:
+    """Nothing can be decided safely: no signature or text checks are run on the file."""
+    return DocumentResult(
+        doc_id=doc["doc_id"],
+        slot=doc["slot"],
+        title=doc.get("title", doc["slot"]),
+        format_type=doc.get("format_type", "E"),
+        verification={
+            "doc_id": doc["doc_id"],
+            "label": "manual_review_required",
+            "decided_by": "system",
+            "checks": [scan_check(read)],
+        },
+        issuer_sig=None,
+        uploader_sig=None,
+        source={"channel": "pdf-signature", "adapter_mode": "offline"},
+        response_ref=None,
+    )
 
 
 def signatory_token(snapshot: dict[str, Any], key: bytes) -> str | None:
@@ -175,7 +207,11 @@ def run(inp: M6Input) -> M6Result:
         pdf = inp.files.get(doc["doc_id"])
         if pdf is None:
             continue
-        pages = read_pages(pdf)
+        read = inp.reads.get(doc["doc_id"]) if inp.reads else None
+        if read is not None and read.blocked:
+            documents.append(_blocked_result(doc, read))
+            continue
+        pages = read_pages(pdf, read.layers() if read else None)
         slot = doc["slot"]
         report = inspect(
             pdf, pages, find_marks(pages), sig_ctx, external=doc.get("format_type") == "E"
@@ -194,6 +230,8 @@ def run(inp: M6Input) -> M6Result:
             )
             ctx.checks += checks
             ctx.flags += flags
+        if read is not None and read.needs_review:
+            ctx.checks.append(scan_check(read))
         if slot == AFFIDAVIT_SLOT:
             affidavit_section = _affidavit(ctx, inp)
         elif slot == ACCOUNTS_SLOT:
@@ -301,7 +339,7 @@ def _affidavit(ctx: DocContext, inp: M6Input) -> dict[str, Any]:
         inp.registry,
     )
     stamp_outcomes = []
-    for finding in result.findings:
+    for finding in [*result.findings, *([result.ocr_match] if result.ocr_match else [])]:
         check, flag = _finding_items(finding, ctx, ruleset)
         ctx.checks.append(check)
         if flag:

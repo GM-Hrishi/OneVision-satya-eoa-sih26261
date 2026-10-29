@@ -421,7 +421,8 @@
       "second_party": "ई-स्टाम्प पर द्वितीय पक्ष परिषद नहीं है",
       "duty_low": "स्टाम्प शुल्क ₹100 से कम",
       "not_e_stamp": "ई-स्टाम्प प्रमाणपत्र पर नहीं",
-      "certificate_reused": "ई-स्टाम्प प्रमाणपत्र संख्या किसी अन्य फ़ाइलिंग पर प्रयुक्त"
+      "certificate_reused": "ई-स्टाम्प प्रमाणपत्र संख्या किसी अन्य फ़ाइलिंग पर प्रयुक्त",
+      "ocr_match": "Stamp number read by OCR matches another case. Needs human verification."
     },
     "notary": {
       "seal_expired": "नोटरीकरण तिथि से पहले नोटरी मुहर की वैधता समाप्त"
@@ -543,7 +544,13 @@
       "UDIN_UNIQUE": "UDIN किसी अन्य फ़ाइलिंग पर नहीं मिला",
       "UDIN_REUSED": "UDIN पहले से किसी अन्य फ़ाइलिंग पर",
       "SRC_NO_CHANNEL": "जारी करने वाले स्रोत तक कोई स्वचालित माध्यम नहीं; मैनुअल सत्यापन कार्य आवश्यक",
-      "SRC_NO_IDENTIFIER": "जाँच के लिए कोई पहचान संख्या छपी नहीं; मैनुअल सत्यापन कार्य आवश्यक"
+      "SRC_NO_IDENTIFIER": "जाँच के लिए कोई पहचान संख्या छपी नहीं; मैनुअल सत्यापन कार्य आवश्यक",
+      "SCAN_IMAGE_ONLY": "Scanned file, no digital signature; an official must verify it",
+      "OCR_LOW_CONFIDENCE": "Scan could not be read reliably by OCR",
+      "OCR_UNAVAILABLE": "Scan could not be read; OCR is not available",
+      "DOC_UNREADABLE": "File could not be opened or has no readable pages",
+      "SRC_READ_BY_OCR": "Identifier was read by OCR; confirm it against the document before relying on the source answer",
+      "STAMP_NO_OCR_MATCH": "Stamp number read by OCR matches another case; needs human verification"
     },
     "evidencePage": "पृष्ठ {page}",
     "noEvidence": "पूरा दस्तावेज़",
@@ -660,7 +667,7 @@
       "manualTask": "Manual verification task open.",
       "chainSource": "हस्ताक्षर श्रृंखला: ऑफ़लाइन जाँच",
       "tasksHeading": "Manual verification tasks",
-      "task": "{title}: no source answered ({reason}). Verify by hand.",
+      "task": "{title}: {reason}. Verify by hand.",
       "mockNote": "इस पृष्ठ के स्रोत उत्तर अनुकरणीय सेवाओं से आते हैं और अनुकरण स्रोत टैग रखते हैं। SHCIL, ICAI या CCA से कोई संपर्क नहीं है।"
     },
     "upload": {
@@ -781,6 +788,29 @@
       "actionAria": "आवेदन {aid} के लिए {action}",
       "railLabel": "नवीनतम अलर्ट",
       "viewAll": "सभी अलर्ट देखें ({count} अपठित)"
+    },
+    "ocr": {
+      "heading": "Reading of the file",
+      "scanPage": "Page {page}: scanned page. Text read by OCR (confidence {confidence}%).",
+      "scanPageNotRead": "Page {page}: scanned page. Not read by OCR.",
+      "scanPageEmpty": "Page {page}: scanned page. OCR found no text.",
+      "nativePage": "Page {page}: text layer.",
+      "skippedPage": "Page {page}: skipped, beyond the page limit.",
+      "advisory": "Text read by OCR is advisory. Findings that rest on it are preliminary indicators and need human verification.",
+      "noRegion": "No region is shown for this finding because OCR gave no position for the text.",
+      "readByOcr": "Read by OCR",
+      "why": {
+        "scan_read": "This file is a scan. {count, plural, one {Page {pages} was} other {Pages {pages} were}} read by OCR (confidence {confidence}%). A scan carries no digital signature, so an official must verify it.",
+        "scan_not_attempted": "This file is a scan and was not read by OCR. An official must read it.",
+        "scan_timeout": "This file is a scan and OCR did not finish in the time allowed. An official must read it.",
+        "low_confidence": "This file is a scan and the text read by OCR is not reliable (confidence {confidence}%, needs {threshold}%). An official must read it.",
+        "unavailable": "This file is a scan and the OCR engine is not available on this system. An official must read it.",
+        "encrypted": "This file is password protected and cannot be opened. Ask the institution for an unprotected copy.",
+        "corrupt": "This file is damaged and cannot be opened. Ask the institution to upload it again.",
+        "no_pages": "This file has no pages. Ask the institution to upload it again.",
+        "blank": "Every page of this file is blank. Ask the institution to upload it again.",
+        "too_large": "This file is too large to read automatically (more than {max_pages} pages). An official must read it."
+      }
     }
   },
   "status": {
@@ -832,7 +862,11 @@
     "ageDays": "{days, plural, =0 {आज} one {1 दिन} other {# दिन}}",
     "reason": {
       "SRC_NO_CHANNEL": "कोई स्वचालित चैनल नहीं",
-      "SRC_NO_IDENTIFIER": "खोजने के लिए कोई पहचान नहीं"
+      "SRC_NO_IDENTIFIER": "खोजने के लिए कोई पहचान नहीं",
+      "SCAN_IMAGE_ONLY": "Scanned file",
+      "OCR_LOW_CONFIDENCE": "Scan not readable by OCR",
+      "OCR_UNAVAILABLE": "OCR not available",
+      "DOC_UNREADABLE": "File unreadable"
     },
     "expiringHeading": "समाप्त होते प्रमाणपत्र",
     "withinDays": "{days} दिनों के भीतर",

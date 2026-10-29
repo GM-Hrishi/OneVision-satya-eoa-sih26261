@@ -8,7 +8,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from satya_forensics.synth.corpus import DEMO_CASES, check_all, write_all
+from satya_forensics.synth.corpus import DEMO_CASES, SCAN_CASES, check_all, write_all
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -21,7 +21,8 @@ def main(argv: list[str] | None = None) -> int:
         if stale:
             print("stale synthetic files (run `make synth`):", *stale, sep="\n  ")
             return 1
-        print(f"synthetic demo cases, registers and test PKI up to date ({len(DEMO_CASES)} cases)")
+        total = len(DEMO_CASES) + len(SCAN_CASES)
+        print(f"synthetic demo cases, registers and test PKI up to date ({total} cases)")
         return 0
     for path in write_all(args.out):
         print(f"wrote {path}")

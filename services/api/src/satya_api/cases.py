@@ -17,6 +17,7 @@ import asyncio
 import json
 import logging
 import re
+import threading
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -33,6 +34,9 @@ from satya_forensics.signatures import TrustStore
 from satya_forensics.stamp import certificate_number
 from satya_forensics.textlayer import read_pages
 from satya_forensics.udin import fy_label, read_accounts
+from satya_ocr import DocumentRead, OcrEngine, OcrSettings, read_document
+from satya_ocr.model import from_dict as read_from_dict
+from satya_ocr.model import to_dict as read_to_dict
 from satya_shared_types import validator
 
 log = logging.getLogger("satya.cases")
@@ -87,6 +91,9 @@ class FixtureCaseRepository:
         concurrency: int = 1,
         pki_dir: Path | None = None,
         registry_file: Path | None = None,
+        ocr_engine: OcrEngine | None = None,
+        ocr_settings: OcrSettings | None = None,
+        ocr_cache_dir: Path | None = None,
     ) -> None:
         self.root = root
         self.token_key = token_key
@@ -102,6 +109,38 @@ class FixtureCaseRepository:
         self._registry: Registry | None = None
         # Slice D: documents uploaded through the workbench replace the seeded file of a slot.
         self._overlay: dict[tuple[str, str], dict[str, Any]] = {}
+        # B-28: how each file can be read (text layer, OCR, or not at all), cached by SHA-256.
+        self.ocr_engine = ocr_engine
+        self.ocr_settings = ocr_settings or OcrSettings()
+        self._reads: dict[str, DocumentRead] = {}
+        self._ocr_gate = threading.Semaphore(1)  # OCR is expensive: one document at a time
+        self.ocr_cache_dir = ocr_cache_dir  # the stored OCR text layers, one JSON per file hash
+
+    def read_of(self, data: bytes) -> DocumentRead:
+        """Classify and, if needed, OCR a file. Never raises; cached by content hash."""
+        sha = sha256_hex(data)
+        if sha not in self._reads:
+            with self._ocr_gate:
+                if sha not in self._reads:
+                    self._reads[sha] = self._cached_read(sha, data)
+        return self._reads[sha]
+
+    def _cached_read(self, sha: str, data: bytes) -> DocumentRead:
+        path = self.ocr_cache_dir / f"{sha}.json" if self.ocr_cache_dir else None
+        if path is not None and path.is_file():
+            try:
+                return read_from_dict(json.loads(path.read_text("utf-8")))
+            except (OSError, ValueError, KeyError, TypeError):
+                log.warning("ocr cache entry unreadable", extra={"sha256": sha})
+        read = read_document(data, self.ocr_settings, self.ocr_engine)
+        # Keep the OCR text layer only when OCR ran; "engine missing" must be retried later.
+        if path is not None and any(p.ocr for p in read.pages):
+            try:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(json.dumps(read_to_dict(read)), "utf-8")
+            except OSError:
+                log.warning("ocr cache entry not written", extra={"sha256": sha})
+        return read
 
     def set_upload(self, case_id: str, slot: str, entry: dict[str, Any]) -> None:
         """Make `entry` (doc_id, sha256, bytes, uploaded_at, upload_path) the file of a slot."""
@@ -221,8 +260,17 @@ class FixtureCaseRepository:
         if key not in self._cache:
             async with self._gate:
                 if key not in self._cache:
+                    read = await asyncio.to_thread(self.read_of, pdf)
                     result = await asyncio.to_thread(
-                        run, CaseInput(case, snapshot, pdf, self.token_key)
+                        run,
+                        CaseInput(
+                            case,
+                            snapshot,
+                            pdf,
+                            self.token_key,
+                            ocr=read.layers() or None,
+                            unreadable_pages=read.page_count if read.blocked else None,
+                        ),
                     )
                     self._cache[key] = result.diff
         return self._cache[key]
@@ -252,9 +300,13 @@ class FixtureCaseRepository:
                 data = files.get(doc["doc_id"])
                 if data is None:
                     continue
-                pages = read_pages(data)
+                read = self.read_of(data)
+                if read.blocked:
+                    continue
+                pages = read_pages(data, read.layers() or None)
                 if doc["slot"] == AFFIDAVIT_SLOT:
-                    number = certificate_number(pages)
+                    # O-23: only numbers from a native text layer enter the reuse register.
+                    number = certificate_number([p for p in pages if not p.from_ocr])
                     if number:
                         registry.add_stamp(number, case["application_id"], case["ay"])
                 elif doc["slot"] == ACCOUNTS_SLOT:
@@ -279,6 +331,7 @@ class FixtureCaseRepository:
                 revocation=crls,
                 registry=self._registry,
                 checked_at=checked_at,
+                reads={doc_id: self.read_of(data) for doc_id, data in files.items()},
             )
         )
         return result, checked_at

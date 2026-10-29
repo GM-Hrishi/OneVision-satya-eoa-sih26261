@@ -43,7 +43,7 @@ const check = (ok, msg) => { console.log(`${ok ? "PASS" : "FAIL"} ${msg}`); if (
   check((await page.locator("tbody tr").count()) >= 1, "label and status filters from the URL apply");
   await page.goto(`${BASE}/rb-queue?band=nonsense&sort=drop;table&dir=sideways`);
   await page.waitForSelector("#case-list", { timeout: 30000 });
-  check((await page.locator("tbody tr").count()) === 5, "unknown filter and sort values are ignored");
+  check((await page.locator("tbody tr").count()) === 8, "unknown filter and sort values are ignored");
 
   // Sortable headers: plain text plus indicator, cycle ascending, descending, ascending.
   await page.goto(`${BASE}/rb-queue`);

@@ -8,12 +8,12 @@ from dataclasses import dataclass
 from typing import Any
 
 from satya_affidavit.diff import DeclMatch, diff_declarations
-from satya_affidavit.extract import Box, extract
-from satya_affidavit.flags import TEXT_LAYER_CONFIDENCE, FlagFactory
+from satya_affidavit.extract import Box, Extracted, extract
+from satya_affidavit.flags import TEXT_LAYER_CONFIDENCE, FlagFactory, confidence_band
 from satya_affidavit.ids import sha256_hex, stable_id
 from satya_affidavit.normalise import clean, parse_date, squash, words_of
 from satya_affidavit.parse import SwornDoc, parse
-from satya_affidavit.reconcile import reconcile
+from satya_affidavit.reconcile import Reconciled, reconcile
 from satya_affidavit.rules import load_ruleset
 from satya_affidavit.template import (
     CORE_COUNT,
@@ -23,6 +23,7 @@ from satya_affidavit.template import (
     load_template,
     render_draft,
 )
+from satya_ocr.model import OcrLayer
 
 ENGINE_VERSION = "0.1.0"
 DRAFT_LABEL = "Portal affidavit draft for this AID and AY"
@@ -34,6 +35,37 @@ PENDING = [
 ]
 
 
+OCR_PENDING = [{"section": "ocr", "module": "M3", "promise": "P-2"}]
+
+
+def _ocr_mean(extracted: Any) -> float | None:
+    if not extracted.ocr_pages:
+        return None
+    return float(round(sum(extracted.ocr_pages.values()) / len(extracted.ocr_pages), 3))
+
+
+def _ocr_flag(flag: dict[str, Any], ocr_pages: dict[int, float]) -> dict[str, Any]:
+    """A finding that rests on OCR text: advisory, preliminary, never above manual review.
+
+    A flag with no page (header fields) is read from the first OCR-affected page's confidence."""
+    page = flag.get("page")
+    confidence = ocr_pages.get(page) if page is not None else None
+    if confidence is None:
+        if page is not None and page not in ocr_pages:
+            return flag  # the finding rests on the native text layer of another page
+        confidence = min(ocr_pages.values())
+    source = dict(flag["extracted_source"])
+    source["doc_label"] = f"{source['doc_label']}, read by OCR ({round(confidence * 100)}%)"
+    return {
+        **flag,
+        "extracted_source": source,
+        "confidence": round(min(flag["confidence"], confidence), 3),
+        "confidence_band": confidence_band(min(flag["confidence"], confidence)),
+        "preliminary_indicator": True,
+        "label": "manual_review_required",
+    }
+
+
 @dataclass(frozen=True)
 class CaseInput:
     """One case as the gateway holds it: case metadata (incl. affidavit_draft), snapshot, PDF."""
@@ -42,6 +74,8 @@ class CaseInput:
     snapshot: dict[str, Any]
     pdf: bytes
     token_key: bytes
+    ocr: dict[int, OcrLayer] | None = None  # OCR text layers of image-only pages (satya_ocr)
+    unreadable_pages: int | None = None  # set when satya_ocr blocked the file: nothing is extracted
 
 
 @dataclass
@@ -178,7 +212,7 @@ def run(inp: CaseInput) -> EngineResult:
     sha = sha256_hex(inp.pdf)
     doc_id = stable_id("doc", sha)
     factory = FlagFactory(ruleset, doc_id, sha)
-    extracted = extract(inp.pdf)
+    extracted = Extracted([], 0) if inp.unreadable_pages is not None else extract(inp.pdf, inp.ocr)
     vocabulary: set[str] = set()
     for decl in draft.declarations:
         vocabulary |= set(words_of(decl.display))
@@ -214,7 +248,7 @@ def run(inp: CaseInput) -> EngineResult:
             sha,
             ruleset.ref,
             expected_block,
-            extracted.page_count,
+            inp.unreadable_pages if inp.unreadable_pages is not None else extracted.page_count,
             template.date_order,
         )
         return EngineResult(diff, None, draft)
@@ -250,8 +284,11 @@ def run(inp: CaseInput) -> EngineResult:
         flags.append(flag)
     flags += _header_flags(doc, draft, factory)
     flags += _decl_flags(matches, doc, factory)
-    tables = reconcile(doc, draft, factory, inp.token_key)
+    # Tables need ruled-line geometry that a scan does not give; they are not read from OCR pages.
+    tables = Reconciled() if extracted.ocr_pages else reconcile(doc, draft, factory, inp.token_key)
     flags += tables.flags
+    if extracted.ocr_pages:
+        flags = [_ocr_flag(f, extracted.ocr_pages) for f in flags]
 
     template_match = doc.heading == template.heading and doc.ay in template.valid_ays
     options = []
@@ -291,8 +328,8 @@ def run(inp: CaseInput) -> EngineResult:
             "sha256": sha,
             "template_match": template_match,
             "template_detected": template.template_id if template_match else None,
-            "text_source": "text_layer",
-            "ocr_mean_confidence": None,
+            "text_source": "ocr" if extracted.ocr_pages else "text_layer",
+            "ocr_mean_confidence": _ocr_mean(extracted),
             "issuer_sig": None,
             "uploader_sig": None,
             "category_list_found": found or None,
@@ -304,7 +341,7 @@ def run(inp: CaseInput) -> EngineResult:
                     "text": clean(d.text) or "(empty)",
                     "page": d.page,
                     "region": doc.pages[d.page].region(d.box),
-                    "ocr_confidence": None,
+                    "ocr_confidence": extracted.ocr_pages.get(d.page),
                 }
                 for d in doc.declarations
             ],
@@ -334,7 +371,7 @@ def run(inp: CaseInput) -> EngineResult:
         "tables": tables.tables,
         "stamp": None,
         "chronology": None,
-        "pending": PENDING,
+        "pending": [*PENDING, *OCR_PENDING] if extracted.ocr_pages else PENDING,
         "flags": flags,
     }
     return EngineResult(diff, doc, draft)

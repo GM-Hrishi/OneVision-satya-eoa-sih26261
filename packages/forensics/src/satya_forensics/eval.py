@@ -37,6 +37,18 @@ EVAL_TOKEN_KEY = b"satya-eval-token-key-synthetic-only-0001"
 CHECKED_AT = "2026-11-25T10:00:00+05:30"
 
 
+# OCR-dependent advisory notes are excluded from precision/recall because the metrics corpus has
+# no OCR text; they are covered by unit tests instead (services/api/tests/test_ocr_fallback.py).
+# Only advisory notes (info severity, preliminary indicator) may be listed here; a test enforces it.
+ADVISORY_NOTES_WITHOUT_PLANTED_CASES: frozenset[str] = frozenset({"STAMP-OCR-MATCH"})
+
+
+def scored_rule_ids(rule_ids: Iterable[str] | None = None) -> list[str]:
+    """Rules that enter the metrics: every rule except the named advisory notes."""
+    ids = list(load_ruleset().rules) if rule_ids is None else list(rule_ids)
+    return [r for r in ids if r not in ADVISORY_NOTES_WITHOUT_PLANTED_CASES]
+
+
 @dataclass
 class RuleScore:
     tp: int = 0
@@ -84,7 +96,7 @@ class Report:
             f"{self.controls / max(self.cases, 1):.0%})",
             f"{'rule':<22} {'TP':>4} {'FP':>4} {'FN':>4} {'precision':>9} {'recall':>7} {'FFR':>6}",
         ]
-        for rule_id in load_ruleset().rules:
+        for rule_id in scored_rule_ids():
             s = self.rules[rule_id]
             lines.append(
                 f"{rule_id:<22} {s.tp:>4} {s.fp:>4} {s.fn:>4} {s.precision:>9.3f} "
@@ -156,7 +168,7 @@ def _score_extraction(report: Report, case: M6Case) -> None:
 
 def evaluate(cases: Iterable[M6Case], name: str) -> Report:
     report = Report(name)
-    rule_ids = list(load_ruleset().rules)
+    rule_ids = scored_rule_ids()
     for case in cases:
         report.cases += 1
         control = bool(case.truth["control"])

@@ -6,12 +6,21 @@ they serve is the signed one: M5 and M6 read the same bytes (same SHA-256, same 
 
 import json
 from collections.abc import Iterator
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
+from satya_affidavit.ids import sha256_hex, stable_id
 from satya_affidavit.synth.institutions import PROFILES
 from satya_forensics import pki
-from satya_forensics.synth.variants import VARIANTS, M6Case, build_case, prior_filings
+from satya_forensics.synth.variants import (
+    AFFIDAVIT_FILE,
+    VARIANTS,
+    M6Case,
+    build_case,
+    prior_filings,
+)
+from satya_ocr.synth import SCAN_VARIANTS, rasterise
 
 # (directory, profile, M6 variant, demo story). Slice D (demo flow) adds three planted cases.
 DEMO_CASES: tuple[tuple[str, int, str, bool], ...] = (
@@ -20,6 +29,13 @@ DEMO_CASES: tuple[tuple[str, int, str, bool], ...] = (
     ("dit11-2026-27", 11, "stamp_reused", False),  # e-stamp number reused from a prior filing
     ("dce07-2026-27", 7, "udin_length", False),  # UDIN structure problem
     ("dce09-2026-27", 9, "sig_expired", False),  # issuer certificate expired at signing
+)
+# B-28 scan cases: a clean affidavit rasterised (OCR reads it), a noisy low quality scan (falls back
+# to OCR_LOW_CONFIDENCE) and a mixed file (page 2 is an image, the others keep their text layer).
+SCAN_CASES: tuple[tuple[str, int, str], ...] = (
+    ("dit13-2026-27", 13, "scan_clean"),
+    ("dce15-2026-27", 15, "scan_noisy"),
+    ("dit17-2026-27", 17, "scan_mixed"),
 )
 REGISTRY_FILE = "prior-filings.json"
 PKI_FILES = ("satya-test-root.pem", "satya-test-sub-ca-1.pem", "satya-test-sub-ca-1.crl")
@@ -47,15 +63,39 @@ def case_files(m6: M6Case) -> dict[str, bytes]:
     }
 
 
+def scan_case(profile: int, kind: str) -> M6Case:
+    """A clean synthetic case whose sworn affidavit is replaced by a scan of itself (Pillow)."""
+    m6 = build_case(profile, "clean")
+    params = dict(SCAN_VARIANTS[kind])
+    only = {2} if kind == "scan_mixed" else None
+    scan = rasterise(m6.files[AFFIDAVIT_FILE], only_pages=only, **params)  # type: ignore[arg-type]
+    old = m6.case["documents"][0]
+    new = {**old, "sha256": sha256_hex(scan), "bytes": len(scan)}
+    new["doc_id"] = stable_id("doc", new["sha256"])
+    m6.case["documents"][0] = new
+    files = {**m6.files, AFFIDAVIT_FILE: scan}
+    truth = json.loads(json.dumps(m6.truth))
+    truth["variant"] = kind
+    truth["control"] = False
+    truth["scan"] = {"kind": kind, **{k: v for k, v in params.items() if k != "seed"}}
+    # The scan has no signature and no M6 finding is planted: only the reading outcome is expected.
+    truth["expected_flags"] = []
+    truth["expected_checks"] = []
+    truth["expected_document_labels"] = {new["doc_id"]: "manual_review_required"}
+    return replace(m6, files=files, variant=kind, truth=truth)
+
+
 def demo_cases() -> list[M6Case]:
-    return [build_case(p, variant, demo=demo) for _, p, variant, demo in DEMO_CASES]
+    base = [build_case(p, variant, demo=demo) for _, p, variant, demo in DEMO_CASES]
+    return base + [scan_case(p, kind) for _, p, kind in SCAN_CASES]
 
 
 def all_files() -> dict[str, bytes]:
     """Every generated file under data/synthetic, keyed by its path relative to that folder."""
     out: dict[str, bytes] = {}
     specs: list[pki.SignerSpec] = []
-    for (directory, *_), m6 in zip(DEMO_CASES, demo_cases(), strict=True):
+    directories = [d for d, *_ in DEMO_CASES] + [d for d, *_ in SCAN_CASES]
+    for directory, m6 in zip(directories, demo_cases(), strict=True):
         for name, data in case_files(m6).items():
             out[f"cases/{directory}/{name}"] = data
         specs += m6.crl_specs

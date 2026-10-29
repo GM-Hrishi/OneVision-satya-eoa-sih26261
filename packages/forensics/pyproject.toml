@@ -9,11 +9,13 @@ dependencies = [
     "pdfplumber==0.11.10",
     "pyyaml==6.0.3",
     "satya-affidavit",
+    "satya-ocr",
     "satya-shared-types",
 ]
 
 [tool.uv.sources]
 satya-shared-types = { workspace = true }
+satya-ocr = { workspace = true }
 satya-affidavit = { workspace = true }
 
 [build-system]

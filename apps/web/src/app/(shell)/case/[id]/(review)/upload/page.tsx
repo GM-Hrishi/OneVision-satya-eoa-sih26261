@@ -4,10 +4,10 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { CaseTabs } from "@/components/case/CaseTabs";
 import { UploadForms } from "@/components/demo/UploadForms";
-import diff from "@/components/diff/DiffView.module.css";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { queue } from "@/lib/demo";
 import { requireRole } from "@/lib/session";
+import { Note } from "@/components/ui/Note";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -26,7 +26,7 @@ export default async function UploadPage({ params }: Props) {
   return (
     <>
       <PageHeader title={t("upload.heading")}>
-        <p className={diff.advisory}>{td("advisory")}</p>
+        <Note>{td("advisory")}</Note>
         <CaseTabs caseId={id} current="upload" />
       </PageHeader>
       <p>{t("upload.intro")}</p>

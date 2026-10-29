@@ -32,7 +32,11 @@ export async function AppShell({ children, path = "/" }: { children: ReactNode; 
   const region = session?.user.regions[0];
   const regionLabel = region === "southern" || region === "national" ? t("regionName", { region: tRegions(region) }) : tRegions("none");
   const roleLabel = role ? tRoles(role) : "";
-  const buildDate = process.env.SATYA_BUILD_DATE ?? new Date().toISOString().slice(0, 10);
+  const built = process.env.SATYA_BUILD_DATE ?? new Date().toISOString().slice(0, 10);
+  // Build metadata as e.g. "27 Oct 2026" (UTC, so the day does not move with the server's zone).
+  const buildDate = new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }).format(
+    new Date(`${built}T00:00:00Z`),
+  );
 
   return (
     <div className={styles.frame}>

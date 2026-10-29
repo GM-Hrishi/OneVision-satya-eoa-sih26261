@@ -1,0 +1,17 @@
+[project]
+name = "satya-ocr"
+version = "0.1.0"
+description = "SATYA-EoA M3: page classifier, hardening and OCR scan fallback (B-28). Advisory; synthetic data only."
+requires-python = ">=3.12"
+dependencies = [
+    "pikepdf==10.17.0",
+    "pypdfium2==5.14.0",
+    "pillow==13.0.0",
+]
+
+[build-system]
+requires = ["hatchling==1.32.4"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/satya_ocr"]

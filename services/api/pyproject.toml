@@ -14,6 +14,7 @@ dependencies = [
     "redis==6.4.0",
     "satya-affidavit",
     "satya-forensics",
+    "satya-ocr",
     "satya-shared-types",
     "sqlalchemy[asyncio]==2.1.6",
     "uvicorn[standard]==0.54.0",
@@ -23,6 +24,7 @@ dependencies = [
 satya-shared-types = { workspace = true }
 satya-affidavit = { workspace = true }
 satya-forensics = { workspace = true }
+satya-ocr = { workspace = true }
 
 [build-system]
 requires = ["hatchling==1.32.4"]

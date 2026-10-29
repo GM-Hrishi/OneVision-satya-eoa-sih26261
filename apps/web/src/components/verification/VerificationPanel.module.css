@@ -21,7 +21,7 @@
 
 .docCell {
   text-align: left;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .slot {
@@ -44,7 +44,7 @@
 
 .details summary {
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .details[open] summary {

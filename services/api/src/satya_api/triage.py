@@ -48,6 +48,7 @@ WHY: dict[str, str] = {
     "STAMP-DUTY": "The stamp duty paid is lower than the amount the template requires.",
     "STAMP-INSTRUMENT": "The stamp is on physical paper, so no e-stamp number can be looked up.",
     "STAMP-REUSE": "This e-stamp certificate number was already used on another filing.",
+    "STAMP-OCR-MATCH": "Stamp number read by OCR matches another case. Needs human verification.",
     "NOTARY-EXPIRY": "The notary's seal had expired on the date of notarisation.",
     "UDIN-STRUCT": "The UDIN does not have the expected structure or year.",
     "UDIN-MEMBER": "The membership number inside the UDIN differs from the one printed on the statement.",
@@ -221,10 +222,13 @@ def alerts_for(
                 doc,
             )
         if doc["manual_task"]:
+            read = doc.get("read") or {}
             add(
                 "pending_source",
                 "source_unavailable_task",
-                f"{doc['title']}: no source for this document. Manual verification task open.",
+                f"{doc['title']}: {read['why']} Manual task open."
+                if read.get("reason_code") and read.get("why")
+                else f"{doc['title']}: no source for this document. Manual verification task open.",
                 doc,
             )
     return out

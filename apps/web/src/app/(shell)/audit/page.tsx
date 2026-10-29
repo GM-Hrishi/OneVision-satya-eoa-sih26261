@@ -10,6 +10,7 @@ import { SourceTag } from "@/components/ui/SourceTag";
 import { audit } from "@/lib/demo";
 import { requireSession } from "@/lib/session";
 import { forbidden } from "next/navigation";
+import { Note } from "@/components/ui/Note";
 
 type Props = { searchParams: Promise<{ case?: string }> };
 
@@ -29,7 +30,7 @@ export default async function AuditPage({ searchParams }: Props) {
   return (
     <>
       <PageHeader title={t("audit.heading")}>
-        <p className={diff.advisory}>{t("audit.intro")}</p>
+        <Note>{t("audit.intro")}</Note>
       </PageHeader>
       <div className={styles.chain} data-ok={data.chain.ok} role="status">
         {data.chain.ok

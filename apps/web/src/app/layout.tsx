@@ -1,7 +1,7 @@
-import "@fontsource/public-sans/400.css";
-import "@fontsource/public-sans/500.css";
-import "@fontsource/public-sans/600.css";
-import "@fontsource/public-sans/700.css";
+// Self-hosted fonts (no CDN). Fontsource CSS sets font-display: swap.
+import "@fontsource/noto-sans/400.css";
+import "@fontsource/noto-sans/500.css";
+import "@fontsource/noto-sans/700.css";
 import "@fontsource/public-sans/800.css";
 import "@fontsource/noto-sans-mono/400.css";
 import "@fontsource/noto-sans-mono/700.css";

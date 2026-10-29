@@ -10,6 +10,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { nowMs, rankAlerts, seenKeys } from "@/lib/alerts";
 import { alerts } from "@/lib/demo";
 import { requireRole } from "@/lib/session";
+import { Note } from "@/components/ui/Note";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("demo");
@@ -40,7 +41,7 @@ export default async function AlertsPage() {
   return (
     <>
       <PageHeader title={t("alerts.heading")}>
-        <p className={diff.advisory}>{t("alerts.intro")}</p>
+        <Note>{t("alerts.intro")}</Note>
       </PageHeader>
       {items.length === 0 ? <p>{t("alerts.empty")}</p> : null}
       {group("alerts-unread", t("alerts.unreadHeading", { count: unread.length }), unread)}

@@ -34,5 +34,8 @@ One line per doc. Synthetic data only; advisory only; mock approval portal.
 - [progress/DECISIONS-SLICE-2.md](progress/DECISIONS-SLICE-2.md): slice 2 non-obvious choices.
 - [progress/DEMO-SLICE-PROGRESS.md](progress/DEMO-SLICE-PROGRESS.md): Slice D (demo flow) step table.
 - [progress/DECISIONS-SLICE-D.md](progress/DECISIONS-SLICE-D.md): Slice D non-obvious choices.
+- [progress/OCR-SLICE-PROGRESS.md](progress/OCR-SLICE-PROGRESS.md): Slice A (B-28 OCR scan fallback, B-31 UI fixes) step table.
+- [progress/DECISIONS-OCR-SLICE.md](progress/DECISIONS-OCR-SLICE.md): Slice A non-obvious choices, thresholds, dependencies and licences.
+- [progress/DEFERRED.md](progress/DEFERRED.md): ideas kept out of scope on purpose.
 - [progress/PRE-PUBLIC-CHECK.md](progress/PRE-PUBLIC-CHECK.md): read-only pre-public repository check.
 - [progress/BRANCH-CLEANUP.md](progress/BRANCH-CLEANUP.md): branch and tag cleanup status (if manual steps remain).

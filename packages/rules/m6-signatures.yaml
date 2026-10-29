@@ -197,6 +197,20 @@ rules:
     institution_visible: true
     preliminary_indicator: true
     description: The affidavit is on physical non-judicial paper (or no stamp page is readable); Annexure-2.1(i) specifies e-stamp, and physical paper cannot be verified online.
+  - rule_id: STAMP-OCR-MATCH
+    version: "0.1.0"
+    text_key: stamp.ocr_match
+    aph_clause: "2.3.4b"
+    also_cites: ["decision O-23", "[VERIFY: no APH clause names reuse; one instrument per affidavit]"]
+    check_kind: format
+    reason_code: STAMP_NO_OCR_MATCH
+    pass_code: STAMP_NO_UNIQUE
+    severity: info
+    label: manual_review_required
+    alert: { type: suspected_anomaly, subtype: stamp_chronology }
+    institution_visible: false
+    preliminary_indicator: true
+    description: A certificate number read by OCR matches another filing. OCR can misread digits, so this is a low-trust note and never a reuse finding.
   - rule_id: STAMP-REUSE
     version: "0.1.0"
     text_key: stamp.certificate_reused
