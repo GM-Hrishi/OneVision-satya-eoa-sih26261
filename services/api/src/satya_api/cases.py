@@ -172,14 +172,16 @@ class FixtureCaseRepository:
             self._dirs = dirs
         return self._dirs
 
-    def _read_case(self, case_id: str) -> tuple[Path, dict[str, Any], dict[str, Any]]:
+    def _read_case(
+        self, case_id: str, overlay: bool = True
+    ) -> tuple[Path, dict[str, Any], dict[str, Any]]:
         path = self._index()[case_id]
         try:
             case = json.loads((path / "case.json").read_text("utf-8"))
             snapshot = json.loads((path / "snapshot.json").read_text("utf-8"))
         except (OSError, ValueError) as exc:
             raise CaseError("case files unreadable") from exc
-        for doc in case.get("documents", []):
+        for doc in case.get("documents", []) if overlay else []:
             entry = self._overlay.get((case_id, doc.get("slot", "")))
             if entry:
                 doc.update(entry)

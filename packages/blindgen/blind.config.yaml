@@ -1,0 +1,5 @@
+# Blind test set configuration (synthetic data only). Seeds are fixed so a run is repeatable;
+# the sealed manifest hash in docs/progress/BLIND-REPLAY-PROGRESS.md is recorded before any evaluation.
+seeds: [7301, 7302, 7303]
+applications: 300        # total across all seeds (split evenly)
+clean_fraction_min: 0.4  # at least this share of applications carry no planted anomaly

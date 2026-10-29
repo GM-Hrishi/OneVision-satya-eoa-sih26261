@@ -60,6 +60,21 @@ UPLOADED, CHECKED, SOURCE, TASK, DISPOSED, READ, NOTE = (
 )
 
 
+def flag_record(flag: dict[str, Any]) -> dict[str, Any]:
+    """The part of a flag the ledger keeps for replay (P-11): identity, rule, version, evidence."""
+    return {
+        "flag_id": flag["flag_id"],
+        "doc_id": flag["doc_id"],
+        "rule_id": flag["rule_id"],
+        "rule_version": flag["rule_version"],
+        "check_ref": flag.get("check_ref"),
+        "severity": flag.get("severity"),
+        "label": flag.get("label"),
+        "page": flag.get("page"),
+        "evidence_sha256": flag.get("evidence_sha256"),
+    }
+
+
 class WorkflowError(Exception):
     def __init__(self, code: str) -> None:
         super().__init__(code)
@@ -242,6 +257,7 @@ class Workflow:
             "engine": {
                 "m5": diff.get("engine_version"),
                 "m6": m6.engine_version,
+                "ruleset_m5": diff.get("ruleset_version"),
                 "ruleset_m6": m6.ruleset_version,
             },
         }
@@ -331,6 +347,23 @@ class Workflow:
                 "flags_sha256": hashlib.sha256(
                     json.dumps(sorted(f["flag_id"] for f in view["flags"])).encode()
                 ).hexdigest(),
+                # Replay (P-11): what a later run is compared with. Older entries lack these
+                # fields and read as `unknown`.
+                "rule_pack": f"{view['engine']['ruleset_m5']}+{view['engine']['ruleset_m6']}",
+                "checked_at": view["checked_at"],
+                "doc_hashes": {d["doc_id"]: d["sha256"] for d in view["documents"]},
+                "flags": [flag_record(f) for f in view["flags"]],
+                "source_responses": [
+                    {
+                        "doc_id": d["doc_id"],
+                        "adapter_id": r["source"]["adapter_id"],
+                        "outcome": r["outcome"],
+                        "reason_code": r["reason_code"],
+                        "response_sha256": r["response_sha256"],
+                    }
+                    for d in view["documents"]
+                    for r in d["responses"]
+                ],
                 "advisory": True,
                 "regulatory_effect": "none",
             },

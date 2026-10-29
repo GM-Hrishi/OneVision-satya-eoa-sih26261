@@ -9,7 +9,7 @@ dependencies = []
 package = false
 
 [tool.uv.workspace]
-members = ["services/api", "services/worker", "packages/shared-types/python", "packages/affidavit", "packages/forensics", "packages/ocr"]
+members = ["services/api", "services/worker", "packages/shared-types/python", "packages/affidavit", "packages/forensics", "packages/ocr", "packages/blindgen"]
 
 [dependency-groups]
 dev = [
@@ -34,10 +34,11 @@ select = ["E", "F", "I", "B", "UP", "S", "N", "SIM", "RUF"]
 ignore = ["S101"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["satya_shared_types", "satya_api", "satya_worker", "satya_affidavit", "satya_forensics", "satya_ocr"]
+known-first-party = ["satya_shared_types", "satya_api", "satya_worker", "satya_affidavit", "satya_forensics", "satya_ocr", "satya_blindgen"]
 
 [tool.ruff.lint.per-file-ignores]
 "**/tests/**" = ["S105", "S106", "S311"]
+"packages/blindgen/**" = ["S311", "E501", "RUF001"]
 "**/migrations/**" = ["E501"]
 # Prose-heavy tooling (issue bodies, smoke-test messages); long lines and en dashes are content.
 "infra/scripts/*.py" = ["E501", "RUF001"]

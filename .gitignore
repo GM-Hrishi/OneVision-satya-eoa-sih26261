@@ -49,3 +49,4 @@ infra/caddy/*.crt
 infra/certs/*.pem
 !infra/certs/no-extra-ca.pem
 next-env.d.ts
+data/blind/

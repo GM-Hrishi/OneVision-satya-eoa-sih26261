@@ -44,6 +44,9 @@ class Settings(BaseSettings):
     # are read from SATYA_OCR_* by satya_ocr.OcrSettings.
     ocr_engine: str = "paddle"
     ocr_rate_limit: str = "10/minute"
+    # Replay (P-11): archived rule packs, one folder per pack id. Empty = packages/rules/archive.
+    rules_archive_dir: str = ""
+    replay_rate_limit: str = "10/minute"
     # Run the M5/M6 checks of every demo case once at start so the first queue load is fast.
     warm_cache: bool = False
 

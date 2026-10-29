@@ -29,7 +29,7 @@ lint: ## ESLint + ruff
 
 typecheck: ## tsc + mypy
 	pnpm -r typecheck
-	uv run mypy services/api/src services/worker/src packages/shared-types/python/satya_shared_types packages/affidavit/src packages/forensics/src packages/ocr/src
+	uv run mypy services/api/src services/worker/src packages/shared-types/python/satya_shared_types packages/affidavit/src packages/forensics/src packages/ocr/src packages/blindgen/src
 
 test: ## Unit tests (no running stack needed)
 	pnpm -r test
@@ -38,6 +38,7 @@ test: ## Unit tests (no running stack needed)
 	uv run pytest services/worker
 	uv run pytest packages/affidavit
 	uv run pytest packages/forensics
+	uv run pytest packages/blindgen
 	uv run pytest packages/ocr
 
 synth: ## Regenerate the synthetic demo cases, registers and public test PKI (data/synthetic)
@@ -88,6 +89,10 @@ demo-reset: ## Reset the demo to the same 8 synthetic cases, empty ledger plus s
 ledger-verify: ## Recompute the ledger hash chain inside the api container
 	$(COMPOSE) exec -T api python -m satya_api.ledger_verify
 
+replay: ## Replay a case at its original or a named rule version: make replay CASE=<id> [RULE_VERSION=<pack id>]
+	@test -n "$(CASE)" || { echo "usage: make replay CASE=cas_... [RULE_VERSION=<pack id>]"; exit 2; }
+	$(COMPOSE) exec -T api python -m satya_api.replay_cli "$(CASE)" $(if $(RULE_VERSION),--rule-version "$(RULE_VERSION)")
+
 trust-ca: ## Export Caddy's local root CA to infra/caddy/local-root.crt (import it into your OS/browser)
 	$(COMPOSE) cp caddy:/data/caddy/pki/authorities/local/root.crt infra/caddy/local-root.crt
 	@echo "Exported infra/caddy/local-root.crt. See docs/DEV-SETUP.md to trust it."
@@ -110,4 +115,10 @@ e2e: ## Browser acceptance (Playwright/Chromium): workbench sign-in + shell, moc
 test-db: ## Postgres-backed API tests in a throwaway pgvector container
 	bash infra/scripts/test-db.sh
 
-.PHONY: demo-reset pki eval-m6 synth synth-check eval-m5 guard secret-scan help install secrets up down ps logs reset mem-check config ledger-verify trust-ca smoke e2e test-db gen-types check-types-diff lint typecheck test
+.PHONY: eval-blind eval-blind-small replay demo-reset pki eval-m6 synth synth-check eval-m5 guard secret-scan help install secrets up down ps logs reset mem-check config ledger-verify trust-ca smoke e2e test-db gen-types check-types-diff lint typecheck test
+
+eval-blind: ## Blind test set: generate (data/blind, git-ignored) and evaluate; writes docs/eval/BLIND-REPORT.md and blind-results.json
+	uv run python -m satya_blindgen run
+
+eval-blind-small: ## Small-N smoke run of the blind generator and evaluator (CI), report written to .logs
+	uv run python -m satya_blindgen run --n 12 --out .logs/blind-small --docs .logs/blind-small-docs

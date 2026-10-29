@@ -110,3 +110,38 @@ def apply_hub(
             responses.append(new)
     verification["label"] = document_label(checks)
     return verification, responses
+
+
+ADAPTERS = {SHCIL["adapter_id"]: SHCIL, ICAI["adapter_id"]: ICAI}
+
+
+def apply_stored(
+    doc: dict[str, Any], slot: str, stored: list[dict[str, Any]], checked_at: str
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Replay (P-11): like `apply_hub`, but the source answers are the ones kept in the ledger.
+
+    Nothing is looked up; a response whose adapter is unknown is ignored (and shows up as a
+    difference to the original).
+    """
+    verification = copy.deepcopy(doc)
+    checks: list[dict[str, Any]] = verification["checks"]
+    responses: list[dict[str, Any]] = []
+    for item in stored:
+        adapter = ADAPTERS.get(item["adapter_id"])
+        if adapter is None:
+            continue
+        if slot == ACCOUNTS_SLOT:
+            checks[:] = [c for c in checks if c["kind"] != "source_lookup"]
+        check = {
+            "kind": "source_lookup",
+            "outcome": item["outcome"],
+            "reason_code": item["reason_code"],
+            "source": dict(adapter),
+            "checked_at": checked_at,
+            "response_sha256": item["response_sha256"],
+            "attempts": 1,
+        }
+        checks.append(check)
+        responses.append(check)
+    verification["label"] = document_label(checks)
+    return verification, responses

@@ -3,6 +3,7 @@ rule_version, APH clause and edition from here (guard rail 6)."""
 
 from dataclasses import dataclass
 from functools import cache
+from pathlib import Path
 
 import yaml
 
@@ -54,7 +55,12 @@ class Ruleset:
 
 @cache
 def load_ruleset() -> Ruleset:
-    raw = yaml.safe_load((rules_dir() / RULESET_FILE).read_text("utf-8"))
+    return load_ruleset_file(rules_dir() / RULESET_FILE)
+
+
+def load_ruleset_file(path: Path) -> Ruleset:
+    """Parse one rule file; replay (P-11) uses it for archived rule packs."""
+    raw = yaml.safe_load(path.read_text("utf-8"))
     edition = str(raw["aph_edition"])
     rules = {
         r["rule_id"]: Rule(

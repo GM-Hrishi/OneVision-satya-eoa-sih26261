@@ -14,7 +14,7 @@ from satya_affidavit.ids import sha256_hex, stable_id
 from satya_affidavit.normalise import clean, parse_date, squash, words_of
 from satya_affidavit.parse import SwornDoc, parse
 from satya_affidavit.reconcile import Reconciled, reconcile
-from satya_affidavit.rules import load_ruleset
+from satya_affidavit.rules import Ruleset, load_ruleset
 from satya_affidavit.template import (
     CORE_COUNT,
     EXISTING_COUNT,
@@ -76,6 +76,7 @@ class CaseInput:
     token_key: bytes
     ocr: dict[int, OcrLayer] | None = None  # OCR text layers of image-only pages (satya_ocr)
     unreadable_pages: int | None = None  # set when satya_ocr blocked the file: nothing is extracted
+    ruleset: Ruleset | None = None  # replay (P-11): an archived rule pack; default = current
 
 
 @dataclass
@@ -208,7 +209,7 @@ def run(inp: CaseInput) -> EngineResult:
     draft = render_draft(
         template, draft_header(case, snapshot), list(draft_meta["category_set"]), snapshot
     )
-    ruleset = load_ruleset()
+    ruleset = inp.ruleset or load_ruleset()
     sha = sha256_hex(inp.pdf)
     doc_id = stable_id("doc", sha)
     factory = FlagFactory(ruleset, doc_id, sha)

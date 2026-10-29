@@ -52,6 +52,7 @@ class M6Input:
     registry: Registry
     checked_at: str  # RFC 3339; when this run happened
     reads: dict[str, DocumentRead] | None = None  # doc_id -> satya_ocr read (scans, unreadable)
+    ruleset: Ruleset | None = None  # replay (P-11): an archived rule pack; default = current
 
 
 @dataclass
@@ -192,7 +193,7 @@ class DocContext:
 
 
 def run(inp: M6Input) -> M6Result:
-    ruleset = load_ruleset()
+    ruleset = inp.ruleset or load_ruleset()
     sig_ctx = SignatureContext(
         trust=inp.trust,
         revocation=inp.revocation,
@@ -324,7 +325,7 @@ STAMP_RULES = ("STAMP-INSTRUMENT", "STAMP-PARTY", "STAMP-DUTY", "STAMP-REUSE")
 
 def _affidavit(ctx: DocContext, inp: M6Input) -> dict[str, Any]:
     """Stamp page, notary block and signing order (UI §6.3 stamp + chronology)."""
-    ruleset = load_ruleset()
+    ruleset = inp.ruleset or load_ruleset()
     basic = inp.snapshot.get("basic") or {}
     application = basic.get("application_date")
     uploaded = ctx.doc.get("uploaded_at")
@@ -360,7 +361,7 @@ def _affidavit(ctx: DocContext, inp: M6Input) -> dict[str, Any]:
 
 def _accounts(ctx: DocContext, inp: M6Input) -> None:
     """P-18 UDIN structure checks and the (unavailable) ICAI lookup on the audited statement."""
-    ruleset = load_ruleset()
+    ruleset = inp.ruleset or load_ruleset()
     acc = read_accounts(ctx.pages)
     permanent_id = inp.case.get("permanent_id") or ""
     for finding in evaluate_udin(

@@ -11,6 +11,7 @@ resolution-markers = [
 members = [
     "satya-affidavit",
     "satya-api",
+    "satya-blindgen",
     "satya-eoa-workspace",
     "satya-forensics",
     "satya-ocr",
@@ -2730,6 +2731,25 @@ requires-dist = [
     { name = "satya-shared-types", editable = "packages/shared-types/python" },
     { name = "sqlalchemy", extras = ["asyncio"], specifier = "==2.1.6" },
     { name = "uvicorn", extras = ["standard"], specifier = "==0.54.0" },
+]
+
+[[package]]
+name = "satya-blindgen"
+version = "0.1.0"
+source = { editable = "packages/blindgen" }
+dependencies = [
+    { name = "pyyaml" },
+    { name = "reportlab" },
+    { name = "satya-affidavit" },
+    { name = "satya-forensics" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "pyyaml", specifier = ">=6" },
+    { name = "reportlab", specifier = "==5.0.1" },
+    { name = "satya-affidavit", editable = "packages/affidavit" },
+    { name = "satya-forensics", editable = "packages/forensics" },
 ]
 
 [[package]]

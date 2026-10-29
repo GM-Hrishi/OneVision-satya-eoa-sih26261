@@ -46,7 +46,7 @@ jobs:
       - run: uv sync --all-packages --frozen
       - run: uv run ruff check .
       - run: uv run ruff format --check .
-      - run: uv run mypy services/api/src services/worker/src packages/shared-types/python/satya_shared_types packages/affidavit/src packages/forensics/src packages/ocr/src
+      - run: uv run mypy services/api/src services/worker/src packages/shared-types/python/satya_shared_types packages/affidavit/src packages/forensics/src packages/ocr/src packages/blindgen/src
       - run: uv run pytest packages/shared-types/python
       - run: uv run pytest services/api
       - run: uv run pytest services/worker
@@ -56,6 +56,10 @@ jobs:
         run: uv run pytest packages/forensics
       - name: M3 page classifier, hardening and OCR fallback tests (FakeOcrEngine; the real engine test skips)
         run: uv run pytest packages/ocr
+      - name: Blind set generator and evaluator (small N smoke, full run is local)
+        run: |
+          uv run pytest packages/blindgen
+          make eval-blind-small
       - name: Synthetic demo cases, registers and test PKI match a fresh generation
         run: uv run python -m satya_forensics.synth --check
       - name: Postgres-backed API tests (pgvector container, real migrations)

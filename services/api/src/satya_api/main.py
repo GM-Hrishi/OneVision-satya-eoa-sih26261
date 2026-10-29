@@ -47,6 +47,8 @@ from satya_api.middleware import (
 )
 from satya_api.problems import ProblemError, problem_response
 from satya_api.ratelimit import RateLimiter
+from satya_api.replay import Replayer
+from satya_api.rulepacks import RulePackCatalog
 from satya_api.signature import HEADER, verify
 from satya_api.store import EventStore, InboundEvent, PostgresStore
 from satya_api.workflow import FLAG_ID, QUEUE_DIRS, QUEUE_SORTS, Workflow, WorkflowError
@@ -120,6 +122,8 @@ def create_app(
     ocr_limiter = RateLimiter(redis, ocr_limit, ocr_window, "ocr")
     overview_limit, overview_window = parse_rate(settings.overview_rate_limit)
     overview_limiter = RateLimiter(redis, overview_limit, overview_window, "overview")
+    replay_limit, replay_window = parse_rate(settings.replay_rate_limit)
+    replay_limiter = RateLimiter(redis, replay_limit, replay_window, "replay")
     hmac_keys = settings.hmac_key_map()
 
     @asynccontextmanager
@@ -157,6 +161,18 @@ def create_app(
             Path(settings.upload_dir) if settings.upload_dir else None,
         )
         await app.state.workflow.restore_uploads()
+        app.state.replayer = (
+            Replayer(
+                app.state.cases,
+                app.state.store,
+                Path(settings.upload_dir) if settings.upload_dir else None,
+                RulePackCatalog(
+                    Path(settings.rules_archive_dir) if settings.rules_archive_dir else None
+                ),
+            )
+            if isinstance(app.state.cases, FixtureCaseRepository)
+            else None
+        )
         warm_task = asyncio.create_task(app.state.workflow.warm()) if settings.warm_cache else None
         if not hmac_keys:
             log.error("no HMAC keys configured; every portal event will be rejected")
@@ -668,6 +684,42 @@ def create_app(
             status_code=201,
             headers={"Cache-Control": "no-store"},
         )
+
+    @app.get("/v1/cases/{case_id}/replay")
+    async def case_replay(
+        case_id: str, request: Request, rule_version: str | None = None
+    ) -> JSONResponse:
+        """Re-run the rules on the stored documents and stored source answers (P-11). Read-only
+        except for one `case.replay` ledger entry. `rule_version` is a rule pack id from the
+        allow-list (default: the pack of the original run)."""
+        principal = await official(request, ("RB", "AU"))
+        retry_after = await replay_limiter.hit(principal.subject)
+        if retry_after is not None:
+            security.warning("rate limited", extra={"trace_id": trace(request), "scope": "replay"})
+            raise ProblemError(429, "RATE_LIMITED", headers={"Retry-After": str(retry_after)})
+        if not CASE_ID.fullmatch(case_id):
+            raise ProblemError(404, "NOT_FOUND")
+        replayer: Replayer | None = request.app.state.replayer
+        summary = await request.app.state.cases.get(case_id)
+        if replayer is None or summary is None:
+            raise ProblemError(404, "NOT_FOUND")
+        if "AU" not in principal.roles:
+            in_scope(request, principal, summary.regional_office, case_id)
+        if rule_version is not None and (
+            len(rule_version) > 80 or rule_version not in replayer.catalog.available()
+        ):
+            raise ProblemError(422, "RULE_VERSION_UNKNOWN")
+        body = await replayer.replay(case_id, rule_version, principal.subject)
+        log.info(
+            "case replayed",
+            extra={
+                "trace_id": trace(request),
+                "sub": principal.subject,
+                "case_id": case_id,
+                "reproducible": body["reproducible"],
+            },
+        )
+        return JSONResponse(body, headers={"Cache-Control": "no-store"})
 
     @app.get("/v1/audit")
     async def audit(request: Request, case_id: str | None = None) -> JSONResponse:
