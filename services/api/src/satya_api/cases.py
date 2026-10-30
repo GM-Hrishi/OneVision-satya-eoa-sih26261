@@ -274,7 +274,10 @@ class FixtureCaseRepository:
                             unreadable_pages=read.page_count if read.blocked else None,
                         ),
                     )
-                    self._cache[key] = result.diff
+                    self._cache[key] = {
+                        **result.diff,
+                        "comparison": comparison_of(read, result.diff),
+                    }
         return self._cache[key]
 
     # ---- M6 (slice 2) --------------------------------------------------------------------------
@@ -370,6 +373,41 @@ class FixtureCaseRepository:
         return None if doc is None else doc.verification
 
 
+def read_note(summary: dict[str, Any]) -> dict[str, Any]:
+    """The ReadNote of a document read (DocumentRead.summary()): what the pages carry stays out."""
+    return {
+        "status": summary["status"],
+        "reason_code": summary["reason_code"],
+        "variant": summary["variant"],
+        "values": summary["values"],
+        "ocr_mean_confidence": summary["ocr_mean_confidence"],
+    }
+
+
+# Where the sworn text came from, by the variant of the read (satya_ocr.reasons.WHY).
+_COMPARISON_SOURCE = {
+    "scan_read": "scan_read",
+    "low_confidence": "scan_unreliable",
+    "scan_not_attempted": "scan_not_read",
+    "scan_timeout": "scan_timeout",
+    "unavailable": "ocr_unavailable",
+}
+
+
+def comparison_of(read: DocumentRead, diff: dict[str, Any]) -> dict[str, Any]:
+    """Whether the sworn copy was really compared (D1 of B-43).
+
+    Only a file with a text layer is compared. A scan, even one read by OCR, and an unreadable file
+    are not: text read by OCR never decides anything (decision #60), so the page must say so.
+    `diff` is accepted so the rule can look at the structure result later without a new signature.
+    """
+    note = read_note(read.summary())
+    if read.reason_code is None:
+        return {"state": "compared", "source": "text_layer", "read": note}
+    source = _COMPARISON_SOURCE.get(read.variant or "", "unreadable")
+    return {"state": "not_compared", "source": source, "read": note}
+
+
 def merge_m6(diff: dict[str, Any], result: M6Result) -> dict[str, Any]:
     """A copy of an AffidavitDiff with the M6 sections (UI §6.3) and the affidavit's M6 flags."""
     section = result.affidavit
@@ -399,11 +437,22 @@ def _actions(label: str, checks: list[dict[str, Any]]) -> list[str]:
     return actions
 
 
-def case_verification(case: dict[str, Any], result: M6Result, checked_at: str) -> dict[str, Any]:
-    """RB-06 data (UI §6.4) from an M6 result."""
+def case_verification(
+    case: dict[str, Any],
+    result: M6Result,
+    checked_at: str,
+    answers: dict[str, dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """RB-06 data (UI §6.4) from an M6 result.
+
+    `answers` maps a doc_id to the label, checks, source and read the Case tab shows (the workflow
+    view, which adds the source hub and the scan gating). Without it only the M6 result is used.
+    """
     documents = []
     for doc in result.documents:
-        label = doc.verification["label"]
+        answer = (answers or {}).get(doc.doc_id)
+        label = answer["label"] if answer else doc.verification["label"]
+        checks = answer["checks"] if answer else doc.verification["checks"]
         documents.append(
             {
                 "doc_id": doc.doc_id,
@@ -412,16 +461,17 @@ def case_verification(case: dict[str, Any], result: M6Result, checked_at: str) -
                 "format_type": doc.format_type,
                 "state_code": STATE_CODES.get(case.get("state", "")),
                 "issuer_profile": None,
-                "source": doc.source,
+                "source": answer["source"] if answer else doc.source,
                 "label": label,
                 "issuer_sig": doc.issuer_sig,
                 "uploader_sig": doc.uploader_sig,
                 "checked_at": checked_at,
-                "response_ref": doc.response_ref,
-                "actions": _actions(label, doc.verification["checks"]),
+                "response_ref": answer["response_ref"] if answer else doc.response_ref,
+                "actions": _actions(label, checks),
                 "flag_count": len(doc.flags),
-                "checks": doc.verification["checks"],
+                "checks": checks,
                 "flags": doc.flags,
+                **({"read": answer["read"]} if answer else {}),
             }
         )
     trust_label = test_pki.TRUST_ANCHOR_LABEL

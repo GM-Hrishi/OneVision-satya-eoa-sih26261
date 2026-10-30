@@ -49,7 +49,7 @@ class CaseStage(StrEnum):
 
 class TextSource(StrEnum):
     """
-    Slice 1 reads the text layer only; OCR arrives with M3 (P-2).
+    Where the sworn text came from: the PDF text layer, or OCR of a scanned file. Text read by OCR never decides anything.
     """
 
     text_layer = "text_layer"
@@ -183,6 +183,25 @@ class DscKind(Enum):
     signature = "signature"
     image_mark = "image_mark"
     NoneType_None = None
+
+
+class ComparisonState(StrEnum):
+    compared = "compared"
+    not_compared = "not_compared"
+
+
+class ComparisonSource(StrEnum):
+    """
+    Where the sworn text came from, or why there is none.
+    """
+
+    text_layer = "text_layer"
+    scan_read = "scan_read"
+    scan_unreliable = "scan_unreliable"
+    scan_not_read = "scan_not_read"
+    scan_timeout = "scan_timeout"
+    ocr_unavailable = "ocr_unavailable"
+    unreadable = "unreadable"
 
 
 class Section(StrEnum):
@@ -861,6 +880,36 @@ class PrintedSection(BaseModel):
     ] = None
 
 
+class ReadStatus(StrEnum):
+    native = "native"
+    ocr_read = "ocr_read"
+    blocked = "blocked"
+
+
+class ReadNote(BaseModel):
+    """
+    How a file was read: the PDF text layer, OCR of a scan, or not at all. The wording of the sentence is a translated template picked by `variant`. Text read by OCR never decides anything.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    status: Annotated[ReadStatus, Field(title="ReadStatus")]
+    reason_code: Annotated[str | None, Field(max_length=40)]
+    """
+    Short code for auditors, for example SCAN_IMAGE_ONLY. The code is shared by a scan that was read and a scan that was not.
+    """
+    variant: Annotated[str | None, Field(max_length=40)]
+    """
+    Key of the plain sentence, for example scan_read, low_confidence, scan_not_attempted.
+    """
+    values: dict[str, str | float]
+    """
+    Numbers the sentence mentions (confidence, threshold, pages).
+    """
+    ocr_mean_confidence: Annotated[float | None, Field(ge=0.0, le=1.0)]
+
+
 class ReceiptId(RootModel[str]):
     root: Annotated[
         str, Field(pattern="^rcp_[0-9A-HJKMNP-TV-Z]{26}$", title="ReceiptId")
@@ -1123,7 +1172,7 @@ class AffidavitSworn(BaseModel):
     template_detected: Annotated[str | None, Field(max_length=120)] = None
     text_source: Annotated[TextSource, Field(title="TextSource")]
     """
-    Slice 1 reads the text layer only; OCR arrives with M3 (P-2).
+    Where the sworn text came from: the PDF text layer, or OCR of a scanned file. Text read by OCR never decides anything.
     """
     ocr_mean_confidence: Annotated[float | None, Field(ge=0.0, le=1.0)]
     """
@@ -1131,11 +1180,11 @@ class AffidavitSworn(BaseModel):
     """
     issuer_sig: SignatureCheck | None
     """
-    Filled by M6 (P-4); null when M6 could not read it.
+    Filled by the signature check; null when it could not read the file.
     """
     uploader_sig: SignatureCheck | None
     """
-    Filled by M6 (P-4); null when M6 could not read it.
+    Filled by the signature check; null when it could not read the file.
     """
     category_list_found: list[CategoryName] | None
     """
@@ -1228,7 +1277,7 @@ class AffidavitTable(BaseModel):
 
 class AffidavitStamp(BaseModel):
     """
-    Filled by M6 (P-4) from the stamp page; null when no stamp page is found.
+    Filled by the signature and stamp check from the stamp page; null when no stamp page is found.
     """
 
     model_config = ConfigDict(
@@ -1252,7 +1301,7 @@ class AffidavitStamp(BaseModel):
 
 class AffidavitChronology(BaseModel):
     """
-    Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload (design B1 row 1, D1). Filled by M6 (P-4).
+    Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload (design B1 row 1, D1). Filled by the signature and stamp check.
     """
 
     model_config = ConfigDict(
@@ -1274,6 +1323,22 @@ class AffidavitChronology(BaseModel):
     A printed signature mark dated after the notarisation (design D1 review case); null when there is no mark.
     """
     notary_expiry_ok: bool | None = None
+
+
+class Comparison(BaseModel):
+    """
+    Whether the sworn copy was really compared with the portal draft. Added by the API; the page says a copy matches only when state is compared. A scan or an unreadable file is not_compared: OCR text never decides anything.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    state: Annotated[ComparisonState, Field(title="ComparisonState")]
+    source: Annotated[ComparisonSource, Field(title="ComparisonSource")]
+    """
+    Where the sworn text came from, or why there is none.
+    """
+    read: ReadNote
 
 
 class Alert(BaseModel):
@@ -1682,7 +1747,7 @@ class EventEnvelope(BaseModel):
     correlation_id: CorrelationId
     data: dict[str, Any]
     """
-    Type-specific payload (§2.4, §2.5). Per-type schemas arrive with their slices.
+    Type-specific payload (§2.4, §2.5). Per-type payload.
     """
     advisory: Literal[True] | None = None
     regulatory_effect: Literal["none"] | None = None
@@ -1795,11 +1860,15 @@ class AffidavitDiff(BaseModel):
     tables: list[AffidavitTable]
     stamp: AffidavitStamp | None
     """
-    Filled by M6 (P-4) from the stamp page; null when no stamp page is found.
+    Filled by the signature and stamp check from the stamp page; null when no stamp page is found.
     """
     chronology: AffidavitChronology | None
     """
-    Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload (design B1 row 1, D1). Filled by M6 (P-4).
+    Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload (design B1 row 1, D1). Filled by the signature and stamp check.
+    """
+    comparison: Annotated[Comparison | None, Field(title="Comparison")] = None
+    """
+    Whether the sworn copy was really compared with the portal draft. Added by the API; the page says a copy matches only when state is compared. A scan or an unreadable file is not_compared: OCR text never decides anything.
     """
     pending: list[PendingSection]
     """
@@ -1822,7 +1891,7 @@ class CaseVerificationDocument(BaseModel):
     state_code: Annotated[str | None, Field(pattern="^[A-Z]{2}$")]
     issuer_profile: Annotated[str | None, Field(max_length=120)]
     """
-    Annexure-14 issuer profile id (M3/M4, P-6); null until that slice.
+    Annexure-14 issuer profile id; null when none is recorded.
     """
     source: Annotated[VerificationSource, Field(title="VerificationSource")]
     label: VerificationLabel | Literal["not_applicable"]
@@ -1838,12 +1907,16 @@ class CaseVerificationDocument(BaseModel):
     """
     actions: list[VerificationAction]
     """
-    Actions the official may take (UI §7.2); the controls arrive with M11 (P-10).
+    Suggested next steps for the official (UI §7.2); the workbench has no control that runs them.
     """
     flag_count: Annotated[int, Field(ge=0)]
     checks: list[Check] | None = None
     """
     The document's VerificationResult.checks[] (Portal §2.7), for the panel's detail view.
+    """
+    read: ReadNote | None = None
+    """
+    How the file was read; the plain sentence for a scan or an unreadable file comes from it.
     """
     flags: list[Flag] | None = None
     """

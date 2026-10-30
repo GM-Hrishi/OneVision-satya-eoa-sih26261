@@ -64,7 +64,7 @@ export type DeclarationBlock = "core" | "existing_institute" | "extra";
  */
 export type Sha256 = string;
 /**
- * Slice 1 reads the text layer only; OCR arrives with M3 (P-2).
+ * Where the sworn text came from: the PDF text layer, or OCR of a scanned file. Text read by OCR never decides anything.
  */
 export type TextSource = "text_layer" | "ocr";
 export type SignatureRole = "issuer" | "uploader";
@@ -106,6 +106,19 @@ export type VerificationLabel =
  * via the `definition` "Date".
  */
 export type Date = string;
+export type ComparisonState = "compared" | "not_compared";
+/**
+ * Where the sworn text came from, or why there is none.
+ */
+export type ComparisonSource =
+  | "text_layer"
+  | "scan_read"
+  | "scan_unreliable"
+  | "scan_not_read"
+  | "scan_timeout"
+  | "ocr_unavailable"
+  | "unreadable";
+export type ReadStatus = "native" | "ocr_read" | "blocked";
 export type ConfidenceBand = "high" | "medium" | "low";
 export type Provenance = "satya" | "portal";
 /**
@@ -344,13 +357,14 @@ export interface AffidavitDiff {
   structure: AffidavitStructure;
   tables: AffidavitTable[];
   /**
-   * Filled by M6 (P-4) from the stamp page; null when no stamp page is found.
+   * Filled by the signature and stamp check from the stamp page; null when no stamp page is found.
    */
   stamp: AffidavitStamp | null;
   /**
-   * Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload (design B1 row 1, D1). Filled by M6 (P-4).
+   * Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload (design B1 row 1, D1). Filled by the signature and stamp check.
    */
   chronology: AffidavitChronology | null;
+  comparison?: Comparison;
   /**
    * DiffView sections whose checks belong to a later module, so the UI can say so instead of showing an empty panel.
    */
@@ -407,11 +421,11 @@ export interface AffidavitSworn {
    */
   ocr_mean_confidence: number | null;
   /**
-   * Filled by M6 (P-4); null when M6 could not read it.
+   * Filled by the signature check; null when it could not read the file.
    */
   issuer_sig: SignatureCheck | null;
   /**
-   * Filled by M6 (P-4); null when M6 could not read it.
+   * Filled by the signature check; null when it could not read the file.
    */
   uploader_sig: SignatureCheck | null;
   /**
@@ -605,6 +619,38 @@ export interface AffidavitChronology {
    */
   mark_after_notary?: boolean | null;
   notary_expiry_ok?: boolean | null;
+}
+/**
+ * Whether the sworn copy was really compared with the portal draft. Added by the API; the page says a copy matches only when state is compared. A scan or an unreadable file is not_compared: OCR text never decides anything.
+ */
+export interface Comparison {
+  state: ComparisonState;
+  source: ComparisonSource;
+  read: ReadNote;
+}
+/**
+ * How a file was read: the PDF text layer, OCR of a scan, or not at all. The wording of the sentence is a translated template picked by `variant`. Text read by OCR never decides anything.
+ *
+ * This interface was referenced by `SatyaContracts`'s JSON-Schema
+ * via the `definition` "ReadNote".
+ */
+export interface ReadNote {
+  status: ReadStatus;
+  /**
+   * Short code for auditors, for example SCAN_IMAGE_ONLY. The code is shared by a scan that was read and a scan that was not.
+   */
+  reason_code: string | null;
+  /**
+   * Key of the plain sentence, for example scan_read, low_confidence, scan_not_attempted.
+   */
+  variant: string | null;
+  /**
+   * Numbers the sentence mentions (confidence, threshold, pages).
+   */
+  values: {
+    [k: string]: string | number | undefined;
+  };
+  ocr_mean_confidence: number | null;
 }
 export interface PendingSection {
   section: "stamp" | "chronology" | "signatures" | "ocr";
@@ -969,7 +1015,7 @@ export interface CaseVerificationDocument {
   format_type: "T" | "E" | "P";
   state_code: string | null;
   /**
-   * Annexure-14 issuer profile id (M3/M4, P-6); null until that slice.
+   * Annexure-14 issuer profile id; null when none is recorded.
    */
   issuer_profile: string | null;
   source: VerificationSource;
@@ -985,7 +1031,7 @@ export interface CaseVerificationDocument {
    */
   response_ref: string | null;
   /**
-   * Actions the official may take (UI §7.2); the controls arrive with M11 (P-10).
+   * Suggested next steps for the official (UI §7.2); the workbench has no control that runs them.
    */
   actions: VerificationAction[];
   flag_count: number;
@@ -993,6 +1039,7 @@ export interface CaseVerificationDocument {
    * The document's VerificationResult.checks[] (Portal §2.7), for the panel's detail view.
    */
   checks?: Check[];
+  read?: ReadNote1;
   /**
    * Findings raised on this document (Portal §2.6.4); additive to UI §6.4 so RB-06 can show findings no other P1 screen shows yet (e.g. UDIN).
    */
@@ -1057,6 +1104,27 @@ export interface FieldDiff {
   source: string | number | boolean | null;
 }
 /**
+ * How a file was read: the PDF text layer, OCR of a scan, or not at all. The wording of the sentence is a translated template picked by `variant`. Text read by OCR never decides anything.
+ */
+export interface ReadNote1 {
+  status: ReadStatus;
+  /**
+   * Short code for auditors, for example SCAN_IMAGE_ONLY. The code is shared by a scan that was read and a scan that was not.
+   */
+  reason_code: string | null;
+  /**
+   * Key of the plain sentence, for example scan_read, low_confidence, scan_not_attempted.
+   */
+  variant: string | null;
+  /**
+   * Numbers the sentence mentions (confidence, threshold, pages).
+   */
+  values: {
+    [k: string]: string | number | undefined;
+  };
+  ocr_mean_confidence: number | null;
+}
+/**
  * A document in a case (Portal spec §2.6.2). classified_type comes from body text / issuer, never heading, filename or uploader label (decision #15); when it differs from declared_type a suspected_anomaly.document_misclassified flag is raised.
  *
  * This interface was referenced by `SatyaContracts`'s JSON-Schema
@@ -1118,7 +1186,7 @@ export interface EventEnvelope {
   sequence: number;
   correlation_id: CorrelationId;
   /**
-   * Type-specific payload (§2.4, §2.5). Per-type schemas arrive with their slices.
+   * Type-specific payload (§2.4, §2.5). Per-type payload.
    */
   data: {};
   advisory?: true;

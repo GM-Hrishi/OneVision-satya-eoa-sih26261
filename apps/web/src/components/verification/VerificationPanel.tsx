@@ -10,10 +10,17 @@ import { SignatureBadge } from "@/components/signature/SignatureBadge";
 import { SourceTag } from "@/components/ui/SourceTag";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import { LABEL_ORDER } from "@/lib/labels";
+import { ReasonLine } from "@/components/demo/ReasonLine";
 import own from "./VerificationPanel.module.css";
 
 type TV = Awaited<ReturnType<typeof getTranslations<"verification">>>;
-const KNOWN_SOURCES = new Set(["pdf-signature", "icai-udin"]);
+const KNOWN_SOURCES = new Set([
+  "pdf-signature",
+  "icai-udin",
+  "cca-offline-chain",
+  "shcil-estamp-mock",
+  "icai-udin-mock",
+]);
 
 function formatIst(iso: string, locale: string): string {
   return new Intl.DateTimeFormat(locale === "hi" ? "hi-IN" : "en-IN", {
@@ -84,7 +91,7 @@ export async function VerificationPanel({ data }: { data: CaseVerification }) {
                       {sourceText(doc, tv)}{" "}
                       {doc.source.adapter_mode === "mock" ? (
                         <SourceTag kind="simulated" />
-                      ) : doc.source.channel === "pdf-signature" ? (
+                      ) : doc.source.channel === "pdf-signature" || doc.source.channel === "cca-offline-chain" ? (
                         <SourceTag kind="testAnchor" />
                       ) : (
                         <span className={styles.label} data-tone="neutral">
@@ -174,7 +181,9 @@ async function DocumentDetails({
                 <td>
                   <StatusLabel label={check.outcome} size="sm" />
                 </td>
-                <td>{reasonText(check, tv)}</td>
+                <td>
+                  <ReasonLine code={check.reason_code} read={doc.read} fallback={reasonText(check, tv)} />
+                </td>
                 <td>{check.evidence ? tv("evidencePage", { page: check.evidence.page }) : tv("noEvidence")}</td>
               </tr>
             ))}

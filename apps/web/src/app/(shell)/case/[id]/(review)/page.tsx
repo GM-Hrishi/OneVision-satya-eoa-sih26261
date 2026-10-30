@@ -13,6 +13,7 @@ import diff from "@/components/diff/DiffView.module.css";
 import { SignatureBadge } from "@/components/signature/SignatureBadge";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ReadNotes } from "@/components/demo/ReadNotes";
+import { ReasonLine } from "@/components/demo/ReasonLine";
 import { caseVerification } from "@/lib/cases";
 import { caseReview } from "@/lib/demo";
 import { LABEL_ORDER } from "@/lib/labels";
@@ -113,7 +114,11 @@ export default async function CasePage({ params }: Props) {
                       .map((c) => (
                         <p key={`${c.reason_code}-${c.source?.adapter_id}`} className={diff.note}>
                           {cat(c.source?.name ?? "", ": ")}
-                          <StatusLabel label={c.outcome} size="sm" /> {cat("(", c.reason_code, ")")}
+                          <StatusLabel label={c.outcome} size="sm" />{" "}
+                          <ReasonLine
+                            code={c.reason_code}
+                            fallback={tv.has(`reason.${c.reason_code}` as never) ? tv(`reason.${c.reason_code}` as never) : c.reason_code}
+                          />
                           {c.response_sha256 ? <span className={styles.mono}> {c.response_sha256.slice(0, 12)}</span> : null}{" "}
                           {c.source?.mode === "mock" ? <SourceTag kind="simulated" /> : null}
                         </p>
@@ -133,7 +138,14 @@ export default async function CasePage({ params }: Props) {
             <h3>{t("case.tasksHeading")}</h3>
             <ul>
               {review.tasks.map((task) => (
-                <li key={task.doc_id}>{t("case.task", { title: task.title, reason: tv.has(`reason.${task.reason}` as never) ? tv(`reason.${task.reason}` as never) : task.reason })}</li>
+                <li key={task.doc_id}>
+                  {t("case.task", { title: task.title })}{" "}
+                  <ReasonLine
+                    code={task.reason}
+                    read={review.documents.find((d) => d.doc_id === task.doc_id)?.read}
+                    fallback={tv.has(`reason.${task.reason}` as never) ? tv(`reason.${task.reason}` as never) : task.reason}
+                  />
+                </li>
               ))}
             </ul>
           </>

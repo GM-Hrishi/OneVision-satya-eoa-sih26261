@@ -60,7 +60,7 @@ async function login(page, username, start = `${BASE}/`) {
   check(main.includes("ICAI UDIN: no automated channel") && main.includes("NO CHANNEL"), "accounts source: no ICAI channel (F10)");
   check(main.includes("A valid uploader signature never makes a document verified."), "mapping legend states the uploader rule");
   check(main.includes("How signatures map to the six labels"), "mapping legend on screen");
-  check(main.includes("arrive with M11 (P-10)"), "actions explained, no dead buttons");
+  check(main.includes("Suggested next steps") && !main.includes("M11"), "actions are suggestions, no build codes, no dead buttons");
   const buttons = await page.locator("main button").allTextContents();
   check(!buttons.some((b) => /approve|reject|clear/i.test(b)), "no approve, reject or clear control on the page");
   await page.locator("details summary").first().click();

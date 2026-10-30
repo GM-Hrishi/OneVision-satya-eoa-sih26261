@@ -18,6 +18,7 @@ import { StatusLabel } from "@/components/ui/StatusLabel";
 import styles from "./DiffView.module.css";
 
 type T = Awaited<ReturnType<typeof getTranslations<"diff">>>;
+type ReadT = Awaited<ReturnType<typeof getTranslations<"demo.ocr">>>;
 export type Tone = "mismatch" | "manual" | "ok" | "neutral";
 
 const VALUE_PREVIEW = 160;
@@ -76,6 +77,7 @@ export async function DiffView({ diff, showAll, allHref, changedHref, verificati
 }) {
   const t = await getTranslations("diff");
   const tr = await getTranslations("rules");
+  const to = await getTranslations("demo.ocr");
   const flagsById = new Map(diff.flags.map((f) => [f.flag_id, f]));
   const flags = [...diff.flags].sort(
     (a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity] || (a.page ?? 0) - (b.page ?? 0),
@@ -85,6 +87,12 @@ export async function DiffView({ diff, showAll, allHref, changedHref, verificati
   const expectedByNo = new Map(diff.expected.declarations.map((d) => [d.no, d]));
   const swornByNo = new Map(diff.sworn.declarations.map((d) => [d.no, d]));
   const pending = new Set(diff.pending.map((p) => p.section));
+  // B-43: "matches" is said only when the comparison really ran on a text layer and the structure
+  // check found everything. Without an explicit state the page assumes nothing was compared.
+  const state = comparisonState(diff);
+  const complete = structureComplete(diff);
+  const showResults = state.compared || state.ocrText;
+  const clean = state.compared && complete;
 
   return (
     <div className={styles.layout}>
@@ -113,10 +121,12 @@ export async function DiffView({ diff, showAll, allHref, changedHref, verificati
                 <dt>{t("pages")}</dt>
                 <dd>{diff.sworn.page_count}</dd>
                 <dt>{t("textSource")}</dt>
-                <dd>{diff.sworn.text_source === "text_layer" ? t("textLayer") : t("ocr")}</dd>
+                <dd>{t(`source.${state.source}` as never, state.values as never)}</dd>
                 <dt>{t("templateMatch")}</dt>
                 <dd>
-                  {diff.sworn.template_match ? (
+                  {!state.compared ? (
+                    <Label tone="neutral">{t("notChecked")}</Label>
+                  ) : diff.sworn.template_match ? (
                     <Label tone="ok">{t("templateMatchYes")}</Label>
                   ) : (
                     <Label tone="manual">{t("templateMatchNo")}</Label>
@@ -146,23 +156,33 @@ export async function DiffView({ diff, showAll, allHref, changedHref, verificati
           </div>
         </section>
 
-        <Structure diff={diff} t={t} />
+        {!state.compared ? <NotCompared state={state} t={t} to={to} /> : null}
+
+        <Structure diff={diff} t={t} showResults={showResults} />
 
         <section className={styles.section} aria-labelledby="diff-clauses">
           <h2 id="diff-clauses">{t("clausesHeading")}</h2>
-          <p className={styles.note}>
-            {t("normalisation", {
-              hyphens: diff.normalisation.hyphens_rejoined,
-              struck: diff.normalisation.strike_through_resolved,
-              order: diff.normalisation.date_order,
-            })}
-          </p>
-          <div className={styles.toggle}>
-            <span>{t("changesCount", { count: changes.length, total: diff.expected.declarations.length })}</span>
-            {showAll ? <a href={changedHref}>{t("showChanged")}</a> : <a href={allHref}>{t("showAll")}</a>}
-          </div>
-          {ops.length === 0 ? (
-            <p>{t("noChanges")}</p>
+          {!showResults ? (
+            <p>{t("clausesNotCompared")}</p>
+          ) : (
+            <>
+              <p className={styles.note}>
+                {t("normalisation", {
+                  hyphens: diff.normalisation.hyphens_rejoined,
+                  struck: diff.normalisation.strike_through_resolved,
+                  order: diff.normalisation.date_order,
+                })}
+              </p>
+              <div className={styles.toggle}>
+                {clean || changes.length > 0 ? (
+                  <span>{t("changesCount", { count: changes.length, total: diff.expected.declarations.length })}</span>
+                ) : null}
+                {showAll ? <a href={changedHref}>{t("showChanged")}</a> : <a href={allHref}>{t("showAll")}</a>}
+              </div>
+            </>
+          )}
+          {!showResults ? null : ops.length === 0 ? (
+            <p>{clean ? t("noChanges") : t("clausesIncomplete")}</p>
           ) : (
             <ol className={styles.ops}>
               {ops.map((op, i) => (
@@ -181,10 +201,16 @@ export async function DiffView({ diff, showAll, allHref, changedHref, verificati
 
         <section className={styles.section} aria-labelledby="diff-tables">
           <h2 id="diff-tables">{t("tablesHeading")}</h2>
-          <p className={styles.note}>{t("tablesIntro")}</p>
-          {diff.tables.map((table) => (
-            <ReconTable key={table.table} table={table} t={t} />
-          ))}
+          {state.compared ? (
+            <>
+              <p className={styles.note}>{t("tablesIntro")}</p>
+              {diff.tables.map((table) => (
+                <ReconTable key={table.table} table={table} t={t} />
+              ))}
+            </>
+          ) : (
+            <p>{t("tablesNotCompared")}</p>
+          )}
         </section>
 
         <section className={styles.section} aria-labelledby="diff-stamp">
@@ -205,7 +231,9 @@ export async function DiffView({ diff, showAll, allHref, changedHref, verificati
       <aside className={styles.rail} aria-labelledby="diff-flags">
         <h2 id="diff-flags">{t("flagsHeading", { count: flags.length })}</h2>
         {flags.length === 0 ? (
-          <p className={styles.section}>{t("noFlags")}</p>
+          <p className={styles.section}>
+            {clean ? t("noFlags") : state.compared ? t("noFlagsIncomplete") : t("noFlagsNotCompared")}
+          </p>
         ) : (
           <ol className={styles.flags}>
             {flags.map((flag) => (
@@ -315,11 +343,93 @@ function StampAndOrder({ diff, t }: { diff: AffidavitDiff; t: T }) {
   );
 }
 
-function Structure({ diff, t }: { diff: AffidavitDiff; t: T }) {
+type ComparisonView = {
+  compared: boolean;
+  ocrText: boolean;
+  source: string;
+  values: Record<string, string | number>;
+  why: string | null;
+};
+
+/** What the page may claim about this copy (D1 of B-43). A missing state counts as not compared. */
+function comparisonState(diff: AffidavitDiff): ComparisonView {
+  const c = diff.comparison;
+  if (!c) {
+    const layer = diff.sworn.text_source === "text_layer";
+    return { compared: false, ocrText: !layer, source: layer ? "text_layer" : "scan_read", values: {}, why: null };
+  }
+  const confidence = c.read.ocr_mean_confidence == null ? undefined : Math.round(c.read.ocr_mean_confidence * 100);
+  return {
+    compared: c.state === "compared",
+    ocrText: c.source === "scan_read" || c.source === "scan_unreliable",
+    source: c.source,
+    values: { ...c.read.values, ...(confidence === undefined ? {} : { confidence }), max_pages: 50 },
+    why: c.read.variant,
+  };
+}
+
+function structureComplete(diff: AffidavitDiff): boolean {
+  const s = diff.structure;
+  return (
+    s.category_line.state === "present" &&
+    s.core.expected === s.core.found &&
+    s.existing_institute.expected === s.existing_institute.found &&
+    s.extra_blocks.length === 0
+  );
+}
+
+/** Says plainly that nothing was compared, and why (the reading sentence comes from the read). */
+function NotCompared({ state, t, to }: { state: ComparisonView; t: T; to: ReadT }) {
+  return (
+    <section className={styles.section} aria-labelledby="diff-notcompared">
+      <h2 id="diff-notcompared">{t("notComparedHeading")}</h2>
+      {state.why ? <p>{to(`why.${state.why}` as never, state.values as never)}</p> : null}
+      <p className={styles.note}>{state.ocrText ? t("notComparedOcr") : t("notComparedEmpty")}</p>
+    </section>
+  );
+}
+
+function Structure({ diff, t, showResults }: { diff: AffidavitDiff; t: T; showResults: boolean }) {
   const s = diff.structure;
   const categoryState = s.category_line.state;
   const tone: Tone = categoryState === "present" ? "ok" : "mismatch";
   const blockOk = (b: { expected: number; found: number }) => b.expected === b.found;
+  if (!showResults) {
+    const rows = [
+      [t("categoryLine"), s.category_line.expected.join("; ")],
+      [t("block.core"), String(s.core.expected)],
+      [t("block.existing_institute"), String(s.existing_institute.expected)],
+      [t("extraBlocks"), t("noneExpected")],
+    ];
+    return (
+      <section className={styles.section} aria-labelledby="diff-structure">
+        <h2 id="diff-structure">{t("structureHeading")}</h2>
+        <div className={styles.tableWrap}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th scope="col">{t("check")}</th>
+                <th scope="col">{t("expected")}</th>
+                <th scope="col">{t("found")}</th>
+                <th scope="col">{t("result")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map(([name, expected]) => (
+                <tr key={name}>
+                  <th scope="row">{name}</th>
+                  <td>{expected}</td>
+                  <td colSpan={2}>
+                    <Label tone="neutral">{t("notChecked")}</Label>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    );
+  }
   return (
     <section className={styles.section} aria-labelledby="diff-structure">
       <h2 id="diff-structure">{t("structureHeading")}</h2>

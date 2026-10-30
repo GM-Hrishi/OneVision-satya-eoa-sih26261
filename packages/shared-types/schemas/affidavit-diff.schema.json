@@ -222,7 +222,7 @@
             "text_layer",
             "ocr"
           ],
-          "description": "Slice 1 reads the text layer only; OCR arrives with M3 (P-2)."
+          "description": "Where the sworn text came from: the PDF text layer, or OCR of a scanned file. Text read by OCR never decides anything."
         },
         "ocr_mean_confidence": {
           "type": [
@@ -242,7 +242,7 @@
               "type": "null"
             }
           ],
-          "description": "Filled by M6 (P-4); null when M6 could not read it."
+          "description": "Filled by the signature check; null when it could not read the file."
         },
         "uploader_sig": {
           "anyOf": [
@@ -253,7 +253,7 @@
               "type": "null"
             }
           ],
-          "description": "Filled by M6 (P-4); null when M6 could not read it."
+          "description": "Filled by the signature check; null when it could not read the file."
         },
         "category_list_found": {
           "type": [
@@ -804,7 +804,7 @@
           "type": "null"
         }
       ],
-      "description": "Filled by M6 (P-4) from the stamp page; null when no stamp page is found."
+      "description": "Filled by the signature and stamp check from the stamp page; null when no stamp page is found."
     },
     "chronology": {
       "anyOf": [
@@ -917,7 +917,24 @@
           "type": "null"
         }
       ],
-      "description": "Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload (design B1 row 1, D1). Filled by M6 (P-4)."
+      "description": "Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload (design B1 row 1, D1). Filled by the signature and stamp check."
+    },
+    "comparison": {
+      "title": "Comparison",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "source", "read"],
+      "description": "Whether the sworn copy was really compared with the portal draft. Added by the API; the page says a copy matches only when state is compared. A scan or an unreadable file is not_compared: OCR text never decides anything.",
+      "properties": {
+        "state": { "title": "ComparisonState", "type": "string", "enum": ["compared", "not_compared"] },
+        "source": {
+          "title": "ComparisonSource",
+          "type": "string",
+          "enum": ["text_layer", "scan_read", "scan_unreliable", "scan_not_read", "scan_timeout", "ocr_unavailable", "unreadable"],
+          "description": "Where the sworn text came from, or why there is none."
+        },
+        "read": { "$ref": "document.schema.json#/$defs/ReadNote" }
+      }
     },
     "pending": {
       "type": "array",

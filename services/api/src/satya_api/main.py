@@ -294,8 +294,8 @@ def create_app(
             },
             "adapters": [],
             "adapters_note": (
-                "No source adapters in slice 0. TN Form D and TN fire licence adapters arrive "
-                "in mock mode with M7 (P-5); every mock result is tagged as a simulated source."
+                "Source answers come from offline checks or simulated services. "
+                "Every simulated result is tagged as a simulated source."
             ),
             "advisory": True,
             "regulatory_effect": "none",
@@ -514,9 +514,9 @@ def create_app(
     @app.get("/v1/cases/{case_id}/verification")
     async def case_verification(case_id: str, request: Request) -> JSONResponse:
         """RB-06 data (UI spec §6.4): one label per document, two signature badges."""
-        principal, repo = await scoped_case(request, case_id)
+        principal, _ = await scoped_case(request, case_id)
         try:
-            body = await repo.verification(case_id)
+            body = await request.app.state.workflow.verification(case_id)
         except CaseError:
             raise unusable(request, case_id) from None
         log.info(
@@ -528,11 +528,11 @@ def create_app(
     @app.get("/v1/cases/{case_id}/documents/{doc_id}/verification")
     async def document_verification(case_id: str, doc_id: str, request: Request) -> JSONResponse:
         """VerificationResult of one document (Portal spec §2.7)."""
-        principal, repo = await scoped_case(request, case_id)
+        principal, _ = await scoped_case(request, case_id)
         if not DOC_ID.fullmatch(doc_id):
             raise ProblemError(404, "NOT_FOUND")
         try:
-            body = await repo.document_verification(case_id, doc_id)
+            body = await request.app.state.workflow.document_verification(case_id, doc_id)
         except CaseError:
             raise unusable(request, case_id) from None
         if body is None:

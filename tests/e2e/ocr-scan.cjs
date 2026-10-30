@@ -102,6 +102,15 @@ const check = (ok, msg) => { console.log(`${ok ? "PASS" : "FAIL"} ${msg}`); if (
   await page.waitForSelector("#flags", { timeout: 30000 });
   check(/This file is a scan/.test(await page.textContent("main")), "noisy scan case shows the reason sentence");
 
+  // B-43: the affidavit diff of a scan says it was not compared, never that it matches
+  for (const id of [DT13, DCE15]) {
+    await page.goto(`${BASE}/case/${id}/affidavit`);
+    await page.waitForSelector("#diff-notcompared", { timeout: 30000 });
+    const diffText = await page.textContent("main");
+    check(!/matches the portal draft/i.test(diffText) && !/No declaration differs/.test(diffText), `scan case ${id.slice(-4)}: the diff never says matches`);
+    check(/Scan, /.test(diffText) && !/M3|P-2/.test(diffText), `scan case ${id.slice(-4)}: the text source names the scan and no build code shows`);
+  }
+
   // B-28: upload a scan into a clean case
   await page.goto(`${BASE}/case/${DCE05}/upload`);
   const form = page.locator("section[aria-labelledby=up-file] form");

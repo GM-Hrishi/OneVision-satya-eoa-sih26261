@@ -22,6 +22,20 @@
     "flag_count": { "type": "integer", "minimum": 0 }
   },
   "$defs": {
+    "ReadNote": {
+      "title": "ReadNote",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason_code", "variant", "values", "ocr_mean_confidence"],
+      "description": "How a file was read: the PDF text layer, OCR of a scan, or not at all. The wording of the sentence is a translated template picked by `variant`. Text read by OCR never decides anything.",
+      "properties": {
+        "status": { "title": "ReadStatus", "type": "string", "enum": ["native", "ocr_read", "blocked"] },
+        "reason_code": { "type": ["string", "null"], "maxLength": 40, "description": "Short code for auditors, for example SCAN_IMAGE_ONLY. The code is shared by a scan that was read and a scan that was not." },
+        "variant": { "type": ["string", "null"], "maxLength": 40, "description": "Key of the plain sentence, for example scan_read, low_confidence, scan_not_attempted." },
+        "values": { "type": "object", "additionalProperties": { "type": ["string", "number"] }, "description": "Numbers the sentence mentions (confidence, threshold, pages)." },
+        "ocr_mean_confidence": { "type": ["number", "null"], "minimum": 0, "maximum": 1 }
+      }
+    },
     "SignatureCheck": {
       "title": "SignatureCheck",
       "description": "One of the two independent signature checks (Portal spec §2.8, UI spec §4.3). An image-only mark is never verified (decision #16).",

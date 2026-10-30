@@ -235,7 +235,8 @@ def test_case_verification_matches_ui_6_4_and_the_demo_story(wb: TestClient) -> 
 def test_clean_case_verification(wb: TestClient) -> None:
     body = wb.get(f"/v1/cases/{DCE05}/verification", headers=auth(token())).json()
     labels = sorted(d["label"] for d in body["documents"])
-    assert labels == ["source_unavailable", "verified"]
+    # The ICAI answer for the audited statement is a stored simulated source answer (SRC_MATCH).
+    assert labels == ["verified", "verified"]
     assert all(d["flag_count"] == 0 for d in body["documents"])
 
 

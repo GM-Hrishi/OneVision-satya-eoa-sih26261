@@ -14,7 +14,7 @@
     "subject": { "$ref": "common.schema.json#/$defs/Subject" },
     "sequence": { "type": "integer", "minimum": 1, "description": "Per application, increases by 1." },
     "correlation_id": { "$ref": "common.schema.json#/$defs/CorrelationId" },
-    "data": { "type": "object", "description": "Type-specific payload (§2.4, §2.5). Per-type schemas arrive with their slices." },
+    "data": { "type": "object", "description": "Type-specific payload (§2.4, §2.5). Per-type payload." },
     "advisory": { "type": "boolean", "const": true },
     "regulatory_effect": { "type": "string", "const": "none" },
     "case_id": { "$ref": "common.schema.json#/$defs/CaseId" },

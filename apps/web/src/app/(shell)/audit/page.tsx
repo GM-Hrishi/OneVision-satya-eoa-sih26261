@@ -14,6 +14,14 @@ import { Note } from "@/components/ui/Note";
 
 type Props = { searchParams: Promise<{ case?: string }> };
 
+type DemoT = Awaited<ReturnType<typeof getTranslations<"demo">>>;
+
+/** A plain label for a ledger event kind; a kind without a label reads "Other event". */
+function eventLabel(t: DemoT, kind: string): string {
+  const key = `audit.event.${kind.replace(/\./g, "_")}`;
+  return t.has(key as never) ? t(key as never) : t("audit.event.unknown");
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("demo");
   return { title: t("audit.title"), description: t("audit.description") };
@@ -64,7 +72,7 @@ export default async function AuditPage({ searchParams }: Props) {
                   <td className={diff.num}>{e.seq}</td>
                   <td>{fmt.format(new Date(e.at))}</td>
                   <td>
-                    {t(`audit.event.${e.event_type.replace(".", "_")}` as never)}
+                    {eventLabel(t, e.event_type)}
                     {e.event_type === "source.response" ? (
                       <>
                         {" "}

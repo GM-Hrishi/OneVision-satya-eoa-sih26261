@@ -38,7 +38,7 @@
           "title": { "type": "string", "minLength": 1, "maxLength": 200 },
           "format_type": { "type": "string", "enum": ["T", "E", "P"], "description": "T = AICTE template, E = external, P = portal data (design B)." },
           "state_code": { "type": ["string", "null"], "pattern": "^[A-Z]{2}$" },
-          "issuer_profile": { "type": ["string", "null"], "maxLength": 120, "description": "Annexure-14 issuer profile id (M3/M4, P-6); null until that slice." },
+          "issuer_profile": { "type": ["string", "null"], "maxLength": 120, "description": "Annexure-14 issuer profile id; null when none is recorded." },
           "source": {
             "title": "VerificationSource",
             "type": "object",
@@ -63,10 +63,11 @@
           "actions": {
             "type": "array",
             "items": { "title": "VerificationAction", "type": "string", "enum": ["recheck", "route_manual", "retry"] },
-            "description": "Actions the official may take (UI §7.2); the controls arrive with M11 (P-10)."
+            "description": "Suggested next steps for the official (UI §7.2); the workbench has no control that runs them."
           },
           "flag_count": { "type": "integer", "minimum": 0 },
           "checks": { "type": "array", "items": { "$ref": "verification-result.schema.json#/$defs/Check" }, "description": "The document's VerificationResult.checks[] (Portal §2.7), for the panel's detail view." },
+          "read": { "$ref": "document.schema.json#/$defs/ReadNote", "description": "How the file was read; the plain sentence for a scan or an unreadable file comes from it." },
           "flags": { "type": "array", "items": { "$ref": "flag.schema.json" }, "description": "Findings raised on this document (Portal §2.6.4); additive to UI §6.4 so RB-06 can show findings no other P1 screen shows yet (e.g. UDIN)." }
         }
       }

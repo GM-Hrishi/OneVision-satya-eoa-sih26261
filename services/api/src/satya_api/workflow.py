@@ -22,6 +22,8 @@ from satya_api.cases import (
     AFFIDAVIT_SLOT,
     CaseError,
     FixtureCaseRepository,
+    case_verification,
+    read_note,
 )
 from satya_api.ledger import LedgerRow, verify_chain
 from satya_api.sources import SOURCES, apply_hub
@@ -263,6 +265,32 @@ class Workflow:
         }
         self._views[key] = view
         return view
+
+    async def verification(self, case_id: str) -> dict[str, Any]:
+        """RB-06 data from the same view as the Case tab (one source of truth for labels, D4)."""
+        view = await self.analyse(case_id)
+        m6, checked_at, case = await self.repo.m6(case_id)
+        answers = {
+            d["doc_id"]: {
+                "label": d["label"],
+                "checks": d["checks"],
+                "source": d["source"],
+                "response_ref": d["responses"][-1]["response_sha256"] if d["responses"] else None,
+                "read": read_note(d["read"]),
+            }
+            for d in view["documents"]
+        }
+        return case_verification(case, m6, checked_at, answers)
+
+    async def document_verification(self, case_id: str, doc_id: str) -> dict[str, Any] | None:
+        """VerificationResult of one document, with the label and checks the Case tab shows."""
+        view = await self.analyse(case_id)
+        doc = next((d for d in view["documents"] if d["doc_id"] == doc_id), None)
+        if doc is None:
+            return None
+        m6, _, _ = await self.repo.m6(case_id)
+        res = next(r for r in m6.documents if r.doc_id == doc_id)
+        return {**res.verification, "label": doc["label"], "checks": doc["checks"]}
 
     async def dispositions(self) -> dict[tuple[str, str], dict[str, Any]]:
         out: dict[tuple[str, str], dict[str, Any]] = {}
