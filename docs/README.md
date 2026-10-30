@@ -7,7 +7,6 @@ One line per document. Synthetic data only; advisory only; mock approval portal.
 - [ARCHITECTURE.md](ARCHITECTURE.md): services, networks, signed event path, sign-in path, security layers and the check pipelines.
 - [STACK-VERSIONS.md](STACK-VERSIONS.md): pinned versions of every image, tool and library.
 - [DEMO-NOTES.md](DEMO-NOTES.md): click path through the synthetic demo cases and what each screen shows.
-- [DEMO-SCRIPT.md](DEMO-SCRIPT.md): a 5 to 7 minute demo script on one synthetic case.
 - [DEMO-CHECKLIST.md](DEMO-CHECKLIST.md): checklist for preparing a demo, including how to verify the OCR engine.
 - [SYNTHETIC-TESTSET-PLAN.md](SYNTHETIC-TESTSET-PLAN.md): how each rule is measured on synthetic test sets.
 - [ISSUES.md](ISSUES.md): backlog of planned work, generated from `backlog/promises.json`.
