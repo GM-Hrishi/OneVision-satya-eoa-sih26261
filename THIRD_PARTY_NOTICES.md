@@ -1,6 +1,6 @@
 # Third-party notices
 
-SATYA-EoA is licensed under the Apache License 2.0 (see `LICENSE` and `NOTICE`). It depends on the open-source packages listed below, each under its own licence. This file lists name, version and licence for direct and transitive dependencies.
+SATYA-EoA is licensed under the MIT License (see `LICENSE`). It depends on the open-source packages listed below, each under its own licence. This file lists name, version and licence for direct and transitive dependencies.
 
 How it was generated (2026-10-29): npm packages with `pnpm licenses list --json` and `pnpm licenses list --prod --json` after `pnpm install --frozen-lockfile`; Python packages with `pip-licenses --format=json --with-urls` run against the environment created by `uv sync --all-packages --frozen`. Licence names are copied from each package's metadata and have not been reviewed one by one by a lawyer. [VERIFY: legal review before relying on this list]
 
@@ -18,7 +18,7 @@ No AGPL, GPL, SSPL or non-commercial licence was found in the npm or Python depe
 | axe-core | 4.14.0 | MPL-2.0 | npm (development) | Accessibility testing only. |
 | lightningcss, lightningcss-linux-x64-gnu, lightningcss-linux-x64-musl | 1.33.0 | MPL-2.0 | npm (development) | Build tooling only. |
 | pypdfium2 | 5.14.0 | BSD-3-Clause, Apache-2.0 and bundled-dependency licences | Python | Metadata lists several licences; see the package for the full set. [VERIFY] |
-| satya-affidavit, satya-api, satya-blindgen, satya-forensics, satya-ocr, satya-shared-types, satya-worker | 0.1.0 | UNKNOWN (no licence field in the package's own `pyproject.toml`) | Python | These are this repository's own workspace packages, covered by the repository's Apache-2.0 licence. Adding a licence field is an optional follow-up. |
+| satya-affidavit, satya-api, satya-blindgen, satya-forensics, satya-ocr, satya-shared-types, satya-worker | 0.1.0 | UNKNOWN (no licence field in the package's own `pyproject.toml`) | Python | These are this repository's own workspace packages, covered by the repository's MIT licence. Adding a licence field is an optional follow-up. |
 
 ## Fonts
 

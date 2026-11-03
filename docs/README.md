@@ -1,6 +1,6 @@
 # Documentation index
 
-One line per document. Synthetic data only; advisory only; mock approval portal. Some documents use internal short codes for modules and backlog items (for example M5 or P-3); the backlog in [ISSUES.md](ISSUES.md) explains them.
+One line per document. Synthetic data only; advisory only; mock approval portal. Some documents use internal short codes for modules and backlog items; the backlog in [ISSUES.md](ISSUES.md) explains them.
 
 ## Guides and design
 - [DEV-SETUP.md](DEV-SETUP.md): local setup on Windows (WSL2), Linux and macOS, trusting the local HTTPS CA, everyday commands.
@@ -25,11 +25,11 @@ One line per document. Synthetic data only; advisory only; mock approval portal.
 - [screens/ui-polish/](screens/ui-polish/): synthetic workbench screenshots (queue in colour and greyscale, overview in greyscale).
 
 ## Progress and decision logs ([progress/](progress/))
-- [progress/PROGRESS.md](progress/PROGRESS.md), [PROGRESS-SLICE-1.md](progress/PROGRESS-SLICE-1.md), [PROGRESS-SLICE-2.md](progress/PROGRESS-SLICE-2.md): step tables for the foundation, affidavit comparison and signature work.
-- [progress/DEMO-SLICE-PROGRESS.md](progress/DEMO-SLICE-PROGRESS.md): step table for the demo flow.
-- [progress/OCR-SLICE-PROGRESS.md](progress/OCR-SLICE-PROGRESS.md): step table for the scan fallback.
+- Step tables ([foundation](progress/PROGRESS.md), [affidavit comparison](progress/PROGRESS-SLICE-1.md), [signatures](progress/PROGRESS-SLICE-2.md)): one per area.
+- [Demo flow](progress/DEMO-SLICE-PROGRESS.md): step table for the demo flow.
+- [Scan fallback](progress/OCR-SLICE-PROGRESS.md): step table for the scan fallback.
 - [progress/UI-POLISH-PROGRESS.md](progress/UI-POLISH-PROGRESS.md): step table for the interface polish.
-- [progress/DECISIONS-SLICE-0.md](progress/DECISIONS-SLICE-0.md), [DECISIONS-SLICE-1.md](progress/DECISIONS-SLICE-1.md), [DECISIONS-SLICE-2.md](progress/DECISIONS-SLICE-2.md), [DECISIONS-SLICE-D.md](progress/DECISIONS-SLICE-D.md): non-obvious choices for each slice.
+- Decision logs ([foundation](progress/DECISIONS-SLICE-0.md), [affidavit comparison](progress/DECISIONS-SLICE-1.md), [signatures](progress/DECISIONS-SLICE-2.md), [demo flow](progress/DECISIONS-SLICE-D.md)): non-obvious choices for each area.
 - [progress/DECISIONS-OCR-SLICE.md](progress/DECISIONS-OCR-SLICE.md): scan fallback choices, thresholds, dependencies and licences.
 - [progress/DECISIONS-UI-POLISH.md](progress/DECISIONS-UI-POLISH.md): interface polish choices.
 - [progress/DECISIONS-BLIND-REPLAY.md](progress/DECISIONS-BLIND-REPLAY.md): choices for the independent test-set generator and case replay.

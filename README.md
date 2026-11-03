@@ -8,7 +8,7 @@ Built by Team OneVision for Smart India Hackathon 2026, problem statement SIH262
 
 ![Validation queue on synthetic cases, listing five applications with a risk band, document labels and top reasons](docs/screens/ui-polish/queue-colour.png)
 
-*The validation queue, on synthetic cases only (screenshot from an earlier build; wording may differ from the current screens).*
+*The validation queue, on synthetic cases only. The screenshot is from an earlier build, so labels and wording on the current screens may differ.*
 
 ## The gap it targets
 
@@ -32,7 +32,7 @@ Under the Approval Process Handbook 2024-27 (Table 2.3), an Extension of Approva
 | Planned, not built | Tamil Nadu building-licence and fire-licence adapters |
 | Planned, not built | Issuer-profile checks |
 | Planned, not built | Handbook date rules |
-| Planned, not built | Land rule |
+| Planned, not built | Handbook land rule on plot and distance (the affidavit land-area comparison against the portal draft is built) |
 | Planned, not built | Year-over-year checks |
 | Planned, not built | Faculty identity checks |
 | Planned, not built | Infrastructure evidence review (photo reuse, GPS, floor-plan area) |
@@ -139,14 +139,15 @@ Synthetic data only. The repository contains no real documents, institutions, pe
 
 ## Known limitations
 
-- Scanned documents are read by OCR and compared with low confidence; the wording shown for scans is still being improved.
+- A scanned affidavit is not compared with the portal draft. The workbench shows an explicit "Not compared" state with a plain reason, and OCR text never decides anything. The official reads the sworn copy itself.
+- OCR covers English only.
 - The tests use synthetic documents that were written together with the rules, so passing them says nothing about real documents.
-- Blind-set evaluation is incomplete and unpublished.
+- No accuracy figures are claimed.
 - Everything listed as planned above is not built.
 
 ## Licence
 
-Apache License 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE). Third-party components are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+MIT License. See [LICENSE](LICENSE). Third-party components are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 ## References
 
