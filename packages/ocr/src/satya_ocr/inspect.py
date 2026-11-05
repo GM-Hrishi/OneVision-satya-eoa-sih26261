@@ -11,6 +11,7 @@ import threading
 import pikepdf
 import pypdfium2 as pdfium
 
+from satya_ocr.aimask import drop_ai_lines
 from satya_ocr.config import OcrSettings
 from satya_ocr.model import PageKind, PageRead
 
@@ -56,7 +57,8 @@ def inspect_pdf(data: bytes, settings: OcrSettings) -> tuple[list[PageRead], str
                 except Exception:
                     log.warning("page %d unreadable", index + 1)
                     return pages, "corrupt", count
-                chars = sum(1 for c in text if not c.isspace())
+                lines = drop_ai_lines(text.splitlines(), str)  # T7: planted text is not text
+                chars = sum(1 for line in lines for c in line if not c.isspace())
                 kind: PageKind
                 if chars >= settings.min_text_chars:
                     kind = "text_layer"

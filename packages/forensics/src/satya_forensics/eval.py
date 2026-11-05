@@ -54,6 +54,7 @@ INDICATORS_WITH_OWN_TESTS: frozenset[str] = frozenset(
         "PDF-FONT-DIFF",
         "PDF-COVER-TEXT",
         "PDF-GLYPH-OVERLAP",
+        "AI-READER-TEXT",
         "CERT-COVERAGE-EXPIRED",
         "CERT-COVERAGE-NOT-YET",
         "CERT-COVERAGE-UNKNOWN",

@@ -432,3 +432,19 @@ rules:
     institution_visible: false
     preliminary_indicator: true
     description: Characters of a date or key value are drawn on top of each other.
+  # ---- T7 text addressed to automated readers (heuristic; the text itself is ignored) ----------
+  - rule_id: AI-READER-TEXT
+    version: "0.1.0"
+    text_key: pdf.ai_reader_text
+    limitation_key: ai_reader_text
+    aph_clause: "2.3.4a [VERIFY]"
+    also_cites: ["[VERIFY: no APH clause names this; cited for document authenticity]"]
+    check_kind: format
+    reason_code: AI_READER_TEXT
+    pass_code: PDF_STRUCTURE_OK
+    severity: warning
+    label: manual_review_required
+    alert: { type: suspected_anomaly, subtype: signature_integrity }
+    institution_visible: false
+    preliminary_indicator: true
+    description: The page carries text addressed to automated readers. SATYA ignores that text and asks a person to look at the page.

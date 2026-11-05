@@ -12,6 +12,7 @@ from typing import Any
 
 import pdfplumber
 
+from satya_ocr.aimask import drop_ai_lines
 from satya_ocr.model import OcrLayer
 
 STRIKE_MIN = 0.3  # a strike line crosses a glyph between 30 % and 80 % of its height (from the top)
@@ -168,6 +169,18 @@ def _lines(page_no: int, words: list[Word]) -> list[Line]:
     return lines
 
 
+def _without_ai_words(words: list[Word]) -> list[Word]:
+    """Words minus every line addressed to automated readers (T7; the indicator is raised by M6)."""
+    kept = drop_ai_lines(_lines(0, words), lambda line: line.raw)
+    return [w for line in kept for w in line.words]
+
+
+def _clean_cell(cell: str | None) -> str | None:
+    if not cell:
+        return cell
+    return "\n".join(drop_ai_lines(cell.split("\n"), str))
+
+
 def _ocr_words(layer: OcrLayer) -> list[Word]:
     """OCR words as extractor words (no strike-through information on a scan)."""
     return [
@@ -204,14 +217,20 @@ def extract(data: bytes, ocr: Mapping[int, OcrLayer] | None = None) -> Extracted
                 struck = [_is_struck(c, strikes) for c in chars]
                 kept = "".join(c["text"] for c, s in zip(chars, struck, strict=True) if not s)
                 words.append(Word(kept, w["text"], box, sum(struck)))
+            words = _without_ai_words(words)
             if not words and not found and ocr and number in ocr:
-                words = _ocr_words(ocr[number])
+                words = _without_ai_words(_ocr_words(ocr[number]))
                 if words:
                     ocr_pages[number] = ocr[number].mean_confidence
             if words or found:
                 text_pages += 1
             tables = [
-                Table(number, Box(*t.bbox), t.extract(), [Box(*r.bbox) for r in t.rows])
+                Table(
+                    number,
+                    Box(*t.bbox),
+                    [[_clean_cell(c) for c in row] for row in t.extract()],
+                    [Box(*r.bbox) for r in t.rows],
+                )
                 for t in found
             ]
             pages.append(
