@@ -25,7 +25,7 @@ from satya_api.cases import (
     case_verification,
     read_note,
 )
-from satya_api.explain import limitation_for
+from satya_api.explain import limitation_for, why_detail, why_summary
 from satya_api.ledger import LedgerRow, verify_chain
 from satya_api.sources import SOURCES, apply_hub
 from satya_api.store import EventStore
@@ -230,11 +230,12 @@ class Workflow:
             by_id.setdefault(flag["flag_id"], flag)
         flags = []
         for flag in sorted(by_id.values(), key=flag_order):
+            titled = {**flag, "doc_title": titles.get(flag["doc_id"], "")}
             flags.append(
                 {
-                    **flag,
+                    **titled,
                     "why": why_sentence(flag),
-                    "doc_title": titles.get(flag["doc_id"], ""),
+                    "why_detail": why_detail(titled),
                     "limitation": limitation_for(flag),
                 }
             )
@@ -257,6 +258,7 @@ class Workflow:
             "tasks": tasks,
             "label_counts": label_counts(labels),
             "checked_at": checked_at,
+            "why_summary": why_summary(band_flags),
             "risk": {
                 "band": risk_band(band_flags, band_labels),
                 "reasons": reasons,
@@ -573,6 +575,7 @@ class Workflow:
                     "undisposed_flags": v["undisposed_flags"],
                     "risk_band": v["risk"]["band"],
                     "top_reasons": v["risk"]["reasons"],
+                    "why_summary": v["why_summary"],
                     "label_counts": v["label_counts"],
                     "status": v["status"],
                     "manual_tasks": len(v["tasks"]),
