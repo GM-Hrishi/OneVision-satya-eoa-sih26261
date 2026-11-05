@@ -121,3 +121,45 @@ def why_summary(flags: list[dict[str, Any]], locale: str = "en") -> list[str]:
         if len(out) == MAX_WHY_SUMMARY:
             break
     return out
+
+
+def diff_summary(diff: dict[str, Any], locale: str = "en") -> dict[str, Any]:
+    """Counts over the portal draft's declarations, from the existing per-declaration ops (T3).
+
+    `total` counts the declarations the portal form prints. A declaration is `match`, `differ`
+    (worded differently) or `missing_in_sworn`; a copy that was not compared (a scan, an unreadable
+    file) leaves every declaration `not_comparable`. `added_in_sworn` counts sworn-only declarations
+    and is not part of `total`. `differing` lists each non-matching declaration with its why.
+    """
+    total = len(diff.get("expected", {}).get("declarations", []))
+    ops = diff.get("ops", [])
+    flags = {f["flag_id"]: f for f in diff.get("flags", [])}
+    compared = (diff.get("comparison") or {}).get("state") != "not_compared"
+    kinds = [o["op"] for o in ops] if compared else []
+    match, differ, missing = (kinds.count(k) for k in ("equal", "changed", "removed"))
+    differing = []
+    for op in ops if compared else []:
+        if op["op"] == "equal":
+            continue
+        flag = flags.get(op.get("flag_id") or "")
+        titled = (
+            {**flag, "doc_title": "the sworn copy"} if flag else {"rule_id": "", "doc_title": ""}
+        )
+        differing.append(
+            {
+                "decl_no": op["decl_no"],
+                "sworn_no": op["sworn_no"],
+                "op": op["op"],
+                "flag_id": op.get("flag_id"),
+                "why": why_detail(titled, locale)["text"],
+            }
+        )
+    return {
+        "total": total,
+        "match": match,
+        "differ": differ,
+        "missing_in_sworn": missing,
+        "not_comparable": total - match - differ - missing,
+        "added_in_sworn": kinds.count("added"),
+        "differing": differing,
+    }

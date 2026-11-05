@@ -364,6 +364,7 @@ export interface AffidavitDiff {
    * Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload (design B1 row 1, D1). Filled by the signature and stamp check.
    */
   chronology: AffidavitChronology | null;
+  summary?: DiffSummary;
   comparison?: Comparison;
   /**
    * DiffView sections whose checks belong to a later module, so the UI can say so instead of showing an empty panel.
@@ -619,6 +620,31 @@ export interface AffidavitChronology {
    */
   mark_after_notary?: boolean | null;
   notary_expiry_ok?: boolean | null;
+}
+/**
+ * Counts over the declarations the portal form prints, computed from `ops`. Added by the API. not_comparable covers every declaration of a copy that was not compared (a scan or an unreadable file). Advisory: a difference is a point to check, not a finding.
+ */
+export interface DiffSummary {
+  total: number;
+  match: number;
+  differ: number;
+  missing_in_sworn: number;
+  not_comparable: number;
+  /**
+   * Declarations only the sworn copy has; not part of total.
+   */
+  added_in_sworn: number;
+  differing: DiffSummaryItem[];
+}
+export interface DiffSummaryItem {
+  decl_no: number | null;
+  sworn_no: number | null;
+  op: "added" | "removed" | "changed";
+  flag_id: string | null;
+  /**
+   * One plain sentence, from the rules catalogue.
+   */
+  why: string;
 }
 /**
  * Whether the sworn copy was really compared with the portal draft. Added by the API; the page says a copy matches only when state is compared. A scan or an unreadable file is not_compared: OCR text never decides anything.

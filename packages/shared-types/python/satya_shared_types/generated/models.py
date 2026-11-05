@@ -185,6 +185,46 @@ class DscKind(Enum):
     NoneType_None = None
 
 
+class Op(StrEnum):
+    added = "added"
+    removed = "removed"
+    changed = "changed"
+
+
+class DiffSummaryItem(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    decl_no: int | None
+    sworn_no: int | None
+    op: Op
+    flag_id: str | None
+    why: str
+    """
+    One plain sentence, from the rules catalogue.
+    """
+
+
+class DiffSummary(BaseModel):
+    """
+    Counts over the declarations the portal form prints, computed from `ops`. Added by the API. not_comparable covers every declaration of a copy that was not compared (a scan or an unreadable file). Advisory: a difference is a point to check, not a finding.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    total: Annotated[int, Field(ge=0)]
+    match: Annotated[int, Field(ge=0)]
+    differ: Annotated[int, Field(ge=0)]
+    missing_in_sworn: Annotated[int, Field(ge=0)]
+    not_comparable: Annotated[int, Field(ge=0)]
+    added_in_sworn: Annotated[int, Field(ge=0)]
+    """
+    Declarations only the sworn copy has; not part of total.
+    """
+    differing: list[DiffSummaryItem]
+
+
 class ComparisonState(StrEnum):
     compared = "compared"
     not_compared = "not_compared"
@@ -1865,6 +1905,10 @@ class AffidavitDiff(BaseModel):
     chronology: AffidavitChronology | None
     """
     Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload (design B1 row 1, D1). Filled by the signature and stamp check.
+    """
+    summary: Annotated[DiffSummary | None, Field(title="DiffSummary")] = None
+    """
+    Counts over the declarations the portal form prints, computed from `ops`. Added by the API. not_comparable covers every declaration of a copy that was not compared (a scan or an unreadable file). Advisory: a difference is a point to check, not a finding.
     """
     comparison: Annotated[Comparison | None, Field(title="Comparison")] = None
     """

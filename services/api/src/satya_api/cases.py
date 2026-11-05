@@ -25,6 +25,7 @@ from typing import Any, Protocol
 
 from satya_affidavit.engine import CaseInput, run
 from satya_affidavit.ids import sha256_hex
+from satya_api.explain import diff_summary
 from satya_forensics import pki as test_pki
 from satya_forensics.engine import M6Input, M6Result
 from satya_forensics.engine import run as run_m6
@@ -355,7 +356,8 @@ class FixtureCaseRepository:
         """The M5 diff with M6's stamp, signing order and signature badges filled in."""
         diff = await self.m5_diff(case_id)
         result, _, _ = await self.m6(case_id)
-        return merge_m6(diff, result)
+        merged = merge_m6(diff, result)
+        return {**merged, "summary": diff_summary(merged)}
 
     async def open_flags(self, case_id: str) -> int:
         """M5 + M6 findings on the case (every flag is undisposed until M11 records decisions)."""
