@@ -6,6 +6,8 @@ One line per document. Synthetic data only; advisory only; mock approval portal.
 - [DEV-SETUP.md](DEV-SETUP.md): local setup on Windows (WSL2), Linux and macOS, trusting the local HTTPS CA, everyday commands.
 - [ARCHITECTURE.md](ARCHITECTURE.md): services, networks, signed event path, sign-in path, security layers and the check pipelines.
 - [STACK-VERSIONS.md](STACK-VERSIONS.md): pinned versions of every image, tool and library.
+- [API-NOTES.md](API-NOTES.md): fields and routes added by the rival-parity logic pass (why sentences, limitations, coverage, chain verify, replay check, run diff, indicators).
+- [TAMPER-TEST.md](TAMPER-TEST.md): how to show the audit chain detecting an altered ledger row, on a throwaway ledger.
 - [DEMO-NOTES.md](DEMO-NOTES.md): click path through the synthetic demo cases and what each screen shows.
 - [DEMO-CHECKLIST.md](DEMO-CHECKLIST.md): checklist for preparing a demo, including how to verify the OCR engine.
 - [SYNTHETIC-TESTSET-PLAN.md](SYNTHETIC-TESTSET-PLAN.md): how each rule is measured on synthetic test sets.
@@ -33,6 +35,7 @@ One line per document. Synthetic data only; advisory only; mock approval portal.
 - [progress/DECISIONS-OCR-SLICE.md](progress/DECISIONS-OCR-SLICE.md): scan fallback choices, thresholds, dependencies and licences.
 - [progress/DECISIONS-UI-POLISH.md](progress/DECISIONS-UI-POLISH.md): interface polish choices.
 - [progress/DECISIONS-BLIND-REPLAY.md](progress/DECISIONS-BLIND-REPLAY.md): choices for the independent test-set generator and case replay.
+- [progress/logic-rival-parity.md](progress/logic-rival-parity.md): task table, discovery notes and decisions for the rival-parity logic pass.
 - [progress/DEFERRED.md](progress/DEFERRED.md): ideas and known defects kept out of scope on purpose.
 
 Some progress and decision logs link to documents that are not part of this repository; those links do not resolve.
