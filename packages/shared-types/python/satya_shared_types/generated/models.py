@@ -871,6 +871,14 @@ class Provenance(StrEnum):
     portal = "portal"
 
 
+class FlagCheckKind(StrEnum):
+    """
+    Present on commodity indicators (PDF structure, text addressed to automated readers). A heuristic flag is a prompt for a person to look: it never produces mismatch_detected by itself and never decides anything. Absent on rule-based findings.
+    """
+
+    heuristic = "heuristic"
+
+
 class Stage(StrEnum):
     """
     C2 stage ①–⑦.
@@ -1897,6 +1905,10 @@ class Flag(BaseModel):
     preliminary_indicator: bool
     severity: Severity
     disposition: Disposition | None
+    check_kind: Annotated[FlagCheckKind | None, Field(title="FlagCheckKind")] = None
+    """
+    Present on commodity indicators (PDF structure, text addressed to automated readers). A heuristic flag is a prompt for a person to look: it never produces mismatch_detected by itself and never decides anything. Absent on rule-based findings.
+    """
     check_ref: Annotated[str | None, Field(max_length=128)] = None
     stage: Annotated[Stage, Field(title="Stage")]
     """

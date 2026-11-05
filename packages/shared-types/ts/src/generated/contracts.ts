@@ -143,6 +143,10 @@ export type Role = "RB" | "SC" | "EV" | "HC" | "RA" | "AU" | "INS";
  */
 export type Timestamp = string;
 /**
+ * Present on commodity indicators (PDF structure, text addressed to automated readers). A heuristic flag is a prompt for a person to look: it never produces mismatch_detected by itself and never decides anything. Absent on rule-based findings.
+ */
+export type FlagCheckKind = "heuristic";
+/**
  * C2 stage ①–⑦.
  */
 export type Stage = "1" | "2" | "3" | "4" | "5" | "6" | "7";
@@ -720,6 +724,7 @@ export interface Flag {
   preliminary_indicator: boolean;
   severity: Severity;
   disposition: Disposition | null;
+  check_kind?: FlagCheckKind;
   check_ref?: string;
   stage: Stage;
   institution_visible: boolean;

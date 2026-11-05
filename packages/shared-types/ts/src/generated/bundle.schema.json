@@ -3261,6 +3261,14 @@
             }
           ]
         },
+        "check_kind": {
+          "title": "FlagCheckKind",
+          "type": "string",
+          "enum": [
+            "heuristic"
+          ],
+          "description": "Present on commodity indicators (PDF structure, text addressed to automated readers). A heuristic flag is a prompt for a person to look: it never produces mismatch_detected by itself and never decides anything. Absent on rule-based findings."
+        },
         "check_ref": {
           "type": "string",
           "maxLength": 128

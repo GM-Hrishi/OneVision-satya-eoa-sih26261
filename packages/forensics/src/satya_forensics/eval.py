@@ -43,10 +43,30 @@ CHECKED_AT = "2026-11-25T10:00:00+05:30"
 ADVISORY_NOTES_WITHOUT_PLANTED_CASES: frozenset[str] = frozenset({"STAMP-OCR-MATCH"})
 
 
+# Heuristic indicators (T6, T7) and certificate coverage (T5) are not planted in the signature,
+# stamp and UDIN corpus, and no precision or recall is claimed for them. Each has its own unit tests
+# (test_structure.py, test_airead.py, test_coverage.py). They may only ask for a person to look or
+# mark an expired certificate, never mismatch_detected; a test enforces it, and another test shows
+# that none of them fires on this corpus.
+INDICATORS_WITH_OWN_TESTS: frozenset[str] = frozenset(
+    {
+        "PDF-ANNOT-OVERLAP",
+        "PDF-FONT-DIFF",
+        "PDF-COVER-TEXT",
+        "PDF-GLYPH-OVERLAP",
+        "CERT-COVERAGE-EXPIRED",
+        "CERT-COVERAGE-NOT-YET",
+        "CERT-COVERAGE-UNKNOWN",
+        "CERT-SESSION-GAP",
+    }
+)
+NOT_SCORED = ADVISORY_NOTES_WITHOUT_PLANTED_CASES | INDICATORS_WITH_OWN_TESTS
+
+
 def scored_rule_ids(rule_ids: Iterable[str] | None = None) -> list[str]:
-    """Rules that enter the metrics: every rule except the named advisory notes."""
+    """Rules that enter the metrics: every rule except the named advisory notes and indicators."""
     ids = list(load_ruleset().rules) if rule_ids is None else list(rule_ids)
-    return [r for r in ids if r not in ADVISORY_NOTES_WITHOUT_PLANTED_CASES]
+    return [r for r in ids if r not in NOT_SCORED]
 
 
 @dataclass

@@ -95,7 +95,9 @@ def test_statuses_map_to_existing_labels_only() -> None:
 
 
 def factory() -> FlagFactory:
-    return FlagFactory(load_ruleset(), "doc_X", "a" * 64, "Fire safety certificate")
+    return FlagFactory(
+        load_ruleset(), "doc_01JD3M5A00000000000000CE05", "a" * 64, "Fire safety certificate"
+    )
 
 
 def test_expired_certificate_raises_one_flag_with_dates() -> None:
@@ -172,3 +174,27 @@ def load_ruleset_path():  # type: ignore[no-untyped-def]
 def test_coverage_rules_have_limitation_and_cite_a_clause(rule_id: str) -> None:
     rule = load_ruleset()[rule_id]
     assert rule.limitation_key == "certificate_dates" and "VERIFY" in rule.aph_clause
+
+
+def test_coverage_flags_and_checks_follow_the_contracts() -> None:
+    from satya_shared_types import validator
+
+    checks = [
+        {
+            "kind": "expiry",
+            "outcome": "verified",
+            "valid_from": "2025-03-01",
+            "valid_to": "2026-08-14",
+        }
+    ]
+    check, flags = coverage_outcome(checks, SUBMITTED, "2026-27", factory())
+    result = {
+        "doc_id": "doc_01JD3M5A00000000000000CE05",
+        "label": document_label([check]),
+        "decided_by": "system",
+        "checks": [check],
+    }
+    assert [e.message for e in validator("VerificationResult").iter_errors(result)] == []
+    for flag in flags:
+        extra = flag.pop("why_extra")
+        assert extra and [e.message for e in validator("Flag").iter_errors(flag)] == []

@@ -312,8 +312,8 @@ rules:
     version: "0.1.0"
     text_key: certificate.expired_before_submission
     limitation_key: certificate_dates
-    aph_clause: "Annex-2.1 [VERIFY: clause for a valid, unexpired certificate on the submission date]"
-    also_cites: ["APH digest: fire safety, structural stability and occupancy/completion certificates must be valid"]
+    aph_clause: "Annex-2.1 [VERIFY]"
+    also_cites: ["APH digest: fire safety, structural stability and occupancy/completion certificates must be valid", "[VERIFY: clause for a valid, unexpired certificate on the submission date]"]
     check_kind: expiry
     reason_code: CERT_EXPIRED_BEFORE_SUBMISSION
     pass_code: CERT_COVERS_SUBMISSION
@@ -327,8 +327,8 @@ rules:
     version: "0.1.0"
     text_key: certificate.not_yet_valid
     limitation_key: certificate_dates
-    aph_clause: "Annex-2.1 [VERIFY: clause for a valid certificate on the submission date]"
-    also_cites: []
+    aph_clause: "Annex-2.1 [VERIFY]"
+    also_cites: ["[VERIFY: clause for a valid certificate on the submission date]"]
     check_kind: expiry
     reason_code: CERT_NOT_YET_VALID
     pass_code: CERT_COVERS_SUBMISSION
@@ -342,8 +342,8 @@ rules:
     version: "0.1.0"
     text_key: certificate.validity_unknown
     limitation_key: certificate_dates
-    aph_clause: "Annex-2.1 [VERIFY: clause for a valid certificate on the submission date]"
-    also_cites: []
+    aph_clause: "Annex-2.1 [VERIFY]"
+    also_cites: ["[VERIFY: clause for a valid certificate on the submission date]"]
     check_kind: expiry
     reason_code: CERT_VALIDITY_UNKNOWN
     pass_code: CERT_COVERS_SUBMISSION
@@ -357,8 +357,8 @@ rules:
     version: "0.1.0"
     text_key: certificate.ends_before_session_end
     limitation_key: certificate_dates
-    aph_clause: "[VERIFY APH clause: whether a certificate must cover the whole academic session]"
-    also_cites: []
+    aph_clause: "[VERIFY APH clause]"
+    also_cites: ["[VERIFY: whether a certificate must cover the whole academic session]"]
     check_kind: expiry
     reason_code: CERT_ENDS_BEFORE_SESSION_END
     pass_code: CERT_COVERS_SESSION
@@ -368,4 +368,67 @@ rules:
     institution_visible: false
     preliminary_indicator: true
     description: A certificate covers the submission date but ends before the end of the academic session. Off unless switched on in coverage.yaml.
-
+  # ---- T6 heuristic PDF structure indicators (commodity checks, check_kind "heuristic") --------
+  # Severity: "medium" is warning, "low" is info. They route to manual_review_required at most and
+  # never to mismatch_detected. Alert subtype signature_integrity is the nearest Portal §2.9 value
+  # [VERIFY with M11].
+  - rule_id: PDF-ANNOT-OVERLAP
+    version: "0.1.0"
+    text_key: pdf.annotation_over_value
+    limitation_key: pdf_annotation
+    aph_clause: "2.3.4a [VERIFY]"
+    also_cites: ["[VERIFY: no APH clause names PDF structure indicators; cited for document authenticity]"]
+    check_kind: format
+    reason_code: PDF_ANNOTATION_OVER_VALUE
+    pass_code: PDF_STRUCTURE_OK
+    severity: warning
+    label: manual_review_required
+    alert: { type: suspected_anomaly, subtype: signature_integrity }
+    institution_visible: false
+    preliminary_indicator: true
+    description: A note, highlight, square or stamp annotation lies over a date or key value on the affidavit or a certificate.
+  - rule_id: PDF-FONT-DIFF
+    version: "0.1.0"
+    text_key: pdf.font_differs
+    limitation_key: pdf_font
+    aph_clause: "2.3.4a [VERIFY]"
+    also_cites: ["[VERIFY: no APH clause names PDF structure indicators; cited for document authenticity]"]
+    check_kind: format
+    reason_code: PDF_FONT_DIFFERS
+    pass_code: PDF_STRUCTURE_OK
+    severity: info
+    label: manual_review_required
+    alert: { type: suspected_anomaly, subtype: signature_integrity }
+    institution_visible: false
+    preliminary_indicator: true
+    description: A date or key value is set in another font family or size than the rest of its line.
+  - rule_id: PDF-COVER-TEXT
+    version: "0.1.0"
+    text_key: pdf.cover_over_text
+    limitation_key: pdf_cover
+    aph_clause: "2.3.4a [VERIFY]"
+    also_cites: ["[VERIFY: no APH clause names PDF structure indicators; cited for document authenticity]"]
+    check_kind: format
+    reason_code: PDF_COVER_OVER_TEXT
+    pass_code: PDF_STRUCTURE_OK
+    severity: warning
+    label: manual_review_required
+    alert: { type: suspected_anomaly, subtype: signature_integrity }
+    institution_visible: false
+    preliminary_indicator: true
+    description: An opaque white (page-colour) box is drawn over a key value whose text is still in the text layer.
+  - rule_id: PDF-GLYPH-OVERLAP
+    version: "0.1.0"
+    text_key: pdf.glyph_overlap
+    limitation_key: pdf_overlap
+    aph_clause: "2.3.4a [VERIFY]"
+    also_cites: ["[VERIFY: no APH clause names PDF structure indicators; cited for document authenticity]"]
+    check_kind: format
+    reason_code: PDF_GLYPH_OVERLAP
+    pass_code: PDF_STRUCTURE_OK
+    severity: warning
+    label: manual_review_required
+    alert: { type: suspected_anomaly, subtype: signature_integrity }
+    institution_visible: false
+    preliminary_indicator: true
+    description: Characters of a date or key value are drawn on top of each other.

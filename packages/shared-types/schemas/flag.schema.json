@@ -49,6 +49,12 @@
     "preliminary_indicator": { "type": "boolean" },
     "severity": { "$ref": "common.schema.json#/$defs/Severity" },
     "disposition": { "anyOf": [{ "$ref": "disposition.schema.json" }, { "type": "null" }] },
+    "check_kind": {
+      "title": "FlagCheckKind",
+      "type": "string",
+      "enum": ["heuristic"],
+      "description": "Present on commodity indicators (PDF structure, text addressed to automated readers). A heuristic flag is a prompt for a person to look: it never produces mismatch_detected by itself and never decides anything. Absent on rule-based findings."
+    },
     "check_ref": { "type": "string", "maxLength": 128 },
     "stage": { "title": "Stage", "type": "string", "enum": ["1", "2", "3", "4", "5", "6", "7"], "description": "C2 stage ①–⑦." },
     "institution_visible": { "type": "boolean" },
