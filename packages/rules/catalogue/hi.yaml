@@ -1,0 +1,62 @@
+# Hindi catalogue (draft). Every entry is marked review: true until a Hindi reviewer has checked it.
+locale: hi
+limitation:
+  entry_slip: {text: "यह किसी गलत काम को नहीं दर्शाता। टाइपिंग की चूक या पोर्टल फ़ॉर्म में बाद का संपादन भी ऐसा ही दिखेगा।", review: true}
+  template_variant: {text: "यह किसी गलत काम को नहीं दर्शाता। संस्था ने टेम्पलेट का पुराना मसौदा या दूसरा प्रिंट इस्तेमाल किया हो सकता है।", review: true}
+  table_reading: {text: "यह किसी गलत काम को नहीं दर्शाता। मिली हुई कोशिका, टूटी हुई पंक्ति या गलत पढ़ी गई तालिका कोशिका भी ऐसा ही दिखेगी।", review: true}
+  resave_changes_bytes: {text: "यह नहीं दर्शाता कि फ़ाइल किसने बदली या क्यों। कुछ व्यूअर में हस्ताक्षरित फ़ाइल खोलकर सहेजने से भी उसके बाइट इसी तरह बदल जाते हैं।", review: true}
+  certificate_status: {text: "यह किसी गलत काम को नहीं दर्शाता। हस्ताक्षरकर्ता ने प्रमाणपत्र का नवीनीकरण किया हो सकता है, और यहाँ की तिथियाँ फ़ाइल से ही ली गई हैं।", review: true}
+  trust_store: {text: "यह किसी गलत काम को नहीं दर्शाता। यह प्रोटोटाइप केवल परीक्षण ट्रस्ट एंकर से जाँचता है, इसलिए किसी अन्य जारीकर्ता का वैध प्रमाणपत्र भी यहाँ दिखेगा।", review: true}
+  signature_mark: {text: "यह किसी गलत काम को नहीं दर्शाता। स्कैन या दोबारा निर्यात की गई प्रतियों में छपा हुआ \"डिजिटल रूप से हस्ताक्षरित\" चिह्न आम है।", review: true}
+  name_format: {text: "यह किसी गलत काम को नहीं दर्शाता। प्रमाणपत्र के नाम में अलग वर्तनी, आद्याक्षर या उपाधि भी ऐसा ही दिखेगी।", review: true}
+  source_reachability: {text: "यह किसी गलत काम को नहीं दर्शाता। जाँच पूरी नहीं हो सकी, उदाहरण के लिए सूची तक पहुँच नहीं मिली।", review: true}
+  date_reading: {text: "यह किसी गलत काम को नहीं दर्शाता। दूसरे प्रारूप में लिखी तिथि या कम गुणवत्ता वाले पृष्ठ से पढ़ी गई तिथि भी ऐसी ही दिखेगी।", review: true}
+  stamp_reading: {text: "यह किसी गलत काम को नहीं दर्शाता। अलग प्रकार का स्टांप या पृष्ठ से गलत पढ़ी गई राशि भी ऐसी ही दिखेगी।", review: true}
+  shared_number: {text: "यह किसी गलत काम को नहीं दर्शाता। गलती से दो बार लिखा गया क्रमांक या संस्था द्वारा दोबारा जमा किया गया आवेदन भी ऐसा ही दिखेगा।", review: true}
+  scan_reading: {text: "यह किसी गलत काम को नहीं दर्शाता। स्कैन किए पृष्ठ से पढ़े गए पाठ में अंक गलत पढ़े जा सकते हैं।", review: true}
+  number_format: {text: "यह किसी गलत काम को नहीं दर्शाता। गलत टाइप किया अंक या अलग ढंग से छपा क्रमांक भी ऐसा ही दिखेगा।", review: true}
+  certificate_dates: {text: "यह किसी गलत काम को नहीं दर्शाता। संस्था के पास नवीनीकृत प्रमाणपत्र हो सकता है जो अपलोड नहीं हुआ, या पृष्ठ से तिथियाँ गलत पढ़ी गई हो सकती हैं।", review: true}
+  pdf_annotation: {text: "यह किसी गलत काम को नहीं दर्शाता। समीक्षक और संस्थाएँ अक्सर पृष्ठ पर टिप्पणी या मोहर जोड़ते हैं।", review: true}
+  pdf_font: {text: "यह किसी गलत काम को नहीं दर्शाता। फ़ॉर्म को टेम्पलेट से अलग भरने पर एक मान में अलग फ़ॉन्ट आम है।", review: true}
+  pdf_cover: {text: "यह किसी गलत काम को नहीं दर्शाता। अपलोड से पहले पृष्ठ को छिपाने या सुधारने पर पाठ के ऊपर सफ़ेद डिब्बा आम है।", review: true}
+  pdf_overlap: {text: "यह किसी गलत काम को नहीं दर्शाता। अक्षरों का एक-दूसरे पर आना लेआउट इंजन या फ़ॉर्म भरने वाले टूल से हो सकता है।", review: true}
+  ai_reader_text: {text: "यह किसी गलत काम को नहीं दर्शाता। ऐसा पाठ चिपकाया गया टेम्पलेट, परीक्षण वाक्य या संपादन टूल का छोड़ा हुआ नोट हो सकता है।", review: true}
+# Plain "why" sentences (draft, same placeholders as en.yaml).
+why:
+  AFF-CAT-LINE: {text: "पोर्टल फ़ॉर्म की क्रमांकित श्रेणी पंक्ति शपथ-प्रति में नहीं है, या उसमें अन्य श्रेणियाँ हैं।", review: true}
+  AFF-DECL-MISSING: {text: "पोर्टल फ़ॉर्म में छपी एक घोषणा शपथ-प्रति में नहीं मिली।", review: true}
+  AFF-DECL-CHANGED: {text: "शपथ-प्रति की एक घोषणा के शब्द पोर्टल फ़ॉर्म से अलग हैं।", review: true}
+  AFF-DECL-ADDED: {text: "शपथ-प्रति में एक ऐसी घोषणा है जो पोर्टल फ़ॉर्म में नहीं छपती।", review: true}
+  AFF-HEADER: {text: "शपथ-प्रति के आरंभिक खंड का एक क्षेत्र पोर्टल फ़ॉर्म से अलग है।", review: true}
+  LAND-AREA-RECON: {text: "शपथ-पत्र में {extracted} {unit_label} भूमि घोषित है; पोर्टल फ़ॉर्म में {expected} {unit_label} है।", review: true}
+  LAND-ROW-RECON: {text: "शपथ-प्रति की एक भूमि पंक्ति पोर्टल फ़ॉर्म के भूमि विवरण से अलग है।", review: true}
+  ROOM-RECON: {text: "शपथ-प्रति का एक कक्ष मान पोर्टल फ़ॉर्म के कक्ष विवरण से अलग है।", review: true}
+  ROOM-ID-DUP: {text: "कक्ष आईडी {extracted} शपथ-पत्र की एक से अधिक कक्ष तालिकाओं में आती है।", review: true}
+  SIG-DIGEST: {text: "{doc_title} की सामग्री अब उस सामग्री से मेल नहीं खाती जिसे उसका डिजिटल हस्ताक्षर कवर करता है।", review: true}
+  SIG-MODIFIED: {text: "{doc_title} हस्ताक्षर के बाद बदली गई है।", review: true}
+  SIG-REVOKED: {text: "{doc_title} पर हस्ताक्षर करने वाला प्रमाणपत्र हस्ताक्षर के समय से पहले रद्द हो चुका था।", review: true}
+  SIG-CERT-EXPIRED: {text: "{doc_title} पर हस्ताक्षर करने वाले प्रमाणपत्र की अवधि हस्ताक्षर के समय समाप्त हो चुकी थी।", review: true}
+  SIG-UNTRUSTED: {text: "{doc_title} पर हस्ताक्षर करने वाला प्रमाणपत्र यहाँ प्रयुक्त ट्रस्ट एंकर तक नहीं जुड़ता।", review: true}
+  SIG-IMAGE: {text: "{doc_title} में \"डिजिटल रूप से हस्ताक्षरित\" चिह्न छपा हुआ पाठ या चित्र है, हस्ताक्षर नहीं।", review: true}
+  SIG-SIGNER: {text: "हस्ताक्षर प्रमाणपत्र का नाम आवेदन में दिए हस्ताक्षरकर्ता से मेल नहीं खाता।", review: true}
+  SIG-REVOCATION: {text: "निरस्तीकरण सूची तक पहुँच नहीं मिली, इसलिए हस्ताक्षर प्रमाणपत्र के रद्द होने की जाँच नहीं हुई।", review: true}
+  SIG-UPLOADER-MISSING: {text: "{doc_title} की अपलोड की गई प्रति पर संस्था का कोई डिजिटल हस्ताक्षर नहीं है।", review: true}
+  STAMP-CHRONO: {text: "{doc_title} में स्टांप, नोटरीकरण या हस्ताक्षर की तिथियाँ अपेक्षित क्रम में नहीं हैं।", review: true}
+  STAMP-PARTY: {text: "{doc_title} का ई-स्टांप ऐसे दूसरे पक्ष का नाम देता है जो टेम्पलेट के अनुसार अपेक्षित नहीं है।", review: true}
+  STAMP-DUTY: {text: "{doc_title} में चुकाया गया स्टांप शुल्क टेम्पलेट की अपेक्षित राशि से कम है।", review: true}
+  STAMP-INSTRUMENT: {text: "{doc_title} का स्टांप भौतिक कागज़ पर है, इसलिए ई-स्टांप क्रमांक खोजा नहीं जा सकता।", review: true}
+  STAMP-REUSE: {text: "{doc_title} का ई-स्टांप प्रमाणपत्र क्रमांक किसी अन्य आवेदन में पहले इस्तेमाल हो चुका है।", review: true}
+  STAMP-OCR-MATCH: {text: "{doc_title} के स्कैन से पढ़ा गया स्टांप क्रमांक किसी अन्य आवेदन से मिलता है; किसी व्यक्ति को जाँचना होगा।", review: true}
+  NOTARY-EXPIRY: {text: "{doc_title} पर नोटरी की मोहर की अवधि नोटरीकरण की तिथि पर समाप्त हो चुकी थी।", review: true}
+  UDIN-STRUCT: {text: "{doc_title} के यूडीआईएन की बनावट या वर्ष अपेक्षित से अलग है।", review: true}
+  UDIN-MEMBER: {text: "यूडीआईएन के भीतर का सदस्यता क्रमांक विवरण पर छपे क्रमांक से अलग है।", review: true}
+  UDIN-REUSE: {text: "{doc_title} का यूडीआईएन किसी अन्य आवेदन में भी मिलता है।", review: true}
+  CERT-COVERAGE-EXPIRED: {text: "{doc_title} {valid_to} को समाप्त हुआ, जो जमा करने की तिथि {submitted} से {days_off} दिन पहले है।", review: true}
+  CERT-COVERAGE-NOT-YET: {text: "{doc_title} {valid_from} से शुरू होता है, जो जमा करने की तिथि {submitted} के {days_off} दिन बाद है।", review: true}
+  CERT-COVERAGE-UNKNOWN: {text: "{doc_title} की वैधता तिथियाँ पढ़ी नहीं जा सकीं, इसलिए जमा करने की तिथि की कवरेज नहीं जाँची गई।", review: true}
+  CERT-SESSION-GAP: {text: "{doc_title} {valid_to} तक वैध है, जो शैक्षणिक सत्र के अंत ({session_end}) से पहले है।", review: true}
+  PDF-ANNOT-OVERLAP: {text: "पृष्ठ {page} पर ऊपर से जोड़ा गया नोट या मोहर {doc_title} के एक मुख्य मान को ढकता है।", review: true}
+  PDF-FONT-DIFF: {text: "{doc_title} के पृष्ठ {page} पर एक मुख्य मान आसपास के पाठ से अलग फ़ॉन्ट या आकार में है।", review: true}
+  PDF-COVER-TEXT: {text: "{doc_title} के पृष्ठ {page} पर एक ठोस डिब्बा उस पाठ के ऊपर है जो फ़ाइल में अब भी मौजूद है।", review: true}
+  PDF-GLYPH-OVERLAP: {text: "{doc_title} के पृष्ठ {page} पर एक मुख्य मान के अक्षर एक-दूसरे के ऊपर छपे हैं।", review: true}
+  AI-READER-TEXT: {text: "{doc_title} के पृष्ठ {page} पर स्वचालित पाठकों को संबोधित पाठ है। SATYA ने उसे अनदेखा किया।", review: true}

@@ -38,6 +38,7 @@ from satya_api.config import (
     get_settings,
     parse_rate,
 )
+from satya_api.explain import rule_detail
 from satya_api.logs import configure_logging
 from satya_api.middleware import (
     BodyLimitMiddleware,
@@ -64,6 +65,7 @@ security = logging.getLogger("satya.security")
 CheckFn = Callable[[], Awaitable[None]]
 MAX_REPORTED_ERRORS = 20
 RISK_BANDS = ("high", "medium", "low")
+RULE_ID = re.compile(r"[A-Z][A-Z0-9-]{2,39}")
 REGION_NAME = re.compile(r"[a-z][a-z_]{1,19}")
 
 
@@ -719,6 +721,15 @@ def create_app(
                 "reproducible": body["reproducible"],
             },
         )
+        return JSONResponse(body, headers={"Cache-Control": "no-store"})
+
+    @app.get("/v1/rules/{rule_id}")
+    async def rule_detail_route(rule_id: str, request: Request) -> JSONResponse:
+        """One current rule: version, APH clause, severity, label and its limitation text."""
+        await official(request, ("RB", "AU"))
+        body = rule_detail(rule_id) if RULE_ID.fullmatch(rule_id) else None
+        if body is None:
+            raise ProblemError(404, "NOT_FOUND")
         return JSONResponse(body, headers={"Cache-Control": "no-store"})
 
     @app.get("/v1/audit")

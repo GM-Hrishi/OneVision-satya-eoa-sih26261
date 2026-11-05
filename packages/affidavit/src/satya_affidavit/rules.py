@@ -26,6 +26,8 @@ class Rule:
     institution_visible: bool
     preliminary_indicator: bool
     tolerance: float = 0.0
+    limitation_key: str | None = None
+    description: str = ""
 
 
 @dataclass(frozen=True)
@@ -64,6 +66,8 @@ def load_ruleset_file(path: Path) -> Ruleset:
             alert_subtype=r["alert"]["subtype"],
             institution_visible=bool(r["institution_visible"]),
             preliminary_indicator=bool(r["preliminary_indicator"]),
+            limitation_key=r.get("limitation_key"),
+            description=str(r.get("description", "")),
             tolerance=float(r.get("tolerance", 0.0)),
         )
         for r in raw["rules"]

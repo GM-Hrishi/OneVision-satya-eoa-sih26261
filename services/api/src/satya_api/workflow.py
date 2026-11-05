@@ -25,6 +25,7 @@ from satya_api.cases import (
     case_verification,
     read_note,
 )
+from satya_api.explain import limitation_for
 from satya_api.ledger import LedgerRow, verify_chain
 from satya_api.sources import SOURCES, apply_hub
 from satya_api.store import EventStore
@@ -230,7 +231,12 @@ class Workflow:
         flags = []
         for flag in sorted(by_id.values(), key=flag_order):
             flags.append(
-                {**flag, "why": why_sentence(flag), "doc_title": titles.get(flag["doc_id"], "")}
+                {
+                    **flag,
+                    "why": why_sentence(flag),
+                    "doc_title": titles.get(flag["doc_id"], ""),
+                    "limitation": limitation_for(flag),
+                }
             )
         # A scan is not evidence of wrongdoing: its manual review label and the signature findings
         # that follow from having no signature do not raise the band (decision O-5).
