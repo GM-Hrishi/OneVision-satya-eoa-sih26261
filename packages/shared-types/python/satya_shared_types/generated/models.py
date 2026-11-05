@@ -701,6 +701,53 @@ class FieldDiff(BaseModel):
     source: str | float | bool | None
 
 
+class CoverageStatus(StrEnum):
+    covers = "covers"
+    expired_before_submission = "expired_before_submission"
+    not_yet_valid = "not_yet_valid"
+    validity_unknown = "validity_unknown"
+
+
+class Status(StrEnum):
+    covers_session = "covers_session"
+    ends_before_session_end = "ends_before_session_end"
+    validity_unknown = "validity_unknown"
+
+
+class SessionCoverage(BaseModel):
+    """
+    Present only when the optional session window is switched on in packages/rules/coverage.yaml (off by default; [VERIFY APH clause]).
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    status: Status
+    session_end: Annotated[str, Field(pattern="^\\d{4}-\\d{2}-\\d{2}$")]
+    days_short: Annotated[int | None, Field(ge=0)]
+
+
+class CertificateCoverage(BaseModel):
+    """
+    Expiry checks of time-bound certificates: whether the printed validity covers the submission date. Added by SATYA, advisory. expired_before_submission is the expired label; nothing new is added to the six labels.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    status: Annotated[CoverageStatus, Field(title="CoverageStatus")]
+    valid_from: Annotated[str | None, Field(pattern="^\\d{4}-\\d{2}-\\d{2}$")]
+    valid_to: Annotated[str | None, Field(pattern="^\\d{4}-\\d{2}-\\d{2}$")]
+    days_off: Annotated[int | None, Field(ge=0)]
+    """
+    Days the validity ended before (expired) or starts after (not yet valid) the submission date; 0 when it covers.
+    """
+    session: Annotated[SessionCoverage | None, Field(title="SessionCoverage")] = None
+    """
+    Present only when the optional session window is switched on in packages/rules/coverage.yaml (off by default; [VERIFY APH clause]).
+    """
+
+
 class ExpiryBasis(StrEnum):
     printed = "printed"
     computed_from_state_rule = "computed_from_state_rule"
@@ -1731,6 +1778,12 @@ class Check(BaseModel):
     """
     valid_from: Date | None = None
     valid_to: Date | None = None
+    coverage: Annotated[
+        CertificateCoverage | None, Field(title="CertificateCoverage")
+    ] = None
+    """
+    Expiry checks of time-bound certificates: whether the printed validity covers the submission date. Added by SATYA, advisory. expired_before_submission is the expired label; nothing new is added to the six labels.
+    """
     basis: Annotated[ExpiryBasis | None, Field(title="ExpiryBasis")] = None
     check_ref: Annotated[str | None, Field(max_length=128)] = None
     """

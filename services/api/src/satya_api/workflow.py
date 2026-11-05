@@ -39,7 +39,10 @@ from satya_api.triage import (
     top_reasons,
     why_sentence,
 )
+from satya_forensics.coverage import coverage_outcome, is_time_bound
+from satya_forensics.flags import FlagFactory as M6Flags
 from satya_forensics.labels import document_label, label_counts
+from satya_forensics.rules import load_ruleset as load_m6_ruleset
 from satya_forensics.stamp import certificate_number
 from satya_forensics.textlayer import read_pages
 from satya_forensics.udin import read_accounts
@@ -61,6 +64,32 @@ UPLOADED, CHECKED, SOURCE, TASK, DISPOSED, READ, NOTE = (
     "document.read",
     "document.note",
 )
+
+
+def submission_date(case: dict[str, Any]) -> date:
+    """The case's submission date: the latest document upload date (as the Overview reads it)."""
+    return max(date.fromisoformat(d["uploaded_at"][:10]) for d in case["documents"])
+
+
+def apply_coverage(
+    verification: dict[str, Any],
+    meta: dict[str, Any],
+    doc_id: str,
+    title: str,
+    case: dict[str, Any],
+) -> list[dict[str, Any]]:
+    """T5: for a time-bound certificate, add the coverage check and return its flags (if any)."""
+    if not is_time_bound(meta.get("declared_type")):
+        return []
+    check, flags = coverage_outcome(
+        verification["checks"],
+        submission_date(case),
+        case["ay"],
+        M6Flags(load_m6_ruleset(), doc_id, meta["sha256"], title),
+    )
+    verification["checks"].append(check)
+    verification["label"] = document_label(verification["checks"])
+    return flags
 
 
 def flag_record(flag: dict[str, Any]) -> dict[str, Any]:
@@ -154,6 +183,7 @@ class Workflow:
         registry = await self.repo.registry()
         docs: list[dict[str, Any]] = []
         tasks: list[dict[str, Any]] = []
+        coverage_flags: list[dict[str, Any]] = []
         reads = {res.doc_id: self.repo.read_of(files[res.doc_id]) for res in m6.documents}
         responses: list[dict[str, Any]]
         for res in m6.documents:
@@ -184,12 +214,13 @@ class Workflow:
                         check["outcome"] = "manual_review_required"
                         check["reason_code"] = "SRC_READ_BY_OCR"
                 verification["label"] = document_label(verification["checks"])
+            meta = next(d for d in case["documents"] if d["doc_id"] == res.doc_id)
+            coverage_flags += apply_coverage(verification, meta, res.doc_id, res.title, case)
             label = verification["label"]
             source = dict(res.source)
             if responses:
                 src = responses[-1]["source"]
                 source = {"channel": src["adapter_id"], "adapter_mode": src["mode"]}
-            meta = next(d for d in case["documents"] if d["doc_id"] == res.doc_id)
             doc = {
                 "doc_id": res.doc_id,
                 "slot": res.slot,
@@ -226,16 +257,20 @@ class Workflow:
                 )
         titles = {d["doc_id"]: d["title"] for d in docs}
         by_id: dict[str, dict[str, Any]] = {}
-        for flag in [*diff["flags"], *merged["flags"], *m6.flags]:
+        for flag in [*diff["flags"], *merged["flags"], *m6.flags, *coverage_flags]:
             by_id.setdefault(flag["flag_id"], flag)
         flags = []
         for flag in sorted(by_id.values(), key=flag_order):
-            titled = {**flag, "doc_title": titles.get(flag["doc_id"], "")}
+            extra = flag.get("why_extra")  # coverage dates; used for the sentence, not served
+            titled = {
+                **{k: v for k, v in flag.items() if k != "why_extra"},
+                "doc_title": titles.get(flag["doc_id"], ""),
+            }
             flags.append(
                 {
                     **titled,
                     "why": why_sentence(flag),
-                    "why_detail": why_detail(titled),
+                    "why_detail": why_detail({**titled, "why_extra": extra}),
                     "limitation": limitation_for(flag),
                 }
             )

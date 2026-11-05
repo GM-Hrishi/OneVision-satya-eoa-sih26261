@@ -305,3 +305,67 @@ rules:
     institution_visible: false
     preliminary_indicator: true
     description: The UDIN already appears on another filing (another institution, or another financial year) in the register (within the synthetic corpus).
+  # ---- T5 certificate coverage of the submission date (time-bound certificates) ---------------
+  # Portal §2.9 has no alert subtype for a date window other than document_expired; the three
+  # non-expired outcomes use missing_info.field_missing [VERIFY with M11].
+  - rule_id: CERT-COVERAGE-EXPIRED
+    version: "0.1.0"
+    text_key: certificate.expired_before_submission
+    limitation_key: certificate_dates
+    aph_clause: "Annex-2.1 [VERIFY: clause for a valid, unexpired certificate on the submission date]"
+    also_cites: ["APH digest: fire safety, structural stability and occupancy/completion certificates must be valid"]
+    check_kind: expiry
+    reason_code: CERT_EXPIRED_BEFORE_SUBMISSION
+    pass_code: CERT_COVERS_SUBMISSION
+    severity: warning
+    label: expired
+    alert: { type: expired, subtype: document_expired }
+    institution_visible: true
+    preliminary_indicator: true
+    description: The printed validity of a time-bound certificate ended before the submission date.
+  - rule_id: CERT-COVERAGE-NOT-YET
+    version: "0.1.0"
+    text_key: certificate.not_yet_valid
+    limitation_key: certificate_dates
+    aph_clause: "Annex-2.1 [VERIFY: clause for a valid certificate on the submission date]"
+    also_cites: []
+    check_kind: expiry
+    reason_code: CERT_NOT_YET_VALID
+    pass_code: CERT_COVERS_SUBMISSION
+    severity: warning
+    label: manual_review_required
+    alert: { type: missing_info, subtype: field_missing }
+    institution_visible: true
+    preliminary_indicator: true
+    description: The printed validity of a time-bound certificate starts after the submission date.
+  - rule_id: CERT-COVERAGE-UNKNOWN
+    version: "0.1.0"
+    text_key: certificate.validity_unknown
+    limitation_key: certificate_dates
+    aph_clause: "Annex-2.1 [VERIFY: clause for a valid certificate on the submission date]"
+    also_cites: []
+    check_kind: expiry
+    reason_code: CERT_VALIDITY_UNKNOWN
+    pass_code: CERT_COVERS_SUBMISSION
+    severity: info
+    label: manual_review_required
+    alert: { type: missing_info, subtype: field_missing }
+    institution_visible: true
+    preliminary_indicator: true
+    description: The validity dates of a time-bound certificate could not be read, so coverage of the submission date was not checked.
+  - rule_id: CERT-SESSION-GAP
+    version: "0.1.0"
+    text_key: certificate.ends_before_session_end
+    limitation_key: certificate_dates
+    aph_clause: "[VERIFY APH clause: whether a certificate must cover the whole academic session]"
+    also_cites: []
+    check_kind: expiry
+    reason_code: CERT_ENDS_BEFORE_SESSION_END
+    pass_code: CERT_COVERS_SESSION
+    severity: info
+    label: manual_review_required
+    alert: { type: missing_info, subtype: field_missing }
+    institution_visible: false
+    preliminary_indicator: true
+    description: A certificate covers the submission date but ends before the end of the academic session. Off unless switched on in coverage.yaml.
+

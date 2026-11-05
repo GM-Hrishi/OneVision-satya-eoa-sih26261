@@ -7,8 +7,8 @@ Branch `feat/logic-rival-parity` (from `main` at 26963f1). Backend only, additiv
 - [x] T1 rule wording lint + `limitation_key` on every rule: DONE (1cac593). `limitation_key` on all 28 rules (14 shared keys), `packages/rules/catalogue/{en,hi}.yaml`, banned-word lint test, `limitation` on review flags, `GET /v1/rules/{rule_id}`. The commit also carries the why templates and `explain.py` helpers used by T2/T3 (shared files).
 - [x] T2 plain "why" sentence per flag and per case: DONE (ae11be1). `why_detail {key, params, text}` per flag, `why_summary` (max 3) on `/review` and queue rows; golden tests.
 - [x] T3 affidavit diff summary counts: DONE (968bdde). `summary` on affidavit-diff (schema + generated types updated); extra optional keys `added_in_sworn` and `differing[]`.
-- [ ] T4 chain verify, replay and run-diff endpoints: in progress
-- [ ] T5 certificate coverage
+- [x] T4 chain verify, replay and run-diff endpoints: DONE (4cab67b). `GET /v1/audit/verify`, `GET /v1/cases/{id}/replay-check`, `GET /v1/cases/{id}/run-diff`; tamper test on a throwaway in-memory ledger, reproduction notes in `docs/TAMPER-TEST.md`. Postgres variant not written: the runtime role cannot alter ledger rows (existing test).
+- [x] T5 certificate coverage: DONE (commit below). `satya_forensics.coverage`, `packages/rules/coverage.yaml` (session window off, `[VERIFY APH clause]`), 4 `CERT-*` rules, coverage check on time-bound documents (label mapped to `expired` / `manual_review_required` / `verified`), `Check.coverage` in the schema. Gap: the demo has no certificate documents (only affidavit and accounts slots are built), so the wiring is exercised by unit and API-helper tests, not the demo path. Replay applies the same step so digests stay equal once certificate documents exist; its submission date is read from the case file.
 - [ ] T6 extra PDF structural indicators
 - [ ] T7 text-aimed-at-AI-readers indicator
 - [ ] T8 docs, changelog, full test run, PR text

@@ -28,7 +28,7 @@ from satya_api.ledger import LedgerRow, canonical_json, verify_chain
 from satya_api.rulepacks import UNKNOWN, RulePack, RulePackCatalog
 from satya_api.sources import apply_stored
 from satya_api.store import EventStore
-from satya_api.workflow import CHECKED, flag_record
+from satya_api.workflow import CHECKED, apply_coverage, flag_record
 from satya_forensics.engine import M6Input
 from satya_forensics.engine import run as run_m6
 from satya_forensics.labels import document_label, label_counts
@@ -198,6 +198,7 @@ class Replayer:
             )
         )
         labels: dict[str, str] = {}
+        coverage_flags: list[dict[str, Any]] = []
         for res in m6.documents:
             doc_read = reads[res.doc_id]
             if doc_read.blocked:  # nothing was read: no identifier, no source answer
@@ -211,9 +212,11 @@ class Replayer:
                         check["outcome"] = "manual_review_required"
                         check["reason_code"] = "SRC_READ_BY_OCR"
                 verification["label"] = document_label(verification["checks"])
+            meta = next(d for d in case["documents"] if d["doc_id"] == res.doc_id)
+            coverage_flags += apply_coverage(verification, meta, res.doc_id, res.title, case)
             labels[res.doc_id] = verification["label"]
         by_id: dict[str, dict[str, Any]] = {}
-        for flag in [*m5["flags"], *m6.flags]:
+        for flag in [*m5["flags"], *m6.flags, *coverage_flags]:
             by_id.setdefault(flag["flag_id"], flag)
         engines = {
             "m5": m5.get("engine_version"),

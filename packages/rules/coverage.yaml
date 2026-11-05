@@ -1,0 +1,19 @@
+# Certificate coverage settings (T5). Read by satya_forensics.coverage.
+#
+# time_bound_types: document types whose printed validity is compared with the submission date.
+# Only fire_safety_certificate appears in the repo's Document example; the other names follow the
+# wording of the APH digest (docs/specs/03-APH-digest.md) and are [VERIFY] against the portal's list.
+time_bound_types:
+  - fire_safety_certificate
+  - structural_stability_certificate
+  - occupancy_certificate
+  - building_licence
+
+# Optional check: does the certificate cover the whole academic session? OFF by default.
+# [VERIFY APH clause] no clause in the repo's APH digest says a certificate must cover the whole
+# session. Switch on only after a clause is confirmed, and cite it in CERT-SESSION-GAP.
+session_window:
+  enabled: false
+  # An academic year "2026-27" runs from start (month-day, in 2026) to end (month-day, in 2027).
+  start: "07-01"
+  end: "06-30"
