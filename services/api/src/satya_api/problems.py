@@ -30,6 +30,7 @@ TITLES = {
     "UPLOAD_NOT_CONFIGURED": "Uploads are not enabled on this server.",
     "DISPOSITION_ACTION_REJECTED": "Choose one of the five dispositions.",
     "DISPOSITION_REASON_REJECTED": "A reason of at least 10 characters is required.",
+    "RUN_NOT_FOUND": "That validation run is not on this case.",
     "FLAG_NOT_FOUND": "That finding is not on this case.",
     "DEGRADED": "The service is degraded.",
     "INTERNAL_ERROR": "Something went wrong. The error has been logged.",

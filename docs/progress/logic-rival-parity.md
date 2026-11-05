@@ -3,11 +3,11 @@
 Branch `feat/logic-rival-parity` (from `main` at 26963f1). Backend only, additive, no `apps/web` changes.
 
 ## Checklist
-- [ ] T0 discovery notes: in progress
-- [ ] T1 rule wording lint + `limitation_key` on every rule
-- [ ] T2 plain "why" sentence per flag and per case
-- [ ] T3 affidavit diff summary counts
-- [ ] T4 chain verify, replay and run-diff endpoints
+- [x] T0 discovery notes: DONE (commit 2c7d8cc), 15 lines below. No blocker.
+- [x] T1 rule wording lint + `limitation_key` on every rule: DONE (1cac593). `limitation_key` on all 28 rules (14 shared keys), `packages/rules/catalogue/{en,hi}.yaml`, banned-word lint test, `limitation` on review flags, `GET /v1/rules/{rule_id}`. The commit also carries the why templates and `explain.py` helpers used by T2/T3 (shared files).
+- [x] T2 plain "why" sentence per flag and per case: DONE (ae11be1). `why_detail {key, params, text}` per flag, `why_summary` (max 3) on `/review` and queue rows; golden tests.
+- [x] T3 affidavit diff summary counts: DONE (968bdde). `summary` on affidavit-diff (schema + generated types updated); extra optional keys `added_in_sworn` and `differing[]`.
+- [ ] T4 chain verify, replay and run-diff endpoints: in progress
 - [ ] T5 certificate coverage
 - [ ] T6 extra PDF structural indicators
 - [ ] T7 text-aimed-at-AI-readers indicator
@@ -33,6 +33,14 @@ Branch `feat/logic-rival-parity` (from `main` at 26963f1). Backend only, additiv
 ## Decisions
 - D-1: `flag.why` stays a string (existing field). Object form is `flag.why_detail: {key, params, text}`.
 - D-2: backend catalogue in `packages/rules/catalogue/`, because `apps/web` is frozen.
+
+- D-3: `/v1/audit/verify` is read-only and writes no ledger entry (the repo does not log `/v1/audit` recomputations either).
+- D-4: `replay-check` reuses `Replayer._compute` with the original pack, writes nothing (unlike `/replay`). Digest = sha256 of canonical JSON of flag records (by flag_id) + document labels; no timestamps. Gap: source answers are the stored ones, as in the existing replay, so no lookup is repeated.
+- D-5: run diff compares two `check.run` ledger entries (default: previous and latest, or `from_seq`/`to_seq`), matched by (document, rule, check) like replay's diff.
+- D-6: new routes return plain JSON like their neighbours (no response_model), so OpenAPI documents the paths but not the bodies; the one schema-backed addition is `AffidavitDiff.summary`.
+- D-7: the rule YAML gained `limitation_key` without a version bump (metadata only, flags unchanged), so archived-pack replay is unaffected.
+- D-8: the workbench validation handler answers bad query values with 400 (existing behaviour).
+- Baseline before changes: shared-types 38 passed; services/api 126 passed, 3 skipped; services/worker 4 passed; packages/affidavit 63 passed.
 
 ## Blockers / questions
 (none yet)

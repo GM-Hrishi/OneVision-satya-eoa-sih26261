@@ -6,6 +6,7 @@ their usual names. The allow-list is the current id plus the directory names fou
 so a client can never make the service open a path of its choosing.
 """
 
+import hashlib
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -69,3 +70,16 @@ class RulePackCatalog:
         if pack_id_of(m5, m6) != pack_id:
             return None
         return RulePack(pack_id, m5, m6)
+
+    def pack_hash(self, pack_id: str) -> str | None:
+        """sha256 over the two rule files of an allow-listed pack, else None."""
+        if pack_id not in self.available():
+            return None
+        folder = rules_dir() if pack_id == current_pack().pack_id else self.archive / pack_id
+        digest = hashlib.sha256()
+        try:
+            for name in (M5_FILE, M6_FILE):
+                digest.update((folder / name).read_bytes())
+        except OSError:
+            return None
+        return digest.hexdigest()

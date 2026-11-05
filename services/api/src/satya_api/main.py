@@ -14,6 +14,7 @@ import logging
 import re
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -39,6 +40,7 @@ from satya_api.config import (
     parse_rate,
 )
 from satya_api.explain import rule_detail
+from satya_api.ledger import verify_chain
 from satya_api.logs import configure_logging
 from satya_api.middleware import (
     BodyLimitMiddleware,
@@ -50,6 +52,7 @@ from satya_api.problems import ProblemError, problem_response
 from satya_api.ratelimit import RateLimiter
 from satya_api.replay import Replayer
 from satya_api.rulepacks import RulePackCatalog
+from satya_api.runs import describe, diff_runs, run_flags, runs_of
 from satya_api.signature import HEADER, verify
 from satya_api.store import EventStore, InboundEvent, PostgresStore
 from satya_api.workflow import FLAG_ID, QUEUE_DIRS, QUEUE_SORTS, Workflow, WorkflowError
@@ -723,6 +726,74 @@ def create_app(
         )
         return JSONResponse(body, headers={"Cache-Control": "no-store"})
 
+    async def audit_case(request: Request, case_id: str) -> tuple[Principal, Any]:
+        """RB (own region) or AU (any region) for replay-style, case-level reads."""
+        principal = await official(request, ("RB", "AU"))
+        retry_after = await replay_limiter.hit(principal.subject)
+        if retry_after is not None:
+            security.warning("rate limited", extra={"trace_id": trace(request), "scope": "replay"})
+            raise ProblemError(429, "RATE_LIMITED", headers={"Retry-After": str(retry_after)})
+        if not CASE_ID.fullmatch(case_id):
+            raise ProblemError(404, "NOT_FOUND")
+        summary = await request.app.state.cases.get(case_id)
+        if summary is None:
+            raise ProblemError(404, "NOT_FOUND")
+        if "AU" not in principal.roles:
+            in_scope(request, principal, summary.regional_office, case_id)
+        return principal, summary
+
+    @app.get("/v1/cases/{case_id}/replay-check")
+    async def case_replay_check(case_id: str, request: Request) -> JSONResponse:
+        """Replay the case with its original rule pack and compare digests. Writes nothing."""
+        principal, _ = await audit_case(request, case_id)
+        replayer: Replayer | None = request.app.state.replayer
+        if replayer is None:
+            raise ProblemError(404, "NOT_FOUND")
+        body = await replayer.check(case_id)
+        log.info(
+            "replay check served",
+            extra={
+                "trace_id": trace(request),
+                "sub": principal.subject,
+                "case_id": case_id,
+                "identical": body["reproduced_identically"],
+            },
+        )
+        return JSONResponse(body, headers={"Cache-Control": "no-store"})
+
+    @app.get("/v1/cases/{case_id}/run-diff")
+    async def case_run_diff(
+        case_id: str, request: Request, from_seq: int | None = None, to_seq: int | None = None
+    ) -> JSONResponse:
+        """Compare two validation runs of a case (default: the previous and the latest)."""
+        principal, _ = await audit_case(request, case_id)
+        runs = runs_of(await flow_of(request).store.ledger_rows(), case_id)
+        by_seq = {r.seq: r for r in runs}
+        if (from_seq is not None and from_seq not in by_seq) or (
+            to_seq is not None and (to_seq not in by_seq)
+        ):
+            raise ProblemError(404, "RUN_NOT_FOUND")
+        old = by_seq[from_seq] if from_seq is not None else (runs[-2] if len(runs) > 1 else None)
+        new = by_seq[to_seq] if to_seq is not None else (runs[-1] if runs else None)
+        comparable = old is not None and new is not None and old.seq < new.seq
+        body: dict[str, Any] = {
+            "case_id": case_id,
+            "comparable": comparable,
+            "from_run": describe(old) if old else None,
+            "to_run": describe(new) if new else None,
+            "advisory": True,
+            "regulatory_effect": "none",
+        }
+        if old is not None and new is not None and comparable:
+            body.update(diff_runs(run_flags(old), run_flags(new)))
+        else:
+            body.update({"new_findings": 0, "resolved": 0, "unchanged": 0, "items": []})
+        log.info(
+            "run diff served",
+            extra={"trace_id": trace(request), "sub": principal.subject, "case_id": case_id},
+        )
+        return JSONResponse(body, headers={"Cache-Control": "no-store"})
+
     @app.get("/v1/rules/{rule_id}")
     async def rule_detail_route(rule_id: str, request: Request) -> JSONResponse:
         """One current rule: version, APH clause, severity, label and its limitation text."""
@@ -752,6 +823,23 @@ def create_app(
             if principal.can_see_region(c.regional_office)
         }
         return lambda case: case in ok
+
+    @app.get("/v1/audit/verify")
+    async def audit_verify(request: Request) -> JSONResponse:
+        """Walk the whole hash chain now, nothing cached: intact, or broken at the first bad row."""
+        await official(request, ("AU", "RB"))
+        rows = await flow_of(request).store.ledger_rows()
+        report = verify_chain(rows)
+        return JSONResponse(
+            {
+                "status": "intact" if report.ok else "broken",
+                "checked_at": datetime.now(UTC).isoformat(timespec="seconds"),
+                "entries": report.rows,
+                "first_bad_entry": report.broken_at,
+                "method": "sha256(prev_hash || payload_sha256 || at), recomputed for every row",
+            },
+            headers={"Cache-Control": "no-store"},
+        )
 
     @app.get("/v1/audit/{seq}")
     async def audit_entry(seq: int, request: Request) -> JSONResponse:
