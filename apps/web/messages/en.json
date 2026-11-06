@@ -1125,6 +1125,36 @@
       "dotLabel": "Application {id}, {band} attention, {days, plural, =0 {submitted today} one {waiting 1 day} other {waiting # days}}",
       "timelineEmpty": "No files to place on the timeline.",
       "timelineNote": "Circles that share a day are stacked."
+    },
+    "affidavit": {
+      "headlineCompared": "{match} of {total} declarations match. {rest, plural, =0 {None do not.} one {# does not.} other {# do not.}}",
+      "headlineNotCompared": "This copy was not compared, so no declaration is marked as matching.",
+      "numeralsLabel": "Declaration counts",
+      "match": "Match",
+      "differ": "Differ",
+      "missing": "Missing in the sworn copy",
+      "notComparable": "Not compared",
+      "viewLabel": "View",
+      "viewTable": "Table",
+      "viewTie": "Tie lines",
+      "backToCase": "Back to the case",
+      "tieCaption": "Sworn copy on the left, portal form on the right. One line per declaration. Long texts are cut short here; the Table view shows them in full.",
+      "tieLeft": "Sworn copy",
+      "tieRight": "Portal form",
+      "tieShowAll": "Show all declarations",
+      "tieShowChanged": "Show only the ones that differ",
+      "tieNone": "Nothing to tie: every declaration matches or the copy was not compared.",
+      "tieNotCompared": "Tie lines need a compared copy. Use the Table view for the reading note.",
+      "tieMissing": "Not in the sworn copy",
+      "tieAdded": "Not in the portal form",
+      "tieNo": "Declaration {no}",
+      "replay": "Replay",
+      "chip": {
+        "changed": "Wording differs",
+        "removed": "Missing in the sworn copy",
+        "added": "Not in the portal form",
+        "equal": "Same"
+      }
     }
   }
 }

@@ -13,11 +13,11 @@
   align-items: center;
   gap: 5px;
   padding: 1px 8px 1px 6px;
-  border: 1px solid var(--badge-neutral-border);
-  border-radius: 6px;
-  background: var(--badge-neutral-bg);
-  color: var(--th-fg);
-  font-family: var(--font-sans);
+  border: 1px solid var(--k-rule);
+  border-radius: 0;
+  background: var(--k-paper);
+  color: var(--k-muted);
+  font-family: var(--font-display);
   font-size: 0.75rem;
   font-weight: 500;
   line-height: 1.5;
@@ -25,7 +25,7 @@
 }
 
 .detail {
-  color: var(--color-muted);
+  color: var(--k-muted);
   font-size: 0.75rem;
   line-height: 1.35;
 }

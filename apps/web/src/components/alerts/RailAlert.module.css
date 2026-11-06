@@ -10,5 +10,5 @@
 }
 
 .all:hover {
-  color: var(--color-surface);
+  color: var(--k-paper);
 }

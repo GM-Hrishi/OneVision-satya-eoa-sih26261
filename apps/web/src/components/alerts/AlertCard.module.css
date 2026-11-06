@@ -6,9 +6,9 @@
   align-items: start;
   padding: var(--space-3) var(--space-4);
   border: 1px solid var(--alert-low-border);
-  border-radius: 6px;
+  border-radius: 0;
   background: var(--alert-low-bg);
-  color: var(--color-text);
+  color: var(--k-ink);
 }
 
 .card[data-tone="high"] {
@@ -78,15 +78,15 @@
 }
 
 .app {
-  font-family: var(--font-mono);
+  font-family: var(--font-kmono);
 }
 
 .clause {
   padding: 0 6px;
-  border: 1px solid var(--tag-neutral-border);
-  border-radius: 4px;
-  background: var(--color-surface);
-  color: var(--tag-neutral-fg);
+  border: 1px solid var(--k-muted);
+  border-radius: 0;
+  background: var(--k-paper);
+  color: var(--k-muted);
   font-size: 0.71875rem;
   font-weight: 500;
   line-height: 1.55;
@@ -99,7 +99,7 @@
 
 .action {
   align-self: center;
-  color: var(--color-accent);
+  color: var(--k-accent-ink);
   font-size: 0.8125rem;
   font-weight: 700;
   white-space: nowrap;

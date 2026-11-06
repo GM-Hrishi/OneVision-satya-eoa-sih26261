@@ -8,7 +8,7 @@
 
 .caseMeta {
   margin: var(--space-1) 0 0;
-  color: var(--color-muted);
+  color: var(--k-muted);
   font-size: 0.875rem;
 }
 
@@ -19,8 +19,8 @@
   gap: var(--space-2);
   margin: var(--space-2) 0 0;
   padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-field);
-  border-radius: 6px;
+  border: 1px solid var(--k-ink);
+  border-radius: 0;
   background: var(--label-pending-bg);
   color: var(--label-pending-fg);
   font-size: 0.875rem;
@@ -44,8 +44,8 @@
 }
 
 .section {
-  background: var(--color-surface);
-  border: 1px solid var(--color-rule);
+  background: var(--k-paper);
+  border: 1px solid var(--k-rule);
   padding: var(--space-4);
   margin-bottom: var(--space-4);
 }
@@ -67,7 +67,7 @@
 }
 
 .card {
-  border: 1px solid var(--color-rule);
+  border: 1px solid var(--k-rule);
   padding: var(--space-3);
 }
 
@@ -85,7 +85,7 @@
 }
 
 .facts dt {
-  color: var(--color-muted);
+  color: var(--k-muted);
 }
 
 .facts dd {
@@ -94,7 +94,7 @@
 }
 
 .mono {
-  font-family: var(--font-mono);
+  font-family: var(--font-kmono);
   font-size: 0.8125rem;
   overflow-wrap: anywhere;
 }
@@ -118,14 +118,14 @@
 
 .table th,
 .table td {
-  border: 1px solid var(--color-rule);
+  border: 1px solid var(--k-rule);
   padding: var(--space-1) var(--space-2);
   text-align: left;
   vertical-align: top;
 }
 
 .table thead th {
-  background: var(--color-page);
+  background: var(--k-desk);
   font-weight: 700;
 }
 
@@ -142,7 +142,7 @@
   display: inline-block;
   padding: 0 var(--space-1);
   border: 1.5px solid currentColor;
-  background: var(--color-surface);
+  background: var(--k-paper);
   font-size: 0.6875rem;
   font-family: var(--font-caps);
   font-weight: 800;
@@ -152,40 +152,40 @@
 }
 
 .label[data-tone="mismatch"] {
-  color: var(--color-label-mismatch);
+  color: var(--k-st-mismatch);
 }
 
 .label[data-tone="manual"] {
-  color: var(--color-label-manual-review);
+  color: var(--k-st-review);
 }
 
 .label[data-tone="ok"] {
-  color: var(--color-label-verified);
+  color: var(--k-st-verified);
 }
 
 .label[data-tone="neutral"] {
-  color: var(--color-label-source-unavailable);
+  color: var(--k-st-unavailable);
 }
 
 .wrong {
   display: inline-block;
   padding: 0 var(--space-1);
-  border: 1.5px solid var(--color-mismatch-border);
-  background: var(--color-mismatch-tint);
-  color: var(--color-mismatch-ink);
-  font-family: var(--font-mono);
+  border: 1.5px solid var(--k-red);
+  background: var(--k-red-tint);
+  color: var(--k-red-ink);
+  font-family: var(--font-kmono);
   font-weight: 700;
 }
 
 .expectedValue {
   display: block;
-  color: var(--color-muted);
+  color: var(--k-muted);
   font-size: 0.8125rem;
 }
 
 .difference {
   display: block;
-  color: var(--color-mismatch-ink);
+  color: var(--k-red-ink);
   font-size: 0.8125rem;
   font-weight: 700;
 }
@@ -206,7 +206,7 @@
 }
 
 .op {
-  border-top: 1px solid var(--color-rule);
+  border-top: 1px solid var(--k-rule);
   padding: var(--space-3) 0;
 }
 
@@ -235,23 +235,23 @@
 }
 
 .del {
-  background: var(--color-mismatch-tint);
-  color: var(--color-mismatch-ink);
+  background: var(--k-red-tint);
+  color: var(--k-red-ink);
   text-decoration: line-through;
   text-decoration-thickness: 2px;
   font-weight: 700;
 }
 
 .ins {
-  background: var(--color-added-tint);
-  color: var(--color-added-ink);
+  background: var(--k-hover);
+  color: var(--k-ink);
   text-decoration: underline;
   text-decoration-thickness: 2px;
   font-weight: 700;
 }
 
 .muted {
-  color: var(--color-muted);
+  color: var(--k-muted);
 }
 
 .note {
@@ -284,8 +284,8 @@
 }
 
 .flag {
-  background: var(--color-surface);
-  border: 1px solid var(--color-rule);
+  background: var(--k-paper);
+  border: 1px solid var(--k-rule);
   margin-bottom: var(--space-3);
   font-size: 0.875rem;
 }
@@ -296,8 +296,8 @@
   align-items: center;
   gap: var(--space-1) var(--space-2);
   padding: var(--space-2) var(--space-3);
-  background: var(--color-page);
-  border-bottom: 1px solid var(--color-rule);
+  background: var(--k-desk);
+  border-bottom: 1px solid var(--k-rule);
 }
 
 .flagBody {
@@ -316,8 +316,8 @@
 
 .flagFoot {
   padding: var(--space-2) var(--space-3);
-  border-top: 1px solid var(--color-rule);
-  color: var(--color-muted);
+  border-top: 1px solid var(--k-rule);
+  color: var(--k-muted);
 }
 
 .provenance {
@@ -325,7 +325,7 @@
   font-family: var(--font-caps);
   font-weight: 800;
   letter-spacing: 0.04em;
-  color: var(--color-chrome);
+  color: var(--k-ink);
 }
 
 .srOnly {
@@ -343,4 +343,20 @@
 /* Long status chips inside a fact list (stamp, notary) wrap at narrow widths instead of widening the page. */
 .facts .label {
   white-space: normal;
+}
+
+/* Style K: three huge numerals under the affidavit headline. */
+.numerals {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4) var(--space-6);
+  margin: var(--space-4) 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 599px) {
+  .numerals {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
