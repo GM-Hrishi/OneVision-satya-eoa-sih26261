@@ -1,5 +1,7 @@
 # Merge notes: style K and the backend branch (draft PR #15)
 
+**Status (6 Nov 2026): joined on branch `integration/k-join`** (main + PR #15 + PR #16, merged with no conflicts; `main` untouched, both PRs still draft). Shared types regenerate with no diff; lint, typecheck and the JS tests pass. The fallbacks below stay in place on purpose: the adapters read the new fields when present and fall back when absent, so no code change was needed. Cleaning up the shims (step 2 below) waits until the build is reviewed on the laptop. Not yet run: e2e, smoke, axe (need Docker).
+
 Backend branch: `feat/logic-rival-parity` (draft PR #15, not merged). Shapes are taken from `docs/API-NOTES.md` on that branch, read-only. Until it merges, every endpoint below answers 404 on `main`, and every field is absent; the UI then uses the fallback in the last column and never prints a key or invents data.
 
 After both branches are merged: (1) regenerate shared types, (2) delete `apps/web/src/lib/api/k-adapters/pending-fields.ts` and read the fields directly, remove `pending-endpoints.ts` notes, (3) run the e2e and smoke tests, (4) delete `apps/web/src/lib/api/__fixtures__` if no test needs it.
