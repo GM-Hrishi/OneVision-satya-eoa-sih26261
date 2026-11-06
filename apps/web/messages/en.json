@@ -1001,6 +1001,39 @@
         "source_unavailable": "{title}: the source did not answer, so it was not compared.",
         "manual_review_required": "{title}: a person has to look at this one."
       }
+    },
+    "proof": {
+      "mapCaption": "Evidence map. Lines join two things only where a finding or a check relates them.",
+      "mapPortal": "Portal form",
+      "relations": "Relations in text",
+      "relation": "{from} and {to}: {state}",
+      "relationFinding": "{from} and {to}: {state} (finding {n})",
+      "mapNode": "{title}",
+      "openDocument": "Open {title}",
+      "legendTitle": "Lines",
+      "line": {
+        "agrees": "Agrees",
+        "disagrees": "Disagrees",
+        "waiting": "Waiting",
+        "check": "A person must check"
+      },
+      "noEdges": "No finding or check relates two things on this case yet, so the map has no lines.",
+      "replay": "Replay",
+      "replayLabel": "Replay the animation",
+      "findingsHeading": "Findings on the map",
+      "journeyCaption": "One row per document, five steps, left to right.",
+      "step": {
+        "template": "Template recognised",
+        "fields": "Fields read",
+        "rules": "Rules checked",
+        "issuer": "Issuer asked",
+        "signature": "Signature"
+      },
+      "stepCell": "{step}: {state}",
+      "stopped": "Stopped here: {reason}",
+      "stopUnreadable": "the file could not be read well enough, so later steps wait for a person.",
+      "stopSource": "the source did not answer, so the document was not compared with it.",
+      "noJourney": "No documents on this case."
     }
   }
 }

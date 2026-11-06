@@ -1,4 +1,4 @@
-// "How far each document was checked": documents x five checks, with an icon cell per check (each state has
+// Ladder view of "How far each document was checked" (the section heading and the view switch live in ProofViews): documents x five checks, with an icon cell per check (each state has
 // its own shape, an aria-label and a legend, so colour is never the only signal) and a one-sentence verdict.
 import { getTranslations } from "next-intl/server";
 import { Icon, type IconName } from "@/components/ui/Icon";
@@ -17,13 +17,9 @@ const STATES: LadderState[] = ["agrees", "disagrees", "waiting", "check", "na"];
 
 export async function Ladder({ rows }: { rows: LadderRow[] }) {
   const t = await getTranslations("k.ladder");
-  const tc = await getTranslations("k.case");
   if (rows.length === 0) return null;
   return (
-    <section className={styles.wrap} aria-labelledby="k-ladder">
-      <h2 id="k-ladder" className={styles.title}>
-        {tc("ladderHeading")}
-      </h2>
+    <div>
       <div className={styles.scroll}>
         <table className={styles.table}>
           <caption className="k-label">{t("caption")}</caption>
@@ -68,6 +64,6 @@ export async function Ladder({ rows }: { rows: LadderRow[] }) {
           </li>
         ))}
       </ul>
-    </section>
+    </div>
   );
 }

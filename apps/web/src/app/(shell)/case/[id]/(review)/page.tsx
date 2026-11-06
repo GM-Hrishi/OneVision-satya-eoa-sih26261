@@ -6,6 +6,9 @@ import { getTranslations } from "next-intl/server";
 import { CaseTabs } from "@/components/case/CaseTabs";
 import { CaseWorkspace } from "@/components/k/CaseWorkspace";
 import { Ladder } from "@/components/k/Ladder";
+import { ProofViews } from "@/components/k/ProofViews";
+import { buildEvidenceGraph } from "@/lib/api/k-adapters/graph";
+import { buildJourney } from "@/lib/api/k-adapters/journey";
 import { buildCaseView } from "@/lib/api/k-adapters/case";
 import styles from "@/components/demo/Demo.module.css";
 import { RiskBand } from "@/components/demo/RiskBand";
@@ -72,7 +75,13 @@ export default async function CasePage({ params }: Props) {
         docs={review.documents.map((d) => ({ docId: d.doc_id, title: d.title, label: d.label, manualTask: d.manual_task }))}
         ladder={
           <>
-            <Ladder rows={view.ladder} />
+            <ProofViews
+              caseId={id}
+              ladder={<Ladder rows={view.ladder} />}
+              graph={buildEvidenceGraph(review)}
+              findings={view.findings.map((f) => ({ n: f.n, rule: f.flag.rule_id, why: f.why }))}
+              journey={buildJourney(review)}
+            />
       <section className={diff.section} aria-labelledby="docs">
         <h2 id="docs">{t("case.docsHeading")}</h2>
         <ul className={styles.counts} aria-label={t("case.countsLabel")}>
