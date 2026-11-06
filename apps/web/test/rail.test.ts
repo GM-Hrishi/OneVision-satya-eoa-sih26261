@@ -30,6 +30,8 @@ describe("breadcrumbs", () => {
       { labelKey: "queue", href: "/rb-queue" },
       { labelKey: "verification" },
     ]);
+    expect(crumbsFor("/audit/replay")).toEqual([{ labelKey: "audit", href: "/audit" }, { labelKey: "auditReplay" }]);
+    expect(crumbsFor("/audit/integrity")).toEqual([{ labelKey: "audit", href: "/audit" }, { labelKey: "auditIntegrity" }]);
     expect(crumbsFor("/help")).toEqual([{ labelKey: "help" }]);
     expect(crumbsFor("/nowhere")).toEqual([]);
   });

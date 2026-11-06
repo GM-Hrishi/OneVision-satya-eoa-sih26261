@@ -32,6 +32,8 @@ export function crumbsFor(pathname: string): Crumb[] {
     return [{ labelKey: "queue", href: "/rb-queue" }, { labelKey: caseView[1] }];
   }
   if (/^\/case\/[^/]+$/.test(pathname)) return [{ labelKey: "queue", href: "/rb-queue" }, { labelKey: "caseOverview" }];
+  const audit = /^\/audit\/(replay|integrity)$/.exec(pathname);
+  if (audit?.[1]) return [{ labelKey: "audit", href: "/audit" }, { labelKey: audit[1] === "replay" ? "auditReplay" : "auditIntegrity" }];
   const keys = CRUMBS[pathname] ?? [];
   return keys.map((labelKey) => ({ labelKey }));
 }

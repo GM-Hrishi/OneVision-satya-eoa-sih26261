@@ -45,7 +45,9 @@
     "alerts": "Alerts",
     "audit": "Audit trail",
     "caseOverview": "Case",
-    "upload": "Add documents"
+    "upload": "Add documents",
+    "auditReplay": "Replay check",
+    "auditIntegrity": "Chain integrity"
   },
   "roles": {
     "RB": "Regulation Bureau",
@@ -1034,6 +1036,55 @@
       "stopUnreadable": "the file could not be read well enough, so later steps wait for a person.",
       "stopSource": "the source did not answer, so the document was not compared with it.",
       "noJourney": "No documents on this case."
+    },
+    "audit": {
+      "headline": "{count, plural, =0 {The ledger has no entries yet.} one {The ledger holds # entry.} other {The ledger holds # entries.}}",
+      "countCaption": "Entries in the chain",
+      "intact": "Chain intact",
+      "broken": "Chain broken at entry {entry}",
+      "unknown": "The chain was not checked on this page.",
+      "checkedAt": "Recomputed at {time}",
+      "verifyAgain": "Verify again",
+      "blocksHeading": "Latest entries, linked",
+      "blocksNone": "No entries to link yet.",
+      "entry": "Entry {no}",
+      "fingerprint": "Fingerprint {hash}",
+      "follows": "Follows {hash}",
+      "firstEntry": "First entry in the view",
+      "tableHeading": "All entries",
+      "replayLink": "Replay check for a case",
+      "integrityLink": "Chain integrity",
+      "integrityHeadline": "How the chain is checked",
+      "integrityBody": "Each entry's hash is computed from the previous entry's hash, the payload fingerprint and the time. The gateway recomputes every hash on each visit, so an edited or removed entry shows up as a break at that entry.",
+      "integrityMethod": "Method: {method}"
+    },
+    "replay": {
+      "headlineOk": "Reproduced identically.",
+      "headlineBad": "Does not reproduce.",
+      "intro": "The original rule pack is run again on the stored documents and the stored source answers. Nothing is written to the ledger.",
+      "unavailable": "Replay check is not available on this build.",
+      "forbidden": "Not assigned to you.",
+      "error": "The replay check could not be completed. Try again.",
+      "retry": "Replay again",
+      "pickHeading": "Choose a case to check",
+      "pickEmpty": "No cases to check.",
+      "pickCase": "Check case {id}",
+      "colWhat": "What was compared",
+      "colOriginal": "Original",
+      "colReplayed": "Replayed",
+      "colResult": "Result",
+      "same": "Same",
+      "different": "Different",
+      "row": {
+        "findings": "Documents and findings fingerprint",
+        "ruleset": "Ruleset",
+        "as_of": "As of",
+        "whole": "Whole result"
+      },
+      "reasonsHeading": "Where it differs",
+      "differsLine": "{what} is different. Open the audit trail for this case and look at the entries from the first changed run.",
+      "auditLink": "Open this case in the audit trail",
+      "fixtureNote": "Development fixture: an example of a failed replay, built from the documented example with one digest changed."
     }
   }
 }

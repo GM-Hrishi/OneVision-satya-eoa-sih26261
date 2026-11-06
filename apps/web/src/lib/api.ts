@@ -48,6 +48,32 @@ export async function apiGet<T>(path: string, callbackPath: string): Promise<T> 
   return (await response.json()) as T;
 }
 
+export type Optional<T> = { status: "ok"; data: T } | { status: "unavailable" } | { status: "forbidden" } | { status: "error" };
+
+/** GET for an endpoint that may not exist on this build (NOT ON MAIN UNTIL PR #15 MERGES): 404 means "unavailable",
+ *  403 "forbidden", any other failure "error". Never throws; 401 still renews the session like apiGet. */
+export async function apiGetOptional<T>(path: string, callbackPath: string): Promise<Optional<T>> {
+  const token = await accessToken();
+  if (!token) renew(callbackPath);
+  const base = process.env.SATYA_API_INTERNAL_URL ?? "http://api:8000";
+  try {
+    const response = await fetch(`${base}${path}`, {
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+      cache: "no-store",
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+    if (response.status === 401) renew(callbackPath);
+    if (response.status === 404) return { status: "unavailable" };
+    if (response.status === 403) return { status: "forbidden" };
+    if (!response.ok) return { status: "error" };
+    return { status: "ok", data: (await response.json()) as T };
+  } catch (error) {
+    if (error instanceof Error && error.message === "NEXT_REDIRECT") throw error;
+    if (typeof error === "object" && error !== null && "digest" in error) throw error;
+    return { status: "error" };
+  }
+}
+
 /** GET that never redirects or throws: null when there is no usable session or the API fails.
  *  For optional page furniture (the rail alert card) that must not break the page around it. */
 const QUIET_TTL_MS = 20_000;
