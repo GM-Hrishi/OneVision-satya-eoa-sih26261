@@ -10,9 +10,10 @@ export interface RailItem {
 const RB: RailItem[] = [
   { href: "/overview", labelKey: "overview" },
   { href: "/rb-queue", labelKey: "queue" },
+  { href: "/manual", labelKey: "manual" },
   { href: "/alerts", labelKey: "alerts" },
   { href: "/audit", labelKey: "audit" },
-  // P1, later slices: /rb-queue/manual (RB-09). P2 hidden: evc-selection, monitoring.
+  // P2 hidden: evc-selection, monitoring. Rules joins with its route (T12).
 ];
 const AU: RailItem[] = [{ href: "/audit", labelKey: "audit" }];
 
@@ -44,6 +45,7 @@ export function crumbsFor(pathname: string): Crumb[] {
 export const CRUMBS: Record<string, string[]> = {
   "/overview": ["overview"],
   "/rb-queue": ["queue"],
+  "/manual": ["manual"],
   "/alerts": ["alerts"],
   "/audit": ["audit"],
   "/help": ["help"],

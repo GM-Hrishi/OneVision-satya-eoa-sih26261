@@ -48,7 +48,8 @@
     "upload": "Add documents",
     "auditReplay": "Replay check",
     "auditIntegrity": "Chain integrity",
-    "documentEvidence": "Document evidence"
+    "documentEvidence": "Document evidence",
+    "manual": "Manual checks"
   },
   "roles": {
     "RB": "Regulation Bureau",
@@ -1190,6 +1191,26 @@
       "current": "This document",
       "notFound": "This document is not part of the case.",
       "noFindings": "No findings on this document."
+    },
+    "manual": {
+      "title": "Manual checks",
+      "description": "Documents that need a person: the source did not answer, or the file could not be read well enough. Advisory only.",
+      "headline": "{count, plural, =0 {No manual checks are open.} one {# manual check is open.} other {# manual checks are open.}}",
+      "numeralsLabel": "Manual check counts",
+      "open": "Manual checks",
+      "unavailable": "Documents with an unavailable source",
+      "oldest": "Oldest, in days",
+      "tableHeading": "Open checks, oldest first",
+      "colApplication": "Application",
+      "colReason": "Why a person has to look",
+      "colAge": "Open for",
+      "colOpen": "Open",
+      "openCase": "Open case",
+      "openAria": "Open case {id}",
+      "age": "{days, plural, =0 {today} one {# day} other {# days}}",
+      "empty": "Nothing needs a manual check right now.",
+      "listNote": "This list shows the most urgent open checks. Each one is worked on in its case; the outcome is recorded there with a reason.",
+      "unknownReason": "A person has to look at this document."
     }
   }
 }

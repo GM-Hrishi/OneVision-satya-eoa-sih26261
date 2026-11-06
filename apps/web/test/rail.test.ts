@@ -12,7 +12,7 @@ describe("rail", () => {
   });
 
   it("lists only routes that exist in this build (no dead navigation)", () => {
-    const built = new Set(["/overview", "/rb-queue", "/alerts", "/audit", "/help", "/accessibility"]);
+    const built = new Set(["/overview", "/rb-queue", "/manual", "/alerts", "/audit", "/help", "/accessibility"]);
     for (const item of [...(RAIL.RB ?? []), ...(RAIL.AU ?? []), ...UTILITY]) {
       expect(built.has(new URL(item.href, "https://x.invalid").pathname), item.href).toBe(true);
     }
