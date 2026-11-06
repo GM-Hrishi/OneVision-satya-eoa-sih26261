@@ -48,6 +48,13 @@ Branch `feat/logic-rival-parity` (from `main` at 26963f1). Backend only, additiv
 - Secret scan (`make secret-scan`, gitleaks in Docker) NOT RUN for the same reason. The real-data guard passes; no secret, token or personal value was added.
 - `apps/web` untouched, so the new fields are not shown anywhere and the catalogue keys are not mirrored into `apps/web/messages` (decision D-2).
 
+## Follow-up (after the first review)
+- Departures D-1, D-2, D-5-style choices and the five questions below were confirmed by the team.
+- Checked: review flags already return `limitation: {key, text}` (added in T1, tested in `test_explain.py`); the new example test asserts it on a real payload too. Affidavit-diff flags are schema-bound and do not carry it (unchanged).
+- `docs/API-NOTES.md` now holds one generated example per item: flag (`why`, `why_detail`, `limitation`), queue row with `why_summary`, diff `summary`, `/v1/audit/verify`, `/v1/cases/{id}/replay-check`, `/v1/cases/{id}/run-diff`, `/v1/rules/{rule_id}`, and an `AI-READER-TEXT` flag. Files in `docs/api-examples/`. `services/api/tests/test_api_examples.py` rebuilds them from the code and fails when the files or the notes are stale; rewrite with `SATYA_WRITE_EXAMPLES=1`. Times are replaced by one fixed sample time.
+- The old `why` string had no sentence for the nine new rules (it showed the generic fallback); `triage.WHY` now has one each. Existing rules unchanged.
+- `services/api`: 166 passed, 3 skipped. `apps/web` untouched.
+
 ## Questions for the team
 1. Metrics gate: `satya_forensics.eval` now has `INDICATORS_WITH_OWN_TESTS` (the four PDF indicators, `AI-READER-TEXT`, the four `CERT-*` rules). They are not planted in the signature/stamp/UDIN corpus, so they are excluded from the precision/recall table, guarded by a test (label, limitation, preliminary) and by a test that none of them fires on the first 40 dev-seed cases. Confirm this is acceptable or ask for planted cases instead.
 2. `why`: the existing string stays; the object is `why_detail` (the brief asked for `why: {key, params, text}`, which would change the type of an existing field).

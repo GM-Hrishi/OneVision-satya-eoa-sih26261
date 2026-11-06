@@ -1,0 +1,15 @@
+{
+  "advisory": true,
+  "aph_clause": "2.3.4b",
+  "aph_edition": "2024-27",
+  "label": "manual_review_required",
+  "limitation": {
+    "key": "limitation.shared_number",
+    "text": "This does not show wrongdoing. A number typed twice by mistake, or a filing resubmitted by the institution, would look the same."
+  },
+  "limitation_key": "shared_number",
+  "preliminary_indicator": true,
+  "rule_id": "STAMP-REUSE",
+  "rule_version": "0.1.0",
+  "severity": "critical"
+}

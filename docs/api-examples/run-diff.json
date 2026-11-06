@@ -1,0 +1,50 @@
+{
+  "advisory": true,
+  "case_id": "cas_01JD3M5A00000000000000DT03",
+  "comparable": true,
+  "from_run": {
+    "at": "2026-11-06T09:00:00+00:00",
+    "flag_count": 7,
+    "ledger_seq": 2,
+    "rule_pack": "m5-affidavit@0.1.0+m6-signatures@0.1.0",
+    "trigger": "seed"
+  },
+  "items": [
+    {
+      "change": "new",
+      "changed_fields": [],
+      "check_ref": "m6:UDIN-REUSE:x",
+      "doc_id": "doc_SG34T9WEMMXMBZ8WA2JBXQX1DC",
+      "flag_id": "flg_new",
+      "label": "mismatch_detected",
+      "page": 2,
+      "rule_id": "UDIN-REUSE",
+      "severity": "critical",
+      "title": "The UDIN already appears on another filing (another institution, or another financial year) in the register (within the synthetic corpus)"
+    },
+    {
+      "change": "resolved",
+      "changed_fields": [],
+      "check_ref": "m5:AFF-CAT-LINE:category_line",
+      "doc_id": "doc_SG34T9WEMMXMBZ8WA2JBXQX1DC",
+      "flag_id": "flg_VV654MTDKWB8JW12KKVEF0Z1FS",
+      "label": "mismatch_detected",
+      "page": 2,
+      "rule_id": "AFF-CAT-LINE",
+      "severity": "critical",
+      "title": "The numbered category line in the opening block is missing or lists other categories than the portal draft"
+    }
+  ],
+  "new_findings": 1,
+  "regulatory_effect": "none",
+  "resolved": 1,
+  "to_run": {
+    "at": "2026-11-06T09:00:00+00:00",
+    "flag_count": 7,
+    "ledger_seq": 7,
+    "rule_pack": "m5-affidavit@0.1.0+m6-signatures@0.1.0",
+    "trigger": "upload"
+  },
+  "truncated": false,
+  "unchanged": 6
+}

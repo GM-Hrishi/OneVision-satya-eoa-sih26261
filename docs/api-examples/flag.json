@@ -1,0 +1,59 @@
+{
+  "aph_clause": "Annex-3 3.1g",
+  "aph_edition": "2024-27",
+  "check_ref": "m5:LAND-AREA-RECON:land:2:area_acre",
+  "confidence": 0.98,
+  "confidence_band": "high",
+  "delta": -1.0,
+  "disposition": null,
+  "doc_id": "doc_SG34T9WEMMXMBZ8WA2JBXQX1DC",
+  "doc_title": "Affidavit 2 (sworn copy)",
+  "evidence_sha256": "f4798063c0945ec37498bbe833aa40e3ec041470a370d1173ae035b372d05db5",
+  "expected_source": {
+    "label": "Application Report: land.deeds[2].area_acre"
+  },
+  "expected_value": 4.5,
+  "extracted_source": {
+    "doc_label": "Affidavit 2 (sworn copy)",
+    "page": 3,
+    "row": "2"
+  },
+  "extracted_value": 3.5,
+  "flag_id": "flg_HJG2FW6K653M622NKWGGQ9HQZE",
+  "institution_visible": true,
+  "label": "mismatch_detected",
+  "limitation": {
+    "key": "limitation.entry_slip",
+    "text": "This does not show wrongdoing. A typing slip, or a later edit in the portal form, would look the same."
+  },
+  "page": 3,
+  "preliminary_indicator": true,
+  "provenance": "satya",
+  "regions": [
+    {
+      "h": 0.0349,
+      "w": 0.8327,
+      "x": 0.0941,
+      "y": 0.5632
+    }
+  ],
+  "rule_id": "LAND-AREA-RECON",
+  "rule_text_key": "affidavit.land_area_differs",
+  "rule_version": "0.1.0",
+  "severity": "warning",
+  "stage": "2",
+  "value_unit": "acre",
+  "why": "The sworn land area is 3.5 acre but the application report has 4.5 acre.",
+  "why_detail": {
+    "key": "why.LAND-AREA-RECON",
+    "params": {
+      "clause": "Annex-3 3.1g",
+      "doc_title": "Affidavit 2 (sworn copy)",
+      "expected": "4.50",
+      "extracted": "3.50",
+      "page": "3",
+      "unit_label": "acres"
+    },
+    "text": "The affidavit declares 3.50 acres of land; the portal form says 4.50 acres."
+  }
+}
