@@ -1,0 +1,22 @@
+.groups { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); list-style: none; margin: var(--space-5) 0; padding: 0; }
+@media (max-width: 599px) { .groups { grid-template-columns: minmax(0, 1fr); } }
+.bar { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-4); margin-bottom: var(--space-4); }
+.svg { width: 100%; height: auto; display: block; background: var(--k-paper); border: 1px solid var(--k-rule); }
+.axis { stroke: var(--k-ink); stroke-width: 2; }
+.tick { stroke: var(--k-rule); stroke-width: 1; }
+.tickText { font-family: var(--font-kmono); font-size: 12px; fill: var(--k-muted); }
+.axisText { font-family: var(--font-kmono); font-size: 12px; fill: var(--k-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+.dot[data-band="high"] .circle { fill: var(--color-risk-high); }
+.dot[data-band="medium"] .circle { fill: var(--color-risk-medium); }
+.dot[data-band="low"] .circle { fill: var(--color-risk-low); }
+.dot[data-band="high"] .letter { fill: var(--color-risk-high-ink); }
+.dot[data-band="medium"] .letter { fill: var(--color-risk-medium-ink); }
+.dot[data-band="low"] .letter { fill: var(--color-risk-low-ink); }
+.letter { font-family: var(--font-caps); font-weight: 800; font-size: 15px; }
+.tail { font-family: var(--font-kmono); font-size: 12px; fill: var(--k-ink); }
+.link { cursor: pointer; }
+.link:focus-visible { outline: none; }
+.link:focus-visible .circle { stroke: var(--k-ink); stroke-width: 4; }
+.link:hover .circle { stroke: var(--k-ink); stroke-width: 2; }
+.longest { font-family: var(--font-display); font-weight: 800; font-size: 13px; fill: var(--k-accent-ink); }
+.caption { max-width: 64ch; margin: var(--space-3) 0 0; color: var(--k-muted); font-size: 0.875rem; }

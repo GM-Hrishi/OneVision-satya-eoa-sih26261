@@ -1111,6 +1111,20 @@
       "sitsHeading": "Where SATYA sits",
       "sits": "On the self-disclosure route there is no Scrutiny, EVC or SHC stage (APH Table 2.3). SATYA is the first-pass scrutiny for that route and an evidence assistant for every committee after it. It advises. Officials decide.",
       "detailHeading": "The detail"
+    },
+    "queue": {
+      "headline": "{count, plural, =0 {No files in the queue.} one {# file, ranked by attention.} other {# files, ranked by attention.}} The order decides nothing.",
+      "groupsLabel": "Files per attention band",
+      "viewLabel": "View",
+      "viewTimeline": "Timeline",
+      "viewList": "List",
+      "timelineCaption": "Each circle is one file, placed by days waiting. Position shows waiting time only. It does not say which file to decide first.",
+      "axis": "Days waiting",
+      "dayTick": "{days}",
+      "longest": "Waited longest",
+      "dotLabel": "Application {id}, {band} attention, {days, plural, =0 {submitted today} one {waiting 1 day} other {waiting # days}}",
+      "timelineEmpty": "No files to place on the timeline.",
+      "timelineNote": "Circles that share a day are stacked."
     }
   }
 }
