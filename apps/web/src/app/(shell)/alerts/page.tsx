@@ -6,7 +6,6 @@ import { getTranslations } from "next-intl/server";
 import { AlertCard } from "@/components/alerts/AlertCard";
 import styles from "@/components/demo/Demo.module.css";
 import diff from "@/components/diff/DiffView.module.css";
-import { PageHeader } from "@/components/ui/PageHeader";
 import { nowMs, rankAlerts, seenKeys } from "@/lib/alerts";
 import { alerts } from "@/lib/demo";
 import { requireRole } from "@/lib/session";
@@ -21,6 +20,7 @@ export default async function AlertsPage() {
   await requireRole("RB", "/alerts");
   const { items } = await alerts("/alerts");
   const t = await getTranslations("demo");
+  const tk = await getTranslations("k.alerts");
   const ranked = rankAlerts(items, await seenKeys());
   const unread = ranked.filter((r) => r.unread);
   const earlier = ranked.filter((r) => !r.unread);
@@ -40,9 +40,10 @@ export default async function AlertsPage() {
     );
   return (
     <>
-      <PageHeader title={t("alerts.heading")}>
+      <header>
+        <h1>{tk("headline", { count: unread.length })}</h1>
         <Note>{t("alerts.intro")}</Note>
-      </PageHeader>
+      </header>
       {items.length === 0 ? <p>{t("alerts.empty")}</p> : null}
       {group("alerts-unread", t("alerts.unreadHeading", { count: unread.length }), unread)}
       {group("alerts-earlier", t("alerts.earlierHeading", { count: earlier.length }), earlier)}

@@ -49,7 +49,9 @@
     "auditReplay": "Replay check",
     "auditIntegrity": "Chain integrity",
     "documentEvidence": "Document evidence",
-    "manual": "Manual checks"
+    "manual": "Manual checks",
+    "rules": "Rules",
+    "ruleDetail": "Rule"
   },
   "roles": {
     "RB": "Regulation Bureau",
@@ -1211,6 +1213,34 @@
       "empty": "Nothing needs a manual check right now.",
       "listNote": "This list shows the most urgent open checks. Each one is worked on in its case; the outcome is recorded there with a reason.",
       "unknownReason": "A person has to look at this document."
+    },
+    "alerts": {
+      "headline": "{count, plural, =0 {No alerts need you today.} one {# alert needs you today.} other {# alerts need you today.}}"
+    },
+    "rules": {
+      "title": "Rules",
+      "description": "The rules SATYA applies, each with the handbook clause it cites. Read only.",
+      "headline": "Open a finding to see the rule behind it.",
+      "listUnavailable": "The full rule list is not available on this build. The rules below are the ones that raised a finding on files in your queue.",
+      "seenHeading": "Rules seen on files in your queue",
+      "seenNone": "No finding in your queue names a rule yet.",
+      "colRule": "Rule",
+      "colClause": "Handbook clause",
+      "colStatement": "What it checks",
+      "open": "Open rule {id}",
+      "detailTitle": "Rule {id}",
+      "detailDescription": "What the rule checks, the handbook clause it cites and what a failure means. Read only.",
+      "detailHeadline": "Rule {id} cites {clause}.",
+      "detailUnavailable": "Rule detail is not available on this build.",
+      "detailForbidden": "Not assigned to you.",
+      "detailError": "The rule could not be loaded. Try again.",
+      "retry": "Try again",
+      "version": "Version {version}, handbook edition {edition}",
+      "failsHeading": "If it fails",
+      "failsLine": "The document is marked with the label below and the finding has the severity below. The finding is a preliminary indicator and needs human verification.",
+      "severityLabel": "Severity",
+      "back": "All rules",
+      "clauseUnconfirmed": "Clause not confirmed [VERIFY]"
     }
   }
 }

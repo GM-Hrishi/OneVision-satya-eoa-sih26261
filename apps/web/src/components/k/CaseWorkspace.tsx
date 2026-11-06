@@ -57,7 +57,9 @@ export function CaseWorkspace({ caseId, findings, docs, ladder }: { caseId: stri
                 <li key={f.flag.flag_id} className={styles.finding} data-selected={f.flag.flag_id === selectedId}>
                   <div className={styles.head}>
                     <Pin n={f.n} />
-                    <span className={styles.rule}>{f.flag.rule_id}</span>
+                    <Link className={styles.rule} href={`/rules/${encodeURIComponent(f.flag.rule_id)}`}>
+                      {f.flag.rule_id}
+                    </Link>
                     <span className="k-label">{t(`severity.${f.flag.severity}`)}</span>
                     <StatusLabel label={f.flag.label} size="sm" />
                   </div>

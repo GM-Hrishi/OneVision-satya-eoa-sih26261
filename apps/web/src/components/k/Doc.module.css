@@ -1,6 +1,7 @@
-.timeline { list-style: none; margin: 0 0 var(--space-4); padding: 0 0 0 var(--space-5); position: relative; border-left: 2px solid var(--k-ink); }
+.timeline { list-style: none; margin: 0 0 var(--space-4); padding: 0 0 0 var(--space-5); position: relative; }
+.timeline::before { content: ""; position: absolute; left: 0; top: 0.9rem; bottom: 1rem; width: 2px; background: var(--k-ink); }
 .timeline li { position: relative; padding: var(--space-2) 0 var(--space-3); }
-.timeline li::before { content: ""; position: absolute; left: calc(var(--space-5) * -1 - 7px); top: 0.9rem; width: 12px; height: 12px; border-radius: 50%; background: var(--k-ink); }
+.timeline li::before { content: ""; position: absolute; left: -5px; top: 0.9rem; width: 12px; height: 12px; border-radius: 50%; background: var(--k-ink); }
 .date { font-family: var(--font-kmono); font-weight: 700; display: block; }
 .scroll { overflow-x: auto; }
 .table { width: 100%; border-collapse: collapse; min-width: 40rem; }

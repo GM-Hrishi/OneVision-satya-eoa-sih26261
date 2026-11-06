@@ -5,40 +5,40 @@
   gap: var(--space-3);
   align-items: start;
   padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--alert-low-border);
+  border: 1px solid var(--k-muted);
   border-radius: 0;
-  background: var(--alert-low-bg);
+  background: var(--k-paper);
   color: var(--k-ink);
 }
 
 .card[data-tone="high"] {
-  border-color: var(--alert-high-border);
-  background: var(--alert-high-bg);
+  border-color: var(--k-red);
+  background: var(--k-red-tint);
 }
 
 .card[data-tone="med"] {
-  border-color: var(--alert-med-border);
-  background: var(--alert-med-bg);
+  border-color: var(--k-ink);
+  background: var(--k-paper);
 }
 
 .icon {
   display: inline-flex;
   padding-top: 2px;
-  color: var(--alert-low-fg);
+  color: var(--k-ink);
 }
 
 .card[data-tone="high"] .icon,
 .card[data-tone="high"] .severity {
-  color: var(--alert-high-fg);
+  color: var(--k-red-ink);
 }
 
 .card[data-tone="med"] .icon,
 .card[data-tone="med"] .severity {
-  color: var(--alert-med-fg);
+  color: var(--k-ink);
 }
 
 .card[data-tone="low"] .severity {
-  color: var(--alert-low-fg);
+  color: var(--k-ink);
 }
 
 .body {
