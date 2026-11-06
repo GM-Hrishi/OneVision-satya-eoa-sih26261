@@ -57,6 +57,31 @@
         },
         "valid_from": { "$ref": "common.schema.json#/$defs/Date" },
         "valid_to": { "$ref": "common.schema.json#/$defs/Date" },
+        "coverage": {
+          "title": "CertificateCoverage",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "valid_from", "valid_to", "days_off"],
+          "description": "Expiry checks of time-bound certificates: whether the printed validity covers the submission date. Added by SATYA, advisory. expired_before_submission is the expired label; nothing new is added to the six labels.",
+          "properties": {
+            "status": { "title": "CoverageStatus", "type": "string", "enum": ["covers", "expired_before_submission", "not_yet_valid", "validity_unknown"] },
+            "valid_from": { "type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+            "valid_to": { "type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+            "days_off": { "type": ["integer", "null"], "minimum": 0, "description": "Days the validity ended before (expired) or starts after (not yet valid) the submission date; 0 when it covers." },
+            "session": {
+              "title": "SessionCoverage",
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["status", "session_end", "days_short"],
+              "description": "Present only when the optional session window is switched on in packages/rules/coverage.yaml (off by default; [VERIFY APH clause]).",
+              "properties": {
+                "status": { "type": "string", "enum": ["covers_session", "ends_before_session_end", "validity_unknown"] },
+                "session_end": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+                "days_short": { "type": ["integer", "null"], "minimum": 0 }
+              }
+            }
+          }
+        },
         "basis": { "title": "ExpiryBasis", "type": "string", "enum": ["printed", "computed_from_state_rule"] },
         "check_ref": { "type": "string", "maxLength": 128, "description": "Links the check to the flag it raised (Flag.check_ref), e.g. m6:STAMP-CHRONO:chronology:order." },
         "signed_at": { "$ref": "common.schema.json#/$defs/Timestamp", "description": "Signature checks: signing time claimed in the CMS signature (the validation moment)." },

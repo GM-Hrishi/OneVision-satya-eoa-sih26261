@@ -185,6 +185,46 @@ class DscKind(Enum):
     NoneType_None = None
 
 
+class Op(StrEnum):
+    added = "added"
+    removed = "removed"
+    changed = "changed"
+
+
+class DiffSummaryItem(BaseModel):
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    decl_no: int | None
+    sworn_no: int | None
+    op: Op
+    flag_id: str | None
+    why: str
+    """
+    One plain sentence, from the rules catalogue.
+    """
+
+
+class DiffSummary(BaseModel):
+    """
+    Counts over the declarations the portal form prints, computed from `ops`. Added by the API. not_comparable covers every declaration of a copy that was not compared (a scan or an unreadable file). Advisory: a difference is a point to check, not a finding.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    total: Annotated[int, Field(ge=0)]
+    match: Annotated[int, Field(ge=0)]
+    differ: Annotated[int, Field(ge=0)]
+    missing_in_sworn: Annotated[int, Field(ge=0)]
+    not_comparable: Annotated[int, Field(ge=0)]
+    added_in_sworn: Annotated[int, Field(ge=0)]
+    """
+    Declarations only the sworn copy has; not part of total.
+    """
+    differing: list[DiffSummaryItem]
+
+
 class ComparisonState(StrEnum):
     compared = "compared"
     not_compared = "not_compared"
@@ -661,6 +701,53 @@ class FieldDiff(BaseModel):
     source: str | float | bool | None
 
 
+class CoverageStatus(StrEnum):
+    covers = "covers"
+    expired_before_submission = "expired_before_submission"
+    not_yet_valid = "not_yet_valid"
+    validity_unknown = "validity_unknown"
+
+
+class Status(StrEnum):
+    covers_session = "covers_session"
+    ends_before_session_end = "ends_before_session_end"
+    validity_unknown = "validity_unknown"
+
+
+class SessionCoverage(BaseModel):
+    """
+    Present only when the optional session window is switched on in packages/rules/coverage.yaml (off by default; [VERIFY APH clause]).
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    status: Status
+    session_end: Annotated[str, Field(pattern="^\\d{4}-\\d{2}-\\d{2}$")]
+    days_short: Annotated[int | None, Field(ge=0)]
+
+
+class CertificateCoverage(BaseModel):
+    """
+    Expiry checks of time-bound certificates: whether the printed validity covers the submission date. Added by SATYA, advisory. expired_before_submission is the expired label; nothing new is added to the six labels.
+    """
+
+    model_config = ConfigDict(
+        extra="forbid",
+    )
+    status: Annotated[CoverageStatus, Field(title="CoverageStatus")]
+    valid_from: Annotated[str | None, Field(pattern="^\\d{4}-\\d{2}-\\d{2}$")]
+    valid_to: Annotated[str | None, Field(pattern="^\\d{4}-\\d{2}-\\d{2}$")]
+    days_off: Annotated[int | None, Field(ge=0)]
+    """
+    Days the validity ended before (expired) or starts after (not yet valid) the submission date; 0 when it covers.
+    """
+    session: Annotated[SessionCoverage | None, Field(title="SessionCoverage")] = None
+    """
+    Present only when the optional session window is switched on in packages/rules/coverage.yaml (off by default; [VERIFY APH clause]).
+    """
+
+
 class ExpiryBasis(StrEnum):
     printed = "printed"
     computed_from_state_rule = "computed_from_state_rule"
@@ -782,6 +869,14 @@ class ConfidenceBand(StrEnum):
 class Provenance(StrEnum):
     satya = "satya"
     portal = "portal"
+
+
+class FlagCheckKind(StrEnum):
+    """
+    Present on commodity indicators (PDF structure, text addressed to automated readers). A heuristic flag is a prompt for a person to look: it never produces mismatch_detected by itself and never decides anything. Absent on rule-based findings.
+    """
+
+    heuristic = "heuristic"
 
 
 class Stage(StrEnum):
@@ -1691,6 +1786,12 @@ class Check(BaseModel):
     """
     valid_from: Date | None = None
     valid_to: Date | None = None
+    coverage: Annotated[
+        CertificateCoverage | None, Field(title="CertificateCoverage")
+    ] = None
+    """
+    Expiry checks of time-bound certificates: whether the printed validity covers the submission date. Added by SATYA, advisory. expired_before_submission is the expired label; nothing new is added to the six labels.
+    """
     basis: Annotated[ExpiryBasis | None, Field(title="ExpiryBasis")] = None
     check_ref: Annotated[str | None, Field(max_length=128)] = None
     """
@@ -1804,6 +1905,10 @@ class Flag(BaseModel):
     preliminary_indicator: bool
     severity: Severity
     disposition: Disposition | None
+    check_kind: Annotated[FlagCheckKind | None, Field(title="FlagCheckKind")] = None
+    """
+    Present on commodity indicators (PDF structure, text addressed to automated readers). A heuristic flag is a prompt for a person to look: it never produces mismatch_detected by itself and never decides anything. Absent on rule-based findings.
+    """
     check_ref: Annotated[str | None, Field(max_length=128)] = None
     stage: Annotated[Stage, Field(title="Stage")]
     """
@@ -1865,6 +1970,10 @@ class AffidavitDiff(BaseModel):
     chronology: AffidavitChronology | None
     """
     Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload (design B1 row 1, D1). Filled by the signature and stamp check.
+    """
+    summary: Annotated[DiffSummary | None, Field(title="DiffSummary")] = None
+    """
+    Counts over the declarations the portal form prints, computed from `ops`. Added by the API. not_comparable covers every declaration of a copy that was not compared (a scan or an unreadable file). Advisory: a difference is a point to check, not a finding.
     """
     comparison: Annotated[Comparison | None, Field(title="Comparison")] = None
     """

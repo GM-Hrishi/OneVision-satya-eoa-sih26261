@@ -24,11 +24,11 @@ from satya_affidavit.engine import CaseInput
 from satya_affidavit.engine import run as run_m5
 from satya_affidavit.ids import sha256_hex
 from satya_api.cases import AFFIDAVIT_SLOT, CaseError, FixtureCaseRepository
-from satya_api.ledger import LedgerRow, verify_chain
+from satya_api.ledger import LedgerRow, canonical_json, verify_chain
 from satya_api.rulepacks import UNKNOWN, RulePack, RulePackCatalog
 from satya_api.sources import apply_stored
 from satya_api.store import EventStore
-from satya_api.workflow import CHECKED, flag_record
+from satya_api.workflow import CHECKED, apply_coverage, flag_record
 from satya_forensics.engine import M6Input
 from satya_forensics.engine import run as run_m6
 from satya_forensics.labels import document_label, label_counts
@@ -95,6 +95,16 @@ def diff_flags(original: list[dict[str, Any]], replayed: list[dict[str, Any]]) -
         "removed": sorted(removed, key=order),
         "changed": sorted(changed, key=order),
     }
+
+
+def run_digest(flags: list[dict[str, Any]], labels: dict[str, str] | None) -> str:
+    """sha256 of one run's result: its flag records (by id) and document labels. No timestamps."""
+    body = {
+        "flags": sorted(flags, key=lambda f: str(f["flag_id"])),
+        "labels": None if labels is None else dict(sorted(labels.items())),
+    }
+    digest: str = sha256_hex(canonical_json(body).encode())
+    return digest
 
 
 def _cap(items: list[Any]) -> tuple[list[Any], bool]:
@@ -188,6 +198,7 @@ class Replayer:
             )
         )
         labels: dict[str, str] = {}
+        coverage_flags: list[dict[str, Any]] = []
         for res in m6.documents:
             doc_read = reads[res.doc_id]
             if doc_read.blocked:  # nothing was read: no identifier, no source answer
@@ -201,9 +212,11 @@ class Replayer:
                         check["outcome"] = "manual_review_required"
                         check["reason_code"] = "SRC_READ_BY_OCR"
                 verification["label"] = document_label(verification["checks"])
+            meta = next(d for d in case["documents"] if d["doc_id"] == res.doc_id)
+            coverage_flags += apply_coverage(verification, meta, res.doc_id, res.title, case)
             labels[res.doc_id] = verification["label"]
         by_id: dict[str, dict[str, Any]] = {}
-        for flag in [*m5["flags"], *m6.flags]:
+        for flag in [*m5["flags"], *m6.flags, *coverage_flags]:
             by_id.setdefault(flag["flag_id"], flag)
         engines = {
             "m5": m5.get("engine_version"),
@@ -260,6 +273,9 @@ class Replayer:
             "original_flags": [],
             "replayed_flags": [],
             "diff": {"added": [], "removed": [], "changed": []},
+            "as_of": None,
+            "digest_original": None,
+            "digest_replayed": None,
             "identical_to_original": False,
             "reproducible": False,
             "reasons": reasons,
@@ -290,6 +306,7 @@ class Replayer:
             return out
         original_flags, cut = _cap(detail["flags"])
         out["original_flags"] = original_flags
+        out["as_of"] = detail.get("checked_at")
         out["truncated"] = cut
         wanted = rule_version or detail["rule_pack"]
         out["rule_version"] = wanted
@@ -328,6 +345,8 @@ class Replayer:
         out["replayed_flags"] = replayed
         out["truncated"] = out["truncated"] or cut
         out["engines"] = engines
+        out["digest_original"] = run_digest(detail["flags"], detail.get("labels"))
+        out["digest_replayed"] = run_digest(flags, labels)
         out["label_counts"] = label_counts(labels.values())
         out["diff"] = diff_flags(detail["flags"], flags)
         same_ids = {f["flag_id"] for f in flags} == {f["flag_id"] for f in detail["flags"]}
@@ -343,3 +362,27 @@ class Replayer:
         else:
             out["reproducible"] = True  # inputs verified; a different pack was asked for
         return out
+
+    async def check(self, case_id: str) -> dict[str, Any]:
+        """Re-run the original rule pack on the vault documents and compare digests (T4).
+
+        Read-only: unlike `replay`, no ledger entry is written. Stored source answers are reused,
+        so no lookup is repeated. `reproduced_identically` is true only when both digests exist
+        and are equal.
+        """
+        rows = await self.store.ledger_rows()
+        result = await self._compute(rows, case_id, None)
+        pack_id = result["rule_version"]
+        original, replayed = result["digest_original"], result["digest_replayed"]
+        return {
+            "case_id": case_id,
+            "reproduced_identically": original is not None and original == replayed,
+            "ruleset_id": pack_id,
+            "ruleset_hash": self.catalog.pack_hash(pack_id),
+            "as_of": result["as_of"],
+            "digest_original": original,
+            "digest_replayed": replayed,
+            "reasons": result["reasons"],
+            "advisory": True,
+            "regulatory_effect": "none",
+        }

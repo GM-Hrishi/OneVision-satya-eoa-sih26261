@@ -9,6 +9,7 @@ rules:
   - rule_id: AFF-CAT-LINE
     version: "0.1.0"
     text_key: affidavit.category_line_missing
+    limitation_key: template_variant
     aph_clause: "Affidavit-2 NOTE"
     also_cites: ["2.3.4b"]
     severity: critical
@@ -20,6 +21,7 @@ rules:
   - rule_id: AFF-DECL-MISSING
     version: "0.1.0"
     text_key: affidavit.declaration_missing
+    limitation_key: template_variant
     aph_clause: "Affidavit-2 NOTE"
     also_cites: ["7.4(a)", "7.1 NOTE"]
     severity: critical
@@ -31,6 +33,7 @@ rules:
   - rule_id: AFF-DECL-CHANGED
     version: "0.1.0"
     text_key: affidavit.declaration_changed
+    limitation_key: entry_slip
     aph_clause: "Affidavit-2 NOTE"
     also_cites: ["7.4(a)", "7.1 NOTE"]
     severity: critical
@@ -42,6 +45,7 @@ rules:
   - rule_id: AFF-DECL-ADDED
     version: "0.1.0"
     text_key: affidavit.declaration_added
+    limitation_key: template_variant
     aph_clause: "Affidavit-2 NOTE"
     also_cites: []
     severity: warning
@@ -53,6 +57,7 @@ rules:
   - rule_id: AFF-HEADER
     version: "0.1.0"
     text_key: affidavit.header_differs
+    limitation_key: entry_slip
     aph_clause: "2.3.4b"
     also_cites: ["Affidavit-2 NOTE"]
     severity: warning
@@ -64,6 +69,7 @@ rules:
   - rule_id: LAND-AREA-RECON
     version: "0.1.0"
     text_key: affidavit.land_area_differs
+    limitation_key: entry_slip
     aph_clause: "Annex-3 3.1g"
     also_cites: ["Affidavit-2 NOTE"]
     verify_note: "[VERIFY] 3.1g governs plots and distance; the area itself is sworn in the Affidavit 2 land table."
@@ -78,6 +84,7 @@ rules:
   - rule_id: LAND-ROW-RECON
     version: "0.1.0"
     text_key: affidavit.land_row_differs
+    limitation_key: table_reading
     aph_clause: "Affidavit-2 NOTE"
     also_cites: ["2.3.4b"]
     severity: warning
@@ -89,6 +96,7 @@ rules:
   - rule_id: ROOM-RECON
     version: "0.1.0"
     text_key: affidavit.room_differs
+    limitation_key: table_reading
     aph_clause: "Annex-3"
     also_cites: ["Affidavit-2 NOTE"]
     verify_note: "[VERIFY] exact Annexure-3 sub-clause for built-up area norms."
@@ -103,6 +111,7 @@ rules:
   - rule_id: ROOM-ID-DUP
     version: "0.1.0"
     text_key: affidavit.room_id_duplicated
+    limitation_key: entry_slip
     aph_clause: "Affidavit-2 NOTE"
     also_cites: []
     verify_note: "[VERIFY] no APH clause states uniqueness; design D5.10 rule."

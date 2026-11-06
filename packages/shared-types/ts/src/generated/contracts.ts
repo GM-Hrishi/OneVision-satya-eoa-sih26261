@@ -143,6 +143,10 @@ export type Role = "RB" | "SC" | "EV" | "HC" | "RA" | "AU" | "INS";
  */
 export type Timestamp = string;
 /**
+ * Present on commodity indicators (PDF structure, text addressed to automated readers). A heuristic flag is a prompt for a person to look: it never produces mismatch_detected by itself and never decides anything. Absent on rule-based findings.
+ */
+export type FlagCheckKind = "heuristic";
+/**
  * C2 stage ①–⑦.
  */
 export type Stage = "1" | "2" | "3" | "4" | "5" | "6" | "7";
@@ -214,6 +218,8 @@ export type CheckKind =
   | "format"
   | "chronology";
 export type SourceMode = "live" | "mock" | "offline" | "none";
+export type CoverageStatus =
+  "covers" | "expired_before_submission" | "not_yet_valid" | "validity_unknown";
 export type ExpiryBasis = "printed" | "computed_from_state_rule";
 /**
  * RFC 3339 date-time with offset (format-checked; Pydantic AwareDatetime); stored UTC, shown IST.
@@ -364,6 +370,7 @@ export interface AffidavitDiff {
    * Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload (design B1 row 1, D1). Filled by the signature and stamp check.
    */
   chronology: AffidavitChronology | null;
+  summary?: DiffSummary;
   comparison?: Comparison;
   /**
    * DiffView sections whose checks belong to a later module, so the UI can say so instead of showing an empty panel.
@@ -621,6 +628,31 @@ export interface AffidavitChronology {
   notary_expiry_ok?: boolean | null;
 }
 /**
+ * Counts over the declarations the portal form prints, computed from `ops`. Added by the API. not_comparable covers every declaration of a copy that was not compared (a scan or an unreadable file). Advisory: a difference is a point to check, not a finding.
+ */
+export interface DiffSummary {
+  total: number;
+  match: number;
+  differ: number;
+  missing_in_sworn: number;
+  not_comparable: number;
+  /**
+   * Declarations only the sworn copy has; not part of total.
+   */
+  added_in_sworn: number;
+  differing: DiffSummaryItem[];
+}
+export interface DiffSummaryItem {
+  decl_no: number | null;
+  sworn_no: number | null;
+  op: "added" | "removed" | "changed";
+  flag_id: string | null;
+  /**
+   * One plain sentence, from the rules catalogue.
+   */
+  why: string;
+}
+/**
  * Whether the sworn copy was really compared with the portal draft. Added by the API; the page says a copy matches only when state is compared. A scan or an unreadable file is not_compared: OCR text never decides anything.
  */
 export interface Comparison {
@@ -692,6 +724,7 @@ export interface Flag {
   preliminary_indicator: boolean;
   severity: Severity;
   disposition: Disposition | null;
+  check_kind?: FlagCheckKind;
   check_ref?: string;
   stage: Stage;
   institution_visible: boolean;
@@ -1074,6 +1107,7 @@ export interface Check {
   field_diff?: FieldDiff[];
   valid_from?: Date;
   valid_to?: Date;
+  coverage?: CertificateCoverage;
   basis?: ExpiryBasis;
   /**
    * Links the check to the flag it raised (Flag.check_ref), e.g. m6:STAMP-CHRONO:chronology:order.
@@ -1102,6 +1136,27 @@ export interface FieldDiff {
   field: string;
   submitted: string | number | boolean | null;
   source: string | number | boolean | null;
+}
+/**
+ * Expiry checks of time-bound certificates: whether the printed validity covers the submission date. Added by SATYA, advisory. expired_before_submission is the expired label; nothing new is added to the six labels.
+ */
+export interface CertificateCoverage {
+  status: CoverageStatus;
+  valid_from: string | null;
+  valid_to: string | null;
+  /**
+   * Days the validity ended before (expired) or starts after (not yet valid) the submission date; 0 when it covers.
+   */
+  days_off: number | null;
+  session?: SessionCoverage;
+}
+/**
+ * Present only when the optional session window is switched on in packages/rules/coverage.yaml (off by default; [VERIFY APH clause]).
+ */
+export interface SessionCoverage {
+  status: "covers_session" | "ends_before_session_end" | "validity_unknown";
+  session_end: string;
+  days_short: number | null;
 }
 /**
  * How a file was read: the PDF text layer, OCR of a scan, or not at all. The wording of the sentence is a translated template picked by `variant`. Text read by OCR never decides anything.

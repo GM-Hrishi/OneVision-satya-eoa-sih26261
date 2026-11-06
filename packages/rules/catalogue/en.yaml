@@ -1,0 +1,65 @@
+# English catalogue for flag limitations (T1) and plain "why" sentences (T2).
+# Wording standard: state what differs and what could innocently explain it. Never say forged, fake,
+# fraud, tampered, cheat or guilty. Every finding is a preliminary indicator for a human to verify.
+locale: en
+limitation:
+  entry_slip: This does not show wrongdoing. A typing slip, or a later edit in the portal form, would look the same.
+  template_variant: This does not show wrongdoing. The institution may have printed an older draft or another print of the template.
+  table_reading: This does not show wrongdoing. A merged cell, a wrapped line or a misread table cell would look the same.
+  resave_changes_bytes: This does not show who changed the file or why. Opening and saving a signed file in some viewers changes its bytes in the same way.
+  certificate_status: This does not show wrongdoing. The signer may have renewed the certificate, and the dates here come from the file itself.
+  trust_store: This does not show wrongdoing. This prototype checks against a test trust anchor only, so a genuine certificate from another issuer would also be reported.
+  signature_mark: This does not show wrongdoing. A printed "digitally signed" mark is common on scanned or re-exported copies.
+  name_format: This does not show wrongdoing. A different spelling, an initial or a title in the certificate name would look the same.
+  source_reachability: This does not show wrongdoing. The check could not be completed, for example because the list was not reachable.
+  date_reading: This does not show wrongdoing. A date typed in another format, or read from a low-quality page, would look the same.
+  stamp_reading: This does not show wrongdoing. A different stamp type or a misread amount on the page would look the same.
+  shared_number: This does not show wrongdoing. A number typed twice by mistake, or a filing resubmitted by the institution, would look the same.
+  scan_reading: This does not show wrongdoing. Text read from a scanned page can contain misread digits.
+  number_format: This does not show wrongdoing. A mistyped digit or a number printed in another layout would look the same.
+  certificate_dates: This does not show wrongdoing. The institution may hold a renewed certificate that was not uploaded, or the dates may be misread from the page.
+  pdf_annotation: This does not show wrongdoing. Reviewers and institutions often add notes or stamps on top of a page.
+  pdf_font: This does not show wrongdoing. A different font on one value is common when a form is filled in separately from its template.
+  pdf_cover: This does not show wrongdoing. A white box over text is common when a page is redacted or corrected before upload.
+  pdf_overlap: This does not show wrongdoing. Overlapping characters can come from a layout engine or a form-filling tool.
+  ai_reader_text: This does not show wrongdoing. Such text can be a pasted template, a test string or a note left by an editing tool.
+# Plain "why" sentences, one per rule id. Placeholders: {extracted} {expected} {unit_label} {doc_title}
+# {page} {clause}. No rule IDs in the sentence. A missing template falls back to a generic sentence.
+why:
+  AFF-CAT-LINE: "The numbered category line of the portal form is missing from the sworn copy, or lists other categories."
+  AFF-DECL-MISSING: "A declaration printed in the portal form does not appear in the sworn copy."
+  AFF-DECL-CHANGED: "A declaration in the sworn copy is worded differently from the portal form."
+  AFF-DECL-ADDED: "The sworn copy has a declaration that the portal form does not print."
+  AFF-HEADER: "A field in the opening block of the sworn copy differs from the portal form."
+  LAND-AREA-RECON: "The affidavit declares {extracted} {unit_label} of land; the portal form says {expected} {unit_label}."
+  LAND-ROW-RECON: "A land row in the sworn copy differs from the land details in the portal form."
+  ROOM-RECON: "A room value in the sworn copy differs from the room details in the portal form."
+  ROOM-ID-DUP: "Room ID {extracted} appears in more than one room table of the affidavit."
+  SIG-DIGEST: "The content of {doc_title} no longer matches what its digital signature covers."
+  SIG-MODIFIED: "{doc_title} was changed after it was signed."
+  SIG-REVOKED: "The certificate that signed {doc_title} was revoked before the signing time."
+  SIG-CERT-EXPIRED: "The certificate that signed {doc_title} had expired at the signing time."
+  SIG-UNTRUSTED: "The certificate that signed {doc_title} does not chain to the trust anchor used here."
+  SIG-IMAGE: "The \"digitally signed\" mark in {doc_title} is printed text or an image, not a signature."
+  SIG-SIGNER: "The name on the signing certificate does not match the signatory in the application."
+  SIG-REVOCATION: "The revocation list could not be reached, so revocation of the signing certificate was not checked."
+  SIG-UPLOADER-MISSING: "The uploaded copy of {doc_title} carries no digital signature from the institution."
+  STAMP-CHRONO: "The dates of the stamp, the notarisation or the signing in {doc_title} are not in the expected order."
+  STAMP-PARTY: "The e-stamp in {doc_title} names a second party other than the one the template requires."
+  STAMP-DUTY: "The stamp duty paid in {doc_title} is lower than the amount the template requires."
+  STAMP-INSTRUMENT: "The stamp in {doc_title} is on physical paper, so no e-stamp number can be looked up."
+  STAMP-REUSE: "The e-stamp certificate number in {doc_title} was already used on another filing."
+  STAMP-OCR-MATCH: "The stamp number read from the scan of {doc_title} matches another filing and needs a person to check it."
+  NOTARY-EXPIRY: "The notary seal on {doc_title} had expired on the date of notarisation."
+  UDIN-STRUCT: "The UDIN in {doc_title} does not have the expected structure or year."
+  UDIN-MEMBER: "The membership number inside the UDIN differs from the one printed on the statement."
+  UDIN-REUSE: "The UDIN in {doc_title} already appears on another filing."
+  CERT-COVERAGE-EXPIRED: "The {doc_title} ended on {valid_to}, {days_off} days before the submission date of {submitted}."
+  CERT-COVERAGE-NOT-YET: "The {doc_title} starts on {valid_from}, {days_off} days after the submission date of {submitted}."
+  CERT-COVERAGE-UNKNOWN: "The validity dates of {doc_title} could not be read, so coverage of the submission date was not checked."
+  CERT-SESSION-GAP: "The {doc_title} is valid until {valid_to}, which is before the end of the academic session ({session_end})."
+  PDF-ANNOT-OVERLAP: "A note or stamp added on top of page {page} covers a key value in {doc_title}."
+  PDF-FONT-DIFF: "A key value on page {page} of {doc_title} is set in a different font or size from the text around it."
+  PDF-COVER-TEXT: "A solid box on page {page} of {doc_title} sits over text that is still in the file."
+  PDF-GLYPH-OVERLAP: "Characters of a key value on page {page} of {doc_title} are drawn on top of each other."
+  AI-READER-TEXT: "Page {page} of {doc_title} contains text addressed to automated readers. SATYA ignored it."

@@ -31,6 +31,8 @@ class Rule:
     retries: int = 0
     other_codes: tuple[tuple[str, str], ...] = ()
     max_year_gap: int = 0
+    limitation_key: str | None = None
+    description: str = ""
 
     def code(self, name: str) -> str:
         return dict(self.other_codes)[name]
@@ -78,6 +80,8 @@ def load_ruleset_file(path: Path) -> Ruleset:
             alert_subtype=r["alert"]["subtype"],
             institution_visible=bool(r["institution_visible"]),
             preliminary_indicator=bool(r["preliminary_indicator"]),
+            limitation_key=r.get("limitation_key"),
+            description=str(r.get("description", "")),
             retries=int(r.get("retries", 0)),
             other_codes=tuple(sorted((r.get("other_codes") or {}).items())),
             max_year_gap=int(r.get("max_year_gap", 0)),

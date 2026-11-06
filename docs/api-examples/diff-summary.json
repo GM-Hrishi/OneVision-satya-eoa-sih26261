@@ -1,0 +1,17 @@
+{
+  "added_in_sworn": 0,
+  "differ": 1,
+  "differing": [
+    {
+      "decl_no": 9,
+      "flag_id": "flg_N6GMR9FAH5RGN1EMR0Q3N2C782",
+      "op": "changed",
+      "sworn_no": 9,
+      "why": "A declaration in the sworn copy is worded differently from the portal form."
+    }
+  ],
+  "match": 23,
+  "missing_in_sworn": 0,
+  "not_comparable": 0,
+  "total": 24
+}

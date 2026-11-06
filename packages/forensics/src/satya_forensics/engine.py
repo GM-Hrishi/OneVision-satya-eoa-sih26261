@@ -13,6 +13,8 @@ from typing import Any
 
 from satya_affidavit.ids import sha256_hex, token
 from satya_affidavit.template import load_template
+from satya_forensics.airead import ai_text_items, scan_pdf
+from satya_forensics.coverage import is_time_bound
 from satya_forensics.flags import FlagFactory
 from satya_forensics.labels import document_label, most_severe
 from satya_forensics.registry import Registry
@@ -28,6 +30,7 @@ from satya_forensics.signatures import (
 )
 from satya_forensics.stamp import Finding
 from satya_forensics.stamp import evaluate as evaluate_stamp
+from satya_forensics.structure import structure_items
 from satya_forensics.textlayer import Page, find_marks, read_pages
 from satya_forensics.udin import evaluate as evaluate_udin
 from satya_forensics.udin import read_accounts
@@ -237,6 +240,15 @@ def run(inp: M6Input) -> M6Result:
             affidavit_section = _affidavit(ctx, inp)
         elif slot == ACCOUNTS_SLOT:
             _accounts(ctx, inp)
+        structure, ai_text = scan_pdf(
+            pdf, with_structure=slot == AFFIDAVIT_SLOT or is_time_bound(doc.get("declared_type"))
+        )
+        for items in (
+            structure_items(structure, factory, ruleset),
+            ai_text_items(ai_text, factory, ruleset),
+        ):
+            ctx.checks += items[0]
+            ctx.flags += items[1]
         source = {"channel": "pdf-signature", "adapter_mode": "offline"}
         lookups = [c for c in ctx.checks if c["kind"] == "source_lookup"]
         if lookups and "source" in lookups[0]:

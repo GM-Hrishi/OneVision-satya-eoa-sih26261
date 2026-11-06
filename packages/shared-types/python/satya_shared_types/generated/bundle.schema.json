@@ -930,6 +930,95 @@
           ],
           "description": "Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload (design B1 row 1, D1). Filled by the signature and stamp check."
         },
+        "summary": {
+          "title": "DiffSummary",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "total",
+            "match",
+            "differ",
+            "missing_in_sworn",
+            "not_comparable",
+            "added_in_sworn",
+            "differing"
+          ],
+          "description": "Counts over the declarations the portal form prints, computed from `ops`. Added by the API. not_comparable covers every declaration of a copy that was not compared (a scan or an unreadable file). Advisory: a difference is a point to check, not a finding.",
+          "properties": {
+            "total": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "match": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "differ": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "missing_in_sworn": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "not_comparable": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "added_in_sworn": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Declarations only the sworn copy has; not part of total."
+            },
+            "differing": {
+              "type": "array",
+              "items": {
+                "title": "DiffSummaryItem",
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "decl_no",
+                  "sworn_no",
+                  "op",
+                  "flag_id",
+                  "why"
+                ],
+                "properties": {
+                  "decl_no": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "sworn_no": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "op": {
+                    "type": "string",
+                    "enum": [
+                      "added",
+                      "removed",
+                      "changed"
+                    ]
+                  },
+                  "flag_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "why": {
+                    "type": "string",
+                    "description": "One plain sentence, from the rules catalogue."
+                  }
+                }
+              }
+            }
+          }
+        },
         "comparison": {
           "title": "Comparison",
           "type": "object",
@@ -2543,6 +2632,84 @@
         "valid_to": {
           "$ref": "#/$defs/Date"
         },
+        "coverage": {
+          "title": "CertificateCoverage",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "valid_from",
+            "valid_to",
+            "days_off"
+          ],
+          "description": "Expiry checks of time-bound certificates: whether the printed validity covers the submission date. Added by SATYA, advisory. expired_before_submission is the expired label; nothing new is added to the six labels.",
+          "properties": {
+            "status": {
+              "title": "CoverageStatus",
+              "type": "string",
+              "enum": [
+                "covers",
+                "expired_before_submission",
+                "not_yet_valid",
+                "validity_unknown"
+              ]
+            },
+            "valid_from": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "valid_to": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+            },
+            "days_off": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "description": "Days the validity ended before (expired) or starts after (not yet valid) the submission date; 0 when it covers."
+            },
+            "session": {
+              "title": "SessionCoverage",
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "status",
+                "session_end",
+                "days_short"
+              ],
+              "description": "Present only when the optional session window is switched on in packages/rules/coverage.yaml (off by default; [VERIFY APH clause]).",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "covers_session",
+                    "ends_before_session_end",
+                    "validity_unknown"
+                  ]
+                },
+                "session_end": {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                },
+                "days_short": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ],
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        },
         "basis": {
           "title": "ExpiryBasis",
           "type": "string",
@@ -3093,6 +3260,14 @@
               "type": "null"
             }
           ]
+        },
+        "check_kind": {
+          "title": "FlagCheckKind",
+          "type": "string",
+          "enum": [
+            "heuristic"
+          ],
+          "description": "Present on commodity indicators (PDF structure, text addressed to automated readers). A heuristic flag is a prompt for a person to look: it never produces mismatch_detected by itself and never decides anything. Absent on rule-based findings."
         },
         "check_ref": {
           "type": "string",

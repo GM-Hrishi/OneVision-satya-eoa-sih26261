@@ -41,7 +41,7 @@ Verified, Mismatch detected (broken digest, edit after signing, revoked certific
 The three scan cases are made by rasterising our own synthetic affidavits with Pillow (skew, noise, lower resolution). If the image was built without the OCR engine, all three read "OCR engine is not available"; build with `WITH_OCR=1` (the compose default) to see the engine read them.
 
 ## Not built (say so if asked)
-Template-aware extraction beyond Affidavit 2 (M3 proper), intake vault with redaction and tokenisation (P-19), identity graph, year-over-year, EVC selection, the full mock portal screens, manual-task screen (RB-09), case replay, Hindi for these screens, hosting, HTTPS tunnel, mobile app. The stage-1 private pre-check is not part of this flow and never feeds the band.
+Template-aware extraction beyond Affidavit 2 (M3 proper), intake vault with redaction and tokenisation (P-19), identity graph, year-over-year, EVC selection, the full mock portal screens, manual-task screen (RB-09), a screen for case replay (the replay, replay check, audit verify and run diff routes exist; see API-NOTES.md), certificate documents (coverage logic exists, no demo case has one), Hindi for these screens, hosting, HTTPS tunnel, mobile app. The stage-1 private pre-check is not part of this flow and never feeds the band.
 
 ## If something looks wrong
 - Queue empty or audit empty: run `make demo-reset`.

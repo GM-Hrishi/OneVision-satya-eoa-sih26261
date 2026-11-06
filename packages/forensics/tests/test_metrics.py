@@ -9,6 +9,8 @@ import pytest
 from satya_affidavit.synth.institutions import DEV_PROFILES, HELD_OUT_PROFILES
 from satya_forensics.eval import (
     ADVISORY_NOTES_WITHOUT_PLANTED_CASES,
+    INDICATORS_WITH_OWN_TESTS,
+    NOT_SCORED,
     RuleScore,
     corpus,
     evaluate,
@@ -32,10 +34,22 @@ def test_allowlist_holds_only_advisory_notes() -> None:
         assert rule.label == "manual_review_required", rule_id
 
 
+def test_indicators_with_own_tests_never_say_mismatch() -> None:
+    rules = load_ruleset().rules
+    for rule_id in INDICATORS_WITH_OWN_TESTS:
+        rule = rules[rule_id]  # also fails if the rule no longer exists
+        assert rule.preliminary_indicator, rule_id
+        assert rule.label in ("manual_review_required", "expired"), rule_id
+        assert rule.limitation_key, rule_id
+        if rule_id.startswith(("PDF-", "AI-")):
+            assert rule.label == "manual_review_required", rule_id
+            assert rule.severity in ("warning", "info"), rule_id
+
+
 def test_allowlisted_notes_never_enter_the_figures() -> None:
     scored = scored_rule_ids()
-    assert not set(scored) & ADVISORY_NOTES_WITHOUT_PLANTED_CASES
-    assert set(scored) | ADVISORY_NOTES_WITHOUT_PLANTED_CASES == set(load_ruleset().rules)
+    assert not set(scored) & (ADVISORY_NOTES_WITHOUT_PLANTED_CASES | INDICATORS_WITH_OWN_TESTS)
+    assert set(scored) | NOT_SCORED == set(load_ruleset().rules)
 
 
 def test_a_new_detection_rule_without_a_planted_case_still_fails() -> None:

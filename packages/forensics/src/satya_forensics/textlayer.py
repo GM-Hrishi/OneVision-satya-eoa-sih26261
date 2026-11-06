@@ -13,6 +13,7 @@ from typing import Any
 
 import pdfplumber
 
+from satya_ocr.aimask import drop_ai_lines
 from satya_ocr.model import OcrLayer
 
 MARK_PHRASES = (
@@ -116,9 +117,10 @@ def read_pages(pdf: bytes, ocr: Mapping[int, OcrLayer] | None = None) -> list[Pa
             for line in p.extract_text_lines(return_chars=False):
                 box = Box(line["x0"], line["top"], line["x1"], line["bottom"])
                 lines.append((" ".join(line["text"].split()), box))
+            lines = drop_ai_lines(lines, lambda item: item[0])  # T7: never read these
             from_ocr = False
             if not lines and ocr and number in ocr:
-                lines = _ocr_lines(ocr[number])
+                lines = drop_ai_lines(_ocr_lines(ocr[number]), lambda item: item[0])
                 from_ocr = True
             text = "\n".join(t for t, _ in lines)
             pages.append(Page(number, float(p.width), float(p.height), text, lines, from_ocr))

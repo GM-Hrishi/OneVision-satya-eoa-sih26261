@@ -53,6 +53,15 @@ WHY: dict[str, str] = {
     "UDIN-STRUCT": "The UDIN does not have the expected structure or year.",
     "UDIN-MEMBER": "The membership number inside the UDIN differs from the one printed on the statement.",
     "UDIN-REUSE": "This UDIN already appears on another filing.",
+    "CERT-COVERAGE-EXPIRED": "The certificate's printed validity ended before the submission date.",
+    "CERT-COVERAGE-NOT-YET": "The certificate's printed validity starts after the submission date.",
+    "CERT-COVERAGE-UNKNOWN": "The certificate's validity dates could not be read.",
+    "CERT-SESSION-GAP": "The certificate ends before the end of the academic session.",
+    "PDF-ANNOT-OVERLAP": "A note or stamp added on top of the page covers a key value.",
+    "PDF-FONT-DIFF": "A key value is set in a different font or size from its line.",
+    "PDF-COVER-TEXT": "A solid box sits over text that is still in the file.",
+    "PDF-GLYPH-OVERLAP": "Characters of a key value are drawn on top of each other.",
+    "AI-READER-TEXT": "The page contains text addressed to automated readers. SATYA ignored it.",
 }
 DEFAULT_WHY = "This finding comes from a rule that cites the APH clause shown. Review the evidence."
 

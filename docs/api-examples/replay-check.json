@@ -1,0 +1,12 @@
+{
+  "advisory": true,
+  "as_of": "2026-11-06T09:00:00+00:00",
+  "case_id": "cas_01JD3M5A00000000000000CE05",
+  "digest_original": "d206b91c0471d7d9c98b09455b00bd7a792c2b79a62c5306ccc8491dfd54ad1a",
+  "digest_replayed": "d206b91c0471d7d9c98b09455b00bd7a792c2b79a62c5306ccc8491dfd54ad1a",
+  "reasons": [],
+  "regulatory_effect": "none",
+  "reproduced_identically": true,
+  "ruleset_hash": "216c4cb8448772ea32a6309a91831db3c0de0290ba50328d96872a0804afc3ea",
+  "ruleset_id": "m5-affidavit@0.1.0+m6-signatures@0.1.0"
+}

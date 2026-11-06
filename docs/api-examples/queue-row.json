@@ -1,0 +1,52 @@
+{
+  "application_id": "1-90000004217",
+  "ay": "2026-27",
+  "case_id": "cas_01JD3M5A00000000000000DT03",
+  "category_set": [
+    "EoA Only"
+  ],
+  "institution_name": "Demo Institute of Technology 03",
+  "label_counts": {
+    "expired": 0,
+    "manual_review_required": 1,
+    "mismatch_detected": 0,
+    "source_unavailable": 1,
+    "verification_pending": 0,
+    "verified": 0
+  },
+  "last_activity_at": "2026-11-06T09:00:00+00:00",
+  "manual_tasks": 1,
+  "open_flags": 7,
+  "region": "Southern",
+  "risk_band": "high",
+  "route": "self_disclosure",
+  "stage": "2",
+  "status": "not_started",
+  "submitted_at": "2026-11-06T09:00:00+00:00",
+  "top_reasons": [
+    {
+      "aph_clause": "Affidavit-2 NOTE",
+      "flag_id": "flg_VV654MTDKWB8JW12KKVEF0Z1FS",
+      "rule_id": "AFF-CAT-LINE",
+      "short_text": "The numbered category line of the portal draft is missing from the sworn copy."
+    },
+    {
+      "aph_clause": "Affidavit-2 NOTE",
+      "flag_id": "flg_N6GMR9FAH5RGN1EMR0Q3N2C782",
+      "rule_id": "AFF-DECL-CHANGED",
+      "short_text": "A declaration in the sworn copy has different wording from the portal draft."
+    },
+    {
+      "aph_clause": "Annex-3 3.1g",
+      "flag_id": "flg_HJG2FW6K653M622NKWGGQ9HQZE",
+      "rule_id": "LAND-AREA-RECON",
+      "short_text": "The sworn land area is 3.5 acre but the application report has 4.5 acre."
+    }
+  ],
+  "undisposed_flags": 7,
+  "why_summary": [
+    "The numbered category line of the portal form is missing from the sworn copy, or lists other categories.",
+    "A declaration in the sworn copy is worded differently from the portal form.",
+    "The affidavit declares 3.50 acres of land; the portal form says 4.50 acres."
+  ]
+}

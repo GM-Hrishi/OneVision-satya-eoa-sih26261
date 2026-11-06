@@ -919,6 +919,37 @@
       ],
       "description": "Application ≤ stamp ≤ notarisation ≤ DSC ≤ upload (design B1 row 1, D1). Filled by the signature and stamp check."
     },
+    "summary": {
+      "title": "DiffSummary",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "match", "differ", "missing_in_sworn", "not_comparable", "added_in_sworn", "differing"],
+      "description": "Counts over the declarations the portal form prints, computed from `ops`. Added by the API. not_comparable covers every declaration of a copy that was not compared (a scan or an unreadable file). Advisory: a difference is a point to check, not a finding.",
+      "properties": {
+        "total": { "type": "integer", "minimum": 0 },
+        "match": { "type": "integer", "minimum": 0 },
+        "differ": { "type": "integer", "minimum": 0 },
+        "missing_in_sworn": { "type": "integer", "minimum": 0 },
+        "not_comparable": { "type": "integer", "minimum": 0 },
+        "added_in_sworn": { "type": "integer", "minimum": 0, "description": "Declarations only the sworn copy has; not part of total." },
+        "differing": {
+          "type": "array",
+          "items": {
+            "title": "DiffSummaryItem",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["decl_no", "sworn_no", "op", "flag_id", "why"],
+            "properties": {
+              "decl_no": { "type": ["integer", "null"] },
+              "sworn_no": { "type": ["integer", "null"] },
+              "op": { "type": "string", "enum": ["added", "removed", "changed"] },
+              "flag_id": { "type": ["string", "null"] },
+              "why": { "type": "string", "description": "One plain sentence, from the rules catalogue." }
+            }
+          }
+        }
+      }
+    },
     "comparison": {
       "title": "Comparison",
       "type": "object",
