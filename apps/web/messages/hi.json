@@ -948,6 +948,59 @@
   "k": {
     "limitation": {
       "title": "यह क्या सिद्ध नहीं करता"
+    },
+    "case": {
+      "idLine": "केस {id}",
+      "headlineMismatch": "{count, plural, one {इस फ़ाइल में एक बात मेल नहीं खाती।} other {इस फ़ाइल में # बातें मेल नहीं खातीं।}}",
+      "headlineLook": "{count, plural, one {एक निष्कर्ष को किसी व्यक्ति की जाँच चाहिए।} other {# निष्कर्षों को किसी व्यक्ति की जाँच चाहिए।}}",
+      "headlineNone": "इस फ़ाइल में कोई खुला निष्कर्ष नहीं है।",
+      "findingsHeading": "क्या मेल नहीं खाता",
+      "findingsEmpty": "इस केस में कोई निष्कर्ष नहीं।",
+      "documentHeading": "दस्तावेज़",
+      "sideHeading": "अन्य दस्तावेज़",
+      "ladderHeading": "हर दस्तावेज़ की जाँच कहाँ तक हुई",
+      "decisionHeading": "आपका निर्णय",
+      "pinLine": "निष्कर्ष {n}: {rule}",
+      "pinOn": "दस्तावेज़ पर निष्कर्ष {n} दिख रहा है।",
+      "selectFinding": "दस्तावेज़ में दिखाएँ: निष्कर्ष {n}",
+      "noDocuments": "इस केस में कोई दस्तावेज़ नहीं।",
+      "stage": "स्थिति: {status}"
+    },
+    "aiReader": {
+      "line": "इस पृष्ठ पर स्वचालित पाठकों को संबोधित पाठ है। SATYA ने उसे अनदेखा किया।",
+      "where": "पृष्ठ {page}, क्षेत्र दस्तावेज़ पर चिह्नित।",
+      "snippet": "मिला हुआ पाठ"
+    },
+    "ladder": {
+      "caption": "प्रति दस्तावेज़ एक पंक्ति, पाँच जाँचें",
+      "viewLabel": "दृश्य",
+      "viewLadder": "सीढ़ी",
+      "viewMap": "नक्शा",
+      "viewJourney": "यात्रा",
+      "colDocument": "दस्तावेज़",
+      "col": {
+        "declared": "घोषित",
+        "read": "पढ़ा गया",
+        "portal": "पोर्टल से मेल",
+        "issuer": "जारीकर्ता",
+        "signature": "हस्ताक्षर"
+      },
+      "state": {
+        "agrees": "मेल खाता है",
+        "disagrees": "मेल नहीं खाता",
+        "waiting": "प्रतीक्षा",
+        "check": "व्यक्ति को जाँचना है",
+        "na": "लागू नहीं"
+      },
+      "cell": "{column}: {state}",
+      "verdict": {
+        "verified": "{title}: कुछ अलग नहीं मिला।",
+        "mismatch_detected": "{title}: कम से कम एक मान अलग है।",
+        "expired": "{title}: तिथि बताती है कि यह ज़रूरत से पहले समाप्त हो गया।",
+        "verification_pending": "{title}: जाँच जारी है।",
+        "source_unavailable": "{title}: स्रोत ने उत्तर नहीं दिया, इसलिए तुलना नहीं हुई।",
+        "manual_review_required": "{title}: इसे किसी व्यक्ति को देखना है।"
+      }
     }
   }
 }

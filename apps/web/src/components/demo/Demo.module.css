@@ -291,6 +291,12 @@
   height: auto;
 }
 
+.region > span {
+  position: absolute;
+  left: -14px;
+  top: -14px;
+}
+
 .region {
   position: absolute;
   border: 2px solid var(--k-red);

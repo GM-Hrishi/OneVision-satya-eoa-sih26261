@@ -11,9 +11,9 @@ Prompt: `docs/prompts/PROMPT_ui_style_k.md` (v1.1). Rule: continue from the firs
 | T0 discovery | DONE | see git log | notes below |
 | T1 tokens, fonts, motion, contrast script | DONE | 85335f9 | k/dur/ease token groups, Archivo variable width axis (62-125%) bundled so no fallback needed, motion.css + lib/motion.ts, contrast script: 51 pairs all pass | |
 | T2 shell: top bar, nav per role, footer, breadcrumbs, menu | DONE | f78bc8e | top bar with SATYA·EoA mark, nav (aria-label Main navigation kept), breadcrumbs above page, footer chain chip (verify endpoint, falls back to /v1/audit chain block, hidden otherwise). Manual checks and Rules nav items join with T11/T12 when the routes exist. Not run in a browser here (no stack). | |
-| T3 primitives + DecisionBar restyle | DONE | see git log | StatusLabel (icon+word, no pill), SourceTag, risk chip square, new Numeral/Pin/Segmented/Paper/HairRow/LimitationNote/Untrusted, DecisionBar radios restyled as a segmented control with native radios (e2e selectors and the button text 'Record decision' kept; prompt copy 'Record my call' deferred to avoid breaking demo-flow.cjs) | |
-| T4 Case page + Ladder | IN PROGRESS | | |
-| T5 Evidence map + Journey | TODO | | |
+| T3 primitives + DecisionBar restyle | DONE | 573c6f4 | StatusLabel (icon+word, no pill), SourceTag, risk chip square, new Numeral/Pin/Segmented/Paper/HairRow/LimitationNote/Untrusted, DecisionBar radios restyled as a segmented control with native radios (e2e selectors and the button text 'Record decision' kept; prompt copy 'Record my call' deferred to avoid breaking demo-flow.cjs) | |
+| T4 Case page + Ladder | DONE | see git log | Case page: h1 sentence from findings, pinned findings with huge clashing values, PDF.js as paper with a pin on the region, limitation note only when the flag carries text, other documents, proof ladder (5 columns, icon cells with aria-labels and legend), old documents/sources table kept (Simulated source and Test trust anchor tags), decision strip last. Kept #flags, 'Show in document', 'Record decision' for tests/e2e/demo-flow.cjs. Stage trail not built: the review payload has no stage names (not invented). Ladder|Map|Journey switch appears with T5 (no dead UI). | |
+| T5 Evidence map + Journey | IN PROGRESS | | |
 | T6 Audit + replay diff | TODO | | |
 | T7 Overview | TODO | | |
 | T8 Queue + timeline | TODO | | |
@@ -42,6 +42,7 @@ Prompt: `docs/prompts/PROMPT_ui_style_k.md` (v1.1). Rule: continue from the firs
 15. e2e specs are Playwright `.cjs` files in `tests/e2e/` and need the running stack (`make up`); they cannot run in this cloud session. Unit tests (`pnpm test`), lint and typecheck can.
 
 ## Blockers / questions
+- Do NOT import runtime values from `@satya/shared-types` in web code: Turbopack cannot resolve its `./generated/constants.js` re-export (vitest can, so tests pass while `next build` fails). Use `lib/labels.ts` (found by running `pnpm build` in T4).
 - Branch name (see top). 
 - e2e and smoke need Docker (`make up`); not available here. Recorded per task; they must be run by the team before merge.
 

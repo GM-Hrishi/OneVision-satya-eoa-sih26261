@@ -948,6 +948,59 @@
   "k": {
     "limitation": {
       "title": "What this does not prove"
+    },
+    "case": {
+      "idLine": "Case {id}",
+      "headlineMismatch": "{count, plural, one {One thing on this file does not add up.} other {# things on this file do not add up.}}",
+      "headlineLook": "{count, plural, one {One finding needs a person to look.} other {# findings need a person to look.}}",
+      "headlineNone": "No open findings on this file.",
+      "findingsHeading": "What does not add up",
+      "findingsEmpty": "No findings on this case.",
+      "documentHeading": "The document",
+      "sideHeading": "Other documents",
+      "ladderHeading": "How far each document was checked",
+      "decisionHeading": "Your call",
+      "pinLine": "Finding {n}: {rule}",
+      "pinOn": "Showing finding {n} on the document.",
+      "selectFinding": "Show in document: finding {n}",
+      "noDocuments": "No documents on this case.",
+      "stage": "Status: {status}"
+    },
+    "aiReader": {
+      "line": "This page contains text addressed to automated readers. SATYA ignored it.",
+      "where": "Page {page}, region marked on the document.",
+      "snippet": "Text found"
+    },
+    "ladder": {
+      "caption": "One row per document, five checks",
+      "viewLabel": "View",
+      "viewLadder": "Ladder",
+      "viewMap": "Map",
+      "viewJourney": "Journey",
+      "colDocument": "Document",
+      "col": {
+        "declared": "Declared",
+        "read": "Read",
+        "portal": "Agrees with portal",
+        "issuer": "Issuer",
+        "signature": "Signature"
+      },
+      "state": {
+        "agrees": "Agrees",
+        "disagrees": "Disagrees",
+        "waiting": "Waiting",
+        "check": "A person must check",
+        "na": "Not applicable"
+      },
+      "cell": "{column}: {state}",
+      "verdict": {
+        "verified": "{title}: nothing found that differs.",
+        "mismatch_detected": "{title}: at least one value differs.",
+        "expired": "{title}: a date shows it ran out before it was needed.",
+        "verification_pending": "{title}: still being checked.",
+        "source_unavailable": "{title}: the source did not answer, so it was not compared.",
+        "manual_review_required": "{title}: a person has to look at this one."
+      }
     }
   }
 }

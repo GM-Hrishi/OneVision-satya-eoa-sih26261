@@ -16,7 +16,7 @@ function show(value: unknown): string {
   return typeof value === "object" ? JSON.stringify(value) : String(value);
 }
 
-function DecisionBar({ caseId, flag }: { caseId: string; flag: ReviewFlag }) {
+export function DecisionBar({ caseId, flag }: { caseId: string; flag: ReviewFlag }) {
   const t = useTranslations("demo");
   const [state, action, pending] = useActionState(recordDisposition, INITIAL);
   const done = flag.disposition;

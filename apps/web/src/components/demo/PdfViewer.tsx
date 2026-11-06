@@ -2,6 +2,7 @@
 // PDF.js viewer: renders one page of a stored synthetic PDF and outlines the evidence regions of a
 // flag (normalised 0..1, origin top left). The PDF comes from the workbench's own /pdf route.
 import { useEffect, useRef, useState } from "react";
+import { Pin } from "@/components/k/Pin";
 import { SourceTag } from "@/components/ui/SourceTag";
 import styles from "./Demo.module.css";
 
@@ -11,6 +12,8 @@ export interface ViewerTarget {
   page: number;
   regions: { x: number; y: number; w: number; h: number }[];
   label: string;
+  /** Finding number shown as a pin on the region (aria-hidden; the finding list says the same in text). */
+  pin?: number;
 }
 
 export interface ViewerText {
@@ -94,7 +97,9 @@ export function PdfViewer({ target, text }: { target: ViewerTarget | null; text:
               ref={i === 0 ? firstRegion : undefined}
               className={styles.region}
               style={{ left: `${r.x * 100}%`, top: `${r.y * 100}%`, width: `${r.w * 100}%`, height: `${r.h * 100}%` }}
-            />
+            >
+              {target.pin && i === 0 ? <Pin n={target.pin} /> : null}
+            </div>
           ))}
         </div>
       </div>

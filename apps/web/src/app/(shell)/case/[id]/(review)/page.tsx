@@ -4,14 +4,15 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { CaseTabs } from "@/components/case/CaseTabs";
-import { CaseReview } from "@/components/demo/CaseReview";
+import { CaseWorkspace } from "@/components/k/CaseWorkspace";
+import { Ladder } from "@/components/k/Ladder";
+import { buildCaseView } from "@/lib/api/k-adapters/case";
 import styles from "@/components/demo/Demo.module.css";
 import { RiskBand } from "@/components/demo/RiskBand";
 import { SourceTag } from "@/components/ui/SourceTag";
 import { StatusLabel } from "@/components/ui/StatusLabel";
 import diff from "@/components/diff/DiffView.module.css";
 import { SignatureBadge } from "@/components/signature/SignatureBadge";
-import { PageHeader } from "@/components/ui/PageHeader";
 import { ReadNotes } from "@/components/demo/ReadNotes";
 import { ReasonLine } from "@/components/demo/ReasonLine";
 import { caseVerification } from "@/lib/cases";
@@ -38,35 +39,40 @@ export default async function CasePage({ params }: Props) {
   const t = await getTranslations("demo");
   const td = await getTranslations("diff");
   const tv = await getTranslations("verification");
+  const tk = await getTranslations("k");
+  const view = buildCaseView(review);
+  const headline =
+    view.disagreeCount > 0
+      ? tk("case.headlineMismatch", { count: view.disagreeCount })
+      : view.lookCount > 0
+        ? tk("case.headlineLook", { count: view.lookCount })
+        : tk("case.headlineNone");
   return (
     <>
-      <PageHeader title={t("case.heading")}>
+      <header>
+        <p className="k-label">
+          <span className="k-mono">{tk("case.idLine", { id: id.slice(-4) })}</span>
+          {" · "}
+          <RiskBand band={review.risk.band} /> {" · "}
+          {tk("case.stage", { status: t(`status.${review.status}`) })}
+        </p>
+        <h1 className="k-h1">{headline}</h1>
+        {view.lead ? <p>{view.lead}</p> : null}
         <p className={diff.caseLine}>
           {verification.documents.length > 0 ? t("case.line", { count: verification.documents.length, id: id.slice(-4) }) : null}
         </p>
         <Note>{td("advisory")}</Note>
-        <CaseTabs caseId={id} current="overview" />
-      </PageHeader>
-
-      <section className={diff.section} aria-labelledby="band">
-        <h2 id="band">{t("case.bandHeading")}</h2>
-        <p>
-          <RiskBand band={review.risk.band} /> <span>{t(`status.${review.status}`)}</span>
-        </p>
         <p className={diff.note}>{t("case.bandNote")}</p>
-        {review.risk.reasons.length > 0 ? (
-          <ul className={styles.reasons}>
-            {review.risk.reasons.map((r) => (
-              <li key={r.flag_id}>
-                {cat(r.rule_id, " (", r.aph_clause ?? t("flags.verify"), "): ", r.short_text)}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>{t("case.noReasons")}</p>
-        )}
-      </section>
+        <CaseTabs caseId={id} current="overview" />
+      </header>
 
+      <CaseWorkspace
+        caseId={id}
+        findings={view.findings}
+        docs={review.documents.map((d) => ({ docId: d.doc_id, title: d.title, label: d.label, manualTask: d.manual_task }))}
+        ladder={
+          <>
+            <Ladder rows={view.ladder} />
       <section className={diff.section} aria-labelledby="docs">
         <h2 id="docs">{t("case.docsHeading")}</h2>
         <ul className={styles.counts} aria-label={t("case.countsLabel")}>
@@ -153,11 +159,9 @@ export default async function CasePage({ params }: Props) {
         <p className={diff.note}>{t("case.mockNote")}</p>
       </section>
 
-      <section className={diff.section} aria-labelledby="flags">
-        <h2 id="flags">{t("flags.heading")}</h2>
-        <p className={diff.note}>{t("flags.intro", { count: review.flags.length, open: review.undisposed_flags })}</p>
-        <CaseReview caseId={id} flags={review.flags} />
-      </section>
+          </>
+        }
+      />
     </>
   );
 }
