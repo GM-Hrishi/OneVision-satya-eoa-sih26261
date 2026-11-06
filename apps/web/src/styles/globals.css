@@ -7,11 +7,11 @@
 }
 
 html {
-  font-family: var(--font-sans);
+  font-family: var(--font-display);
   font-size: 100%; /* respects the user's browser text size; everything below is in rem */
   line-height: 1.5;
-  color: var(--color-text);
-  background: var(--color-page);
+  color: var(--k-ink);
+  background: var(--k-desk);
   -webkit-text-size-adjust: 100%;
 }
 

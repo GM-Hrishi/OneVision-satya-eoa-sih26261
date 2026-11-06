@@ -25,7 +25,9 @@
     "searchPlaceholder": "आवेदन आईडी या संस्थान",
     "searchButton": "खोजें",
     "userMenu": "खाता मेनू",
-    "accessibilitySettings": "सुगम्यता सेटिंग"
+    "accessibilitySettings": "सुगम्यता सेटिंग",
+    "brandName": "SATYA",
+    "brandSuffix": "EoA"
   },
   "nav": {
     "home": "मुखपृष्ठ",
@@ -937,5 +939,10 @@
       "answering": "उत्तर दे रहा है",
       "unavailable": "उत्तर नहीं दे रहा"
     }
+  },
+  "chain": {
+    "intact": "श्रृंखला सुरक्षित",
+    "broken": "प्रविष्टि {entry} पर श्रृंखला टूटी",
+    "entries": "{count, plural, one {# प्रविष्टि} other {# प्रविष्टियाँ}}"
   }
 }

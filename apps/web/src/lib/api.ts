@@ -53,14 +53,14 @@ export async function apiGet<T>(path: string, callbackPath: string): Promise<T> 
 const QUIET_TTL_MS = 20_000;
 const quietCache = new Map<string, { at: number; data: unknown }>();
 
-export async function apiGetQuiet<T>(path: string): Promise<T | null> {
+export async function apiGetQuiet<T>(path: string, ttlMs: number = QUIET_TTL_MS): Promise<T | null> {
   const token = await accessToken();
   if (!token) return null;
   // Every page renders the rail card, so answers are reused for a few seconds per session; this
   // keeps the card from eating the official's per-minute API quota.
   const key = `${token.slice(-32)}|${path}`;
   const hit = quietCache.get(key);
-  if (hit && Date.now() - hit.at < QUIET_TTL_MS) return hit.data as T;
+  if (hit && Date.now() - hit.at < ttlMs) return hit.data as T;
   const base = process.env.SATYA_API_INTERNAL_URL ?? "http://api:8000";
   try {
     const response = await fetch(`${base}${path}`, {

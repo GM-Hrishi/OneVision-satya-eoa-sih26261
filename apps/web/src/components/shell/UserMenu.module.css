@@ -4,26 +4,27 @@
   gap: var(--space-2);
   padding: 2px var(--space-2) 2px 2px;
   border: 0;
-  border-radius: 999px;
+  border-radius: 0;
   background: transparent;
-  color: var(--color-text);
+  color: var(--k-ink);
   font: inherit;
   font-size: 0.8125rem;
   cursor: pointer;
 }
 
 .trigger[data-hovered] {
-  background: var(--menu-hover);
+  background: var(--k-hover);
 }
 
 .trigger[data-pressed],
 .trigger[aria-expanded="true"] {
-  background: var(--menu-hover);
+  background: var(--k-hover);
 }
 
 .trigger[data-focus-visible] {
-  outline: 2px solid var(--color-surface);
-  box-shadow: 0 0 0 4px var(--color-saffron-rule);
+  outline: var(--size-k-focus-outer) solid var(--k-ink);
+  outline-offset: var(--size-k-focus-inner);
+  box-shadow: 0 0 0 var(--size-k-focus-inner) var(--k-desk);
 }
 
 .initials {
@@ -33,8 +34,8 @@
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background: var(--color-chrome);
-  color: var(--color-surface);
+  background: var(--k-ink);
+  color: var(--k-paper);
   font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -53,10 +54,10 @@
 
 .popover {
   min-width: 14rem;
-  border: 1px solid var(--color-field);
-  border-radius: 6px;
-  background: var(--color-surface);
-  box-shadow: 0 2px 8px rgb(17 24 39 / 12%);
+  border: 1px solid var(--k-ink);
+  border-radius: 0;
+  background: var(--k-paper);
+  box-shadow: 0 8px 24px rgb(16 32 46 / 18%);
 }
 
 .identity {
@@ -64,13 +65,13 @@
   flex-direction: column;
   gap: 1px;
   padding: var(--space-3) var(--space-3) var(--space-2);
-  border-bottom: 1px solid var(--color-rule);
-  color: var(--color-muted);
+  border-bottom: 1px solid var(--k-rule);
+  color: var(--k-muted);
   font-size: 0.75rem;
 }
 
 .identityName {
-  color: var(--color-text);
+  color: var(--k-ink);
   font-size: 0.8125rem;
   font-weight: 700;
 }
@@ -82,17 +83,18 @@
 
 .sectionHead {
   padding: var(--space-1) var(--space-3);
-  color: var(--color-muted);
+  color: var(--k-muted);
   font-size: 0.6875rem;
   font-weight: 700;
+  font-family: var(--font-kmono);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
 }
 
 .item {
   display: block;
   padding: var(--space-2) var(--space-3);
-  color: var(--color-text);
+  color: var(--k-ink);
   font-size: 0.875rem;
   text-decoration: none;
   cursor: pointer;
@@ -101,7 +103,7 @@
 
 .item[data-focused],
 .item[data-hovered] {
-  background: var(--menu-hover);
+  background: var(--k-hover);
 }
 
 .item[data-selected] {
@@ -109,11 +111,12 @@
 }
 
 .item[data-focus-visible] {
-  box-shadow: inset 0 0 0 2px var(--color-saffron-rule);
+  outline: var(--size-k-focus-outer) solid var(--k-ink);
+  outline-offset: -4px;
 }
 
 .separator {
   height: 1px;
   margin: var(--space-1) 0;
-  background: var(--color-rule);
+  background: var(--k-rule);
 }

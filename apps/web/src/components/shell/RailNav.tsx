@@ -1,5 +1,5 @@
 "use client";
-// Rail links; the current page gets aria-current="page", which the CSS turns into the saffron bar.
+// Top-bar nav links (the file keeps its old name until the T14 clean-up). The current page gets aria-current="page", which the CSS turns into an accent underline.
 import { usePathname } from "next/navigation";
 import { Link } from "react-aria-components";
 import styles from "./AppShell.module.css";
@@ -16,13 +16,13 @@ export function isCurrent(href: string, pathname: string): boolean {
 export function RailNav({ label, items }: { label: string; items: NavItem[] }) {
   const pathname = usePathname();
   return (
-    <nav aria-label={label}>
-      <ul className={styles.railList}>
+    <nav aria-label={label} className={styles.topNav}>
+      <ul className={styles.navList}>
         {items.map((item) => {
           const current = isCurrent(item.href, pathname);
           return (
             <li key={item.href}>
-              <Link href={item.href} className={styles.railLink} aria-current={current ? "page" : undefined}>
+              <Link href={item.href} className={styles.navLink} aria-current={current ? "page" : undefined}>
                 {item.label}
               </Link>
             </li>

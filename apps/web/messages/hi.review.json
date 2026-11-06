@@ -321,5 +321,8 @@
   "verification.reason.SRC_BOUND_TO_OTHER_FILING": "[VERIFY] new in Slice W (B-43)",
   "verification.source.cca-offline-chain": "[VERIFY] new in Slice W (B-43)",
   "verification.source.shcil-estamp-mock": "[VERIFY] new in Slice W (B-43)",
-  "verification.source.icai-udin-mock": "[VERIFY] new in Slice W (B-43)"
+  "verification.source.icai-udin-mock": "[VERIFY] new in Slice W (B-43)",
+  "chain.intact": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
+  "chain.broken": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
+  "chain.entries": "[VERIFY] new in style K; machine-drafted Hindi, native review needed"
 }

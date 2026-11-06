@@ -25,7 +25,9 @@
     "searchPlaceholder": "Application ID",
     "searchButton": "Search",
     "userMenu": "Account menu",
-    "accessibilitySettings": "Accessibility settings"
+    "accessibilitySettings": "Accessibility settings",
+    "brandName": "SATYA",
+    "brandSuffix": "EoA"
   },
   "nav": {
     "home": "Home",
@@ -937,5 +939,10 @@
       "answering": "answering",
       "unavailable": "not answering"
     }
+  },
+  "chain": {
+    "intact": "Chain intact",
+    "broken": "Chain broken at entry {entry}",
+    "entries": "{count, plural, one {# entry} other {# entries}}"
   }
 }

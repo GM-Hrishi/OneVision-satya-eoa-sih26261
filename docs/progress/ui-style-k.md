@@ -9,9 +9,9 @@ Prompt: `docs/prompts/PROMPT_ui_style_k.md` (v1.1). Rule: continue from the firs
 |---|---|---|---|
 | Setup: prompt copy + progress file | DONE | see git log | prompt, progress file and mockups committed |
 | T0 discovery | DONE | see git log | notes below |
-| T1 tokens, fonts, motion, contrast script | DONE | see git log | k/dur/ease token groups, Archivo variable width axis (62-125%) bundled so no fallback needed, motion.css + lib/motion.ts, contrast script: 51 pairs all pass | |
-| T2 shell: top bar, nav per role, footer, breadcrumbs, menu | TODO | | |
-| T3 primitives + DecisionBar restyle | TODO | | |
+| T1 tokens, fonts, motion, contrast script | DONE | 85335f9 | k/dur/ease token groups, Archivo variable width axis (62-125%) bundled so no fallback needed, motion.css + lib/motion.ts, contrast script: 51 pairs all pass | |
+| T2 shell: top bar, nav per role, footer, breadcrumbs, menu | DONE | see git log | top bar with SATYA·EoA mark, nav (aria-label Main navigation kept), breadcrumbs above page, footer chain chip (verify endpoint, falls back to /v1/audit chain block, hidden otherwise). Manual checks and Rules nav items join with T11/T12 when the routes exist. Not run in a browser here (no stack). | |
+| T3 primitives + DecisionBar restyle | IN PROGRESS | | |
 | T4 Case page + Ladder | TODO | | |
 | T5 Evidence map + Journey | TODO | | |
 | T6 Audit + replay diff | TODO | | |
