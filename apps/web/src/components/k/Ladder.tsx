@@ -1,5 +1,6 @@
 // Ladder view of "How far each document was checked" (the section heading and the view switch live in ProofViews): documents x five checks, with an icon cell per check (each state has
 // its own shape, an aria-label and a legend, so colour is never the only signal) and a one-sentence verdict.
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { StatusLabel } from "@/components/ui/StatusLabel";
@@ -15,7 +16,7 @@ const ICON: Record<LadderState, IconName> = {
 };
 const STATES: LadderState[] = ["agrees", "disagrees", "waiting", "check", "na"];
 
-export async function Ladder({ rows }: { rows: LadderRow[] }) {
+export async function Ladder({ rows, caseId }: { rows: LadderRow[]; caseId: string }) {
   const t = await getTranslations("k.ladder");
   if (rows.length === 0) return null;
   return (
@@ -39,7 +40,9 @@ export async function Ladder({ rows }: { rows: LadderRow[] }) {
             {rows.map((row) => (
               <tr key={row.docId}>
                 <th scope="row">
-                  <span className={styles.docTitle}>{row.title}</span>
+                  <Link className={styles.docTitle} href={`/case/${caseId}/documents/${row.docId}`}>
+                    {row.title}
+                  </Link>
                   <br />
                   <StatusLabel label={row.label} size="sm" />
                   <p className={styles.verdict}>{row.verdictText ?? t(`verdict.${row.label}`, { title: row.title })}</p>

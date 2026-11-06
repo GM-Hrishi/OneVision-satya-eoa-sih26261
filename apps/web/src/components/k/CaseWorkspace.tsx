@@ -121,7 +121,9 @@ export function CaseWorkspace({ caseId, findings, docs, ladder }: { caseId: stri
             <ul className={styles.docList}>
               {docs.map((d) => (
                 <li key={d.docId} className={styles.docItem}>
-                  <span className={styles.docTitle}>{d.title}</span>
+                  <Link className={styles.docTitle} href={`/case/${caseId}/documents/${d.docId}`}>
+                    {d.title}
+                  </Link>
                   <StatusLabel label={d.label} />
                   {d.manualTask ? <span className="k-label">{t("case.manualTask")}</span> : null}
                 </li>

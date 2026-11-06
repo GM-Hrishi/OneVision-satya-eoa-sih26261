@@ -93,7 +93,7 @@ export function EvidenceMap({ graph, findings, caseId }: { graph: EvidenceGraph;
               return (
                 <g key={n.id} className={`${styles.node} ${cls("pop")}`} style={delay(staggerDelay(i, total))} data-kind={n.kind}>
                   {n.docId ? (
-                    <Link href={`/case/${caseId}/verification`} className={styles.nodeLink} aria-label={t("openDocument", { title: titleOf(n) })}>
+                    <Link href={`/case/${caseId}/documents/${n.docId}`} className={styles.nodeLink} aria-label={t("openDocument", { title: titleOf(n) })}>
                       {body}
                     </Link>
                   ) : (

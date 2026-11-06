@@ -32,6 +32,11 @@ describe("breadcrumbs", () => {
     ]);
     expect(crumbsFor("/audit/replay")).toEqual([{ labelKey: "audit", href: "/audit" }, { labelKey: "auditReplay" }]);
     expect(crumbsFor("/audit/integrity")).toEqual([{ labelKey: "audit", href: "/audit" }, { labelKey: "auditIntegrity" }]);
+    expect(crumbsFor("/case/cas_01JD3M5A00000000000000DT03/documents/doc_SG34T9WEMMXMBZ8WA2JBXQX1D")).toEqual([
+      { labelKey: "queue", href: "/rb-queue" },
+      { labelKey: "caseOverview", href: "/case/cas_01JD3M5A00000000000000DT03" },
+      { labelKey: "documentEvidence" },
+    ]);
     expect(crumbsFor("/help")).toEqual([{ labelKey: "help" }]);
     expect(crumbsFor("/nowhere")).toEqual([]);
   });

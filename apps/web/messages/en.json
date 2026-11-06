@@ -47,7 +47,8 @@
     "caseOverview": "Case",
     "upload": "Add documents",
     "auditReplay": "Replay check",
-    "auditIntegrity": "Chain integrity"
+    "auditIntegrity": "Chain integrity",
+    "documentEvidence": "Document evidence"
   },
   "roles": {
     "RB": "Regulation Bureau",
@@ -1155,6 +1156,40 @@
         "added": "Not in the portal form",
         "equal": "Same"
       }
+    },
+    "doc": {
+      "title": "Document evidence: {title}",
+      "description": "What was submitted, what the issuer record says and what each check found for one document. Advisory only.",
+      "backToCase": "Back to the case",
+      "compareHeading": "Submitted against the issuer record",
+      "compareNone": "No field was compared with an issuer record for this document.",
+      "colField": "Field",
+      "colSubmitted": "Submitted",
+      "colRecord": "Issuer record",
+      "colSource": "Source",
+      "colCheck": "Check",
+      "colOutcome": "Result",
+      "checksHeading": "What each check found",
+      "chronoHeading": "Stamp paper and signing dates",
+      "chronoNone": "No dates were read from this document.",
+      "chronoOrderOk": "The dates are in the expected order.",
+      "chronoOrderBad": "The dates are not in the expected order. A person should look at them.",
+      "date": {
+        "application_date": "Application date",
+        "stamp_date": "Stamp paper date",
+        "notary_date": "Notarisation date",
+        "dsc_date": "Signing date",
+        "upload_date": "Upload date",
+        "notary_expiry": "Notary seal valid until"
+      },
+      "allHeading": "All documents on this case",
+      "colDocument": "Document",
+      "colStatus": "Status",
+      "colWhy": "What stands out",
+      "open": "Open {title}",
+      "current": "This document",
+      "notFound": "This document is not part of the case.",
+      "noFindings": "No findings on this document."
     }
   }
 }

@@ -77,7 +77,7 @@ export default async function CasePage({ params }: Props) {
           <>
             <ProofViews
               caseId={id}
-              ladder={<Ladder rows={view.ladder} />}
+              ladder={<Ladder rows={view.ladder} caseId={id} />}
               graph={buildEvidenceGraph(review)}
               findings={view.findings.map((f) => ({ n: f.n, rule: f.flag.rule_id, why: f.why }))}
               journey={buildJourney(review)}
