@@ -114,7 +114,7 @@ const check = (ok, msg) => { console.log(`${ok ? "PASS" : "FAIL"} ${msg}`); if (
     const s = getComputedStyle(el);
     return { l: s.borderLeftWidth, t: s.borderTopWidth, c: s.borderLeftColor === s.borderTopColor, r: s.borderRadius };
   });
-  check(card.l === "1px" && card.t === "1px" && card.c && card.r === "6px", "alert card has a full 1px border and 6px radius (no side stripe)");
+  check(card.l === "1px" && card.t === "1px" && card.c && card.r === "0px", "alert card has a full 1px border and square corners (style K, no side stripe)");
   const first = await page.locator("main article").first().textContent();
   check(/(High|Medium|Low) severity/.test(first) && /unread/.test(first), `alert first line names the severity and says unread ("${first.slice(0, 90)}")`);
   await page.getByRole("link", { name: /Open flag|Open document/ }).first().click();
