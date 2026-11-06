@@ -9,7 +9,7 @@ Prompt: `docs/prompts/PROMPT_ui_style_k.md` (v1.1). Rule: continue from the firs
 |---|---|---|---|
 | Setup: prompt copy + progress file | DONE | see git log | prompt, progress file and mockups committed |
 | T0 discovery | DONE | see git log | notes below |
-| T1 tokens, fonts, motion, contrast script | IN PROGRESS | | |
+| T1 tokens, fonts, motion, contrast script | DONE | see git log | k/dur/ease token groups, Archivo variable width axis (62-125%) bundled so no fallback needed, motion.css + lib/motion.ts, contrast script: 51 pairs all pass | |
 | T2 shell: top bar, nav per role, footer, breadcrumbs, menu | TODO | | |
 | T3 primitives + DecisionBar restyle | TODO | | |
 | T4 Case page + Ladder | TODO | | |

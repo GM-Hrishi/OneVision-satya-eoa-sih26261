@@ -15,7 +15,7 @@ describe("self-hosted fonts (B-31)", () => {
   });
 
   it("the root layout imports exactly the weights in use, once", () => {
-    const imports = [...layout.matchAll(/^import "@fontsource\/([\w-]+)\/(\d+)\.css";$/gm)].map((m) => `${m[1]}/${m[2]}`);
+    const imports = [...layout.matchAll(/^import "@fontsource(?:-variable)?\/([\w-]+)\/([\w]+)\.css";$/gm)].map((m) => `${m[1]}/${m[2]}`);
     expect(imports.sort()).toEqual(
       [
         "noto-sans/400",
@@ -25,9 +25,21 @@ describe("self-hosted fonts (B-31)", () => {
         "noto-sans-devanagari/700",
         "noto-sans-mono/400",
         "noto-sans-mono/700",
+        "archivo/wdth",
+        "jetbrains-mono/500",
+        "jetbrains-mono/700",
         "public-sans/800",
       ].sort(),
     );
+  });
+
+  it("style K fonts: Archivo variable with the width axis, JetBrains Mono 500 and 700", () => {
+    expect(pkg.dependencies["@fontsource-variable/archivo"]).toBeTruthy();
+    expect(pkg.dependencies["@fontsource/jetbrains-mono"]).toBeTruthy();
+    expect(tokens).toMatch(/--font-display: "Archivo Variable"/);
+    expect(tokens).toMatch(/--font-kmono: "JetBrains Mono"/);
+    const css = readFileSync(join(root, "node_modules/@fontsource-variable/archivo/wdth.css"), "utf8");
+    expect(css).toMatch(/font-stretch: 62% 125%/);
   });
 
   it("the font tokens name the right families and no CDN is referenced", () => {
