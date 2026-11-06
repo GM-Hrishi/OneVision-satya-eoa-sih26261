@@ -1,0 +1,85 @@
+/* Style K primitives. Tokens only; square corners except the circular pin. */
+.numeral {
+  display: block;
+}
+
+.caption {
+  display: block;
+  margin-top: var(--space-2);
+  max-width: 28ch;
+}
+
+.pin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-family: var(--font-kmono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--k-paper);
+  flex: none;
+}
+.pin[data-tone="red"] { background: var(--k-red); }
+.pin[data-tone="ink"] { background: var(--k-ink); }
+.pin[data-tone="accent"] { background: var(--k-accent-ink); }
+
+.seg {
+  display: block;
+}
+
+.segLabel {
+  display: block;
+  margin-bottom: var(--space-2);
+}
+
+.segGroup {
+  display: inline-flex;
+  flex-wrap: wrap;
+  border: 1px solid var(--k-ink);
+  background: var(--k-paper);
+}
+
+.segItem {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 var(--space-4);
+  border-right: 1px solid var(--k-ink);
+  color: var(--k-ink);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+.segItem:last-child { border-right: 0; }
+.segItem[data-hovered] { background: var(--k-hover); }
+.segItem[data-selected] { background: var(--k-ink); color: var(--k-paper); }
+.segItem[data-focus-visible] {
+  outline: var(--size-k-focus-outer) solid var(--k-ink);
+  outline-offset: var(--size-k-focus-inner);
+  box-shadow: 0 0 0 var(--size-k-focus-inner) var(--k-desk);
+  z-index: 1;
+}
+
+.note {
+  margin: var(--space-4) 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--k-ink);
+  background: var(--k-paper);
+}
+.noteTitle { display: block; margin-bottom: var(--space-1); }
+.noteText { margin: 0; }
+
+.hair {
+  display: grid;
+  align-items: start;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--k-rule);
+}
+.hair:hover { background: var(--k-hover); }
+.hair:last-child { border-bottom: 1px solid var(--k-rule); }

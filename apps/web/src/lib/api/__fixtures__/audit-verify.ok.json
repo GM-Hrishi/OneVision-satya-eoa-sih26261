@@ -1,0 +1,7 @@
+{
+  "checked_at": "2026-11-06T09:00:00+00:00",
+  "entries": 7,
+  "first_bad_entry": null,
+  "method": "sha256(prev_hash || payload_sha256 || at), recomputed for every row",
+  "status": "intact"
+}

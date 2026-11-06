@@ -18,10 +18,10 @@
   min-height: 34px;
   height: 34px;
   padding: 0 var(--space-3);
-  border: 1px solid var(--color-field);
-  border-radius: 4px;
-  background: var(--color-surface);
-  color: var(--color-text);
+  border: 1px solid var(--k-ink);
+  border-radius: 0;
+  background: var(--k-paper);
+  color: var(--k-ink);
   font: inherit;
   font-size: 0.875rem;
   text-align: left;
@@ -29,16 +29,16 @@
 }
 
 .button:hover {
-  background: var(--th-hover);
+  background: var(--k-hover);
 }
 
 .button[data-focus-visible] {
-  outline: var(--size-focus-ring) solid var(--color-accent);
+  outline: var(--size-focus-ring) solid var(--k-accent-ink);
   outline-offset: 2px;
 }
 
 .button[data-pressed] {
-  background: var(--th-hover);
+  background: var(--k-hover);
 }
 
 .value {
@@ -49,14 +49,14 @@
 
 .chevron {
   display: inline-flex;
-  color: var(--color-muted);
+  color: var(--k-muted);
 }
 
 .popover {
   min-width: var(--trigger-width);
-  border: 1px solid var(--color-field);
-  border-radius: 4px;
-  background: var(--color-surface);
+  border: 1px solid var(--k-ink);
+  border-radius: 0;
+  background: var(--k-paper);
   box-shadow: 0 2px 8px rgb(17 24 39 / 12%);
 }
 
@@ -79,11 +79,11 @@
 
 .item[data-focused],
 .item[data-hovered] {
-  background: var(--menu-hover);
+  background: var(--k-hover);
 }
 
 .item[data-focus-visible] {
-  outline: var(--size-focus-ring) solid var(--color-accent);
+  outline: var(--size-focus-ring) solid var(--k-accent-ink);
   outline-offset: -3px;
 }
 
@@ -94,5 +94,5 @@
 .check {
   display: inline-flex;
   width: 16px;
-  color: var(--color-chrome);
+  color: var(--k-ink);
 }

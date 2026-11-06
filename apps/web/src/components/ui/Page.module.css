@@ -1,23 +1,23 @@
 .header {
-  border-bottom: 2px solid var(--color-chrome);
+  border-bottom: 2px solid var(--k-ink);
   margin-bottom: var(--space-5);
   padding-bottom: var(--space-2);
 }
 
 .lede {
-  color: var(--color-muted);
+  color: var(--k-muted);
 }
 
 .panel {
-  background: var(--color-surface);
-  border: 1px solid var(--color-rule);
+  background: var(--k-paper);
+  border: 1px solid var(--k-rule);
   padding: var(--space-5);
   margin-bottom: var(--space-4);
 }
 
 .empty {
-  background: var(--color-surface);
-  border: 1px solid var(--color-rule);
+  background: var(--k-paper);
+  border: 1px solid var(--k-rule);
   padding: var(--space-6) var(--space-5);
 }
 
@@ -43,7 +43,7 @@
 
 .skeletonRow {
   height: 1.25rem;
-  background: linear-gradient(90deg, var(--color-viewer) 0%, var(--color-rule) 50%, var(--color-viewer) 100%);
+  background: linear-gradient(90deg, var(--k-hover) 0%, var(--k-rule) 50%, var(--k-hover) 100%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
 }
@@ -66,9 +66,9 @@
 }
 
 .reference {
-  font-family: var(--font-mono);
+  font-family: var(--font-kmono);
   font-size: 0.8125rem;
-  color: var(--color-muted);
+  color: var(--k-muted);
 }
 
 .button {
@@ -76,16 +76,16 @@
   font-weight: 700;
   letter-spacing: 0.02em;
   padding: var(--space-2) var(--space-4);
-  color: var(--color-surface);
-  background: var(--color-chrome);
-  border: 1px solid var(--color-chrome);
+  color: var(--k-paper);
+  background: var(--k-ink);
+  border: 1px solid var(--k-ink);
   border-bottom-width: 3px;
-  border-bottom-color: var(--color-text);
+  border-bottom-color: var(--k-ink);
   cursor: pointer;
 }
 
 .button[data-hovered] {
-  background: var(--color-chrome-2);
+  background: var(--k-accent-ink);
 }
 
 .button[data-pressed] {
@@ -94,6 +94,6 @@
 }
 
 .button[data-focus-visible] {
-  outline: var(--size-focus-ring) solid var(--color-accent);
+  outline: var(--size-focus-ring) solid var(--k-accent-ink);
   outline-offset: 2px;
 }

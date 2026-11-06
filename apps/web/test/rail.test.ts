@@ -12,7 +12,7 @@ describe("rail", () => {
   });
 
   it("lists only routes that exist in this build (no dead navigation)", () => {
-    const built = new Set(["/overview", "/rb-queue", "/alerts", "/audit", "/help", "/accessibility"]);
+    const built = new Set(["/overview", "/rb-queue", "/manual", "/rules", "/alerts", "/audit", "/help", "/accessibility"]);
     for (const item of [...(RAIL.RB ?? []), ...(RAIL.AU ?? []), ...UTILITY]) {
       expect(built.has(new URL(item.href, "https://x.invalid").pathname), item.href).toBe(true);
     }
@@ -29,6 +29,13 @@ describe("breadcrumbs", () => {
     expect(crumbsFor("/case/cas_01JD3M5A00000000000000DT03/verification")).toEqual([
       { labelKey: "queue", href: "/rb-queue" },
       { labelKey: "verification" },
+    ]);
+    expect(crumbsFor("/audit/replay")).toEqual([{ labelKey: "audit", href: "/audit" }, { labelKey: "auditReplay" }]);
+    expect(crumbsFor("/audit/integrity")).toEqual([{ labelKey: "audit", href: "/audit" }, { labelKey: "auditIntegrity" }]);
+    expect(crumbsFor("/case/cas_01JD3M5A00000000000000DT03/documents/doc_SG34T9WEMMXMBZ8WA2JBXQX1D")).toEqual([
+      { labelKey: "queue", href: "/rb-queue" },
+      { labelKey: "caseOverview", href: "/case/cas_01JD3M5A00000000000000DT03" },
+      { labelKey: "documentEvidence" },
     ]);
     expect(crumbsFor("/help")).toEqual([{ labelKey: "help" }]);
     expect(crumbsFor("/nowhere")).toEqual([]);

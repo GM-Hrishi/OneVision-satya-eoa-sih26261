@@ -1,0 +1,22 @@
+.bar { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-4); margin-bottom: var(--space-4); }
+.btn { min-height: 46px; padding: 0 var(--space-4); border: 1px solid var(--k-ink); border-radius: 0; background: var(--k-paper); color: var(--k-ink); font: 700 0.9375rem/1 var(--font-display); cursor: pointer; }
+.btn:hover { background: var(--k-hover); }
+.caption { max-width: 70ch; color: var(--k-muted); font-size: 0.875rem; margin: 0 0 var(--space-3); }
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) 200px minmax(0, 1fr); align-items: start; }
+.heads { display: grid; grid-template-columns: minmax(0, 1fr) 200px minmax(0, 1fr); margin-bottom: var(--space-2); }
+.col { margin: 0; padding: 0; list-style: none; }
+.cell { height: 56px; display: flex; align-items: center; gap: var(--space-2); padding: 0 var(--space-3); border-top: 1px solid var(--k-rule); background: var(--k-paper); overflow: hidden; }
+.cell[data-op="changed"], .cell[data-op="removed"], .cell[data-op="added"] { background: var(--k-red-tint); }
+.cell[data-op="changed"] .text, .cell[data-op="removed"] .text, .cell[data-op="added"] .text { font-family: var(--font-kmono); font-weight: 700; color: var(--k-red-ink); }
+.no { font-family: var(--font-kmono); font-size: 0.75rem; color: var(--k-muted); flex: none; min-width: 2.5rem; }
+.text { font-size: 0.8125rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+.empty { font-style: normal; color: var(--k-muted); font-size: 0.8125rem; }
+.mid { position: relative; width: 200px; }
+.svg { display: block; width: 200px; }
+.chip { position: absolute; left: 50%; transform: translateX(-50%); max-width: 180px; padding: 2px var(--space-2); background: var(--k-accent-ink); color: var(--k-paper); font-weight: 800; font-size: 0.75rem; line-height: 1.25; text-align: center; }
+.lineMatch { stroke: var(--k-rule); stroke-width: 1; }
+.lineDiff { stroke: var(--k-accent); stroke-width: 4; }
+.paper { box-shadow: 0 1px 2px rgb(16 32 46 / 12%), 0 8px 24px rgb(16 32 46 / 10%); }
+@media (max-width: 1023px) { .tieOnly { display: none; } }
+.fallback { display: none; }
+@media (max-width: 1023px) { .fallback { display: block; } }

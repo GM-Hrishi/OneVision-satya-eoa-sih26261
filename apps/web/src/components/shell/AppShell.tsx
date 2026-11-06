@@ -1,5 +1,5 @@
-// AppShell (UI spec §3.1, v0.8): one-row header (breadcrumb, plain context text, search, user menu),
-// left rail per role with the saffron current-page bar, one-line footer.
+// AppShell (style K): one top bar (product mark, nav per role, context text, search, user menu), breadcrumbs above the
+// page, one-line footer with the chain chip. The left rail is retired; below 1024px the nav is a menu button.
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
@@ -10,7 +10,7 @@ import { BreadcrumbTrail } from "./BreadcrumbTrail";
 import { MobileMenu } from "./MobileMenu";
 import { RailNav } from "./RailNav";
 import { UserMenu } from "./UserMenu";
-import { RailAlert } from "@/components/alerts/RailAlert";
+import { ChainChip } from "./ChainChip";
 import styles from "./AppShell.module.css";
 
 const CURRENT_AY = "2026-27";
@@ -39,18 +39,20 @@ export async function AppShell({ children, path = "/" }: { children: ReactNode; 
   );
 
   return (
-    <div className={styles.frame}>
+    <div className={`${styles.frame} k-surface`}>
       <a className={styles.skip} href="#main">
         {t("skipLink")}
       </a>
       <header className={styles.top}>
-        <Link className={styles.brand} href="/">
-          {t("brand")}
+        <Link className={styles.brand} href="/" aria-label={t("brand")}>
+          <span aria-hidden="true">{t("brandName")}</span>
+          <span className={styles.dot} aria-hidden="true" />
+          <span aria-hidden="true" className={styles.brandEoa}>
+            {t("brandSuffix")}
+          </span>
         </Link>
+        <Suspense>{items.length > 0 && <RailNav label={t("railLabel")} items={items} />}</Suspense>
         <MobileMenu label={t("menu")} closeLabel={t("closeMenu")} items={[...items, ...utility]} />
-        <Suspense>
-          <BreadcrumbTrail label={t("breadcrumbLabel")} />
-        </Suspense>
         <div className={styles.headRight}>
           {role && (
             <div className={styles.context} role="group" aria-label={t("contextAria", { role: roleLabel, region: regionLabel, ay: CURRENT_AY })}>
@@ -96,26 +98,17 @@ export async function AppShell({ children, path = "/" }: { children: ReactNode; 
         </div>
       </header>
       <div className={styles.body}>
-        <aside className={styles.rail}>
-          <div>
-            <Suspense>{items.length > 0 && <RailNav label={t("railLabel")} items={items} />}</Suspense>
-            {role === "RB" && (
-              <Suspense>
-                <RailAlert />
-              </Suspense>
-            )}
-          </div>
-          <div className={styles.railBottom}>
-            <Suspense>
-              <RailNav label={t("utilityLabel")} items={utility} />
-            </Suspense>
-          </div>
-        </aside>
+        <Suspense>
+          <BreadcrumbTrail label={t("breadcrumbLabel")} />
+        </Suspense>
         <main id="main" className={styles.main} tabIndex={-1}>
           {children}
         </main>
       </div>
       <footer className={styles.footer}>
+        <Suspense fallback={<p className={styles.chain} aria-hidden="true" />}>
+          <ChainChip />
+        </Suspense>
         <nav aria-label={tFooter("label")}>
           <ul className={styles.footerLinks}>
             <li>

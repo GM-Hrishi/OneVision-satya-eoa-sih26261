@@ -1,0 +1,130 @@
+/* Style K base: type roles, focus ring, buttons, inputs, tables, paper. Tokens only, no raw hex.
+   Applied from the shell (T2) on; older components keep their own module CSS until T14. */
+:root {
+  --k-focus-ring: 0 0 0 var(--size-k-focus-inner) var(--k-desk);
+}
+
+.k-surface {
+  background: var(--k-desk);
+  color: var(--k-ink);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.k-surface:lang(hi) {
+  line-height: 1.6;
+}
+
+/* Visible focus on every focusable element: 2px desk inner ring, 2px ink outer ring. */
+.k-surface :focus-visible {
+  outline: var(--size-k-focus-outer) solid var(--k-ink);
+  outline-offset: var(--size-k-focus-inner);
+  box-shadow: var(--k-focus-ring);
+}
+
+/* .big numerals: Archivo 800, 62% width, tabular, 54px to 170px so nothing overflows at 320px. */
+.k-big {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 62%;
+  line-height: 0.86;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(3.375rem, 3rem + 8vw, 10.625rem);
+  color: var(--k-accent);
+  overflow-wrap: anywhere;
+}
+.k-big[data-tone="red"] { color: var(--k-red); }
+.k-big[data-tone="ink"] { color: var(--k-ink); }
+
+/* h1: Archivo 800, 80% width, balanced. */
+.k-h1 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 80%;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  text-wrap: balance;
+  font-size: clamp(2rem, 1.2rem + 2.4vw, 4rem);
+  margin: 0 0 var(--space-4);
+}
+
+/* .k small-caps label: mono, uppercase except in Hindi. */
+.k-label {
+  font-family: var(--font-kmono);
+  font-size: 0.71875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--k-muted);
+}
+.k-label:lang(hi), .k-surface:lang(hi) .k-label {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.k-mono { font-family: var(--font-kmono); font-weight: 500; }
+
+/* Buttons: primary solid accent 50px, secondary 1px ink border on white. Square corners. */
+.k-btn {
+  min-height: 50px;
+  padding: 0 var(--space-5);
+  border: 1px solid transparent;
+  border-radius: 0;
+  background: var(--k-accent);
+  color: var(--k-paper);
+  font: 800 1rem/1 var(--font-display);
+  font-stretch: 90%;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  text-decoration: none;
+}
+.k-btn:hover { background: var(--k-accent-ink); }
+.k-btn[disabled], .k-btn[aria-disabled="true"] { background: var(--k-muted); cursor: not-allowed; }
+.k-btn-2 {
+  background: var(--k-paper);
+  color: var(--k-ink);
+  border-color: var(--k-ink);
+}
+.k-btn-2:hover { background: var(--k-hover); }
+
+/* Inputs: 46px, 1px ink border, white. */
+.k-input {
+  min-height: 46px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--k-ink);
+  border-radius: 0;
+  background: var(--k-paper);
+  color: var(--k-ink);
+  font: 500 1rem/1.5 var(--font-display);
+}
+
+/* Paper: the white document with the one soft shadow. */
+.k-paper {
+  background: var(--k-paper);
+  box-shadow: 0 1px 2px rgb(16 32 46 / 12%), 0 8px 24px rgb(16 32 46 / 10%);
+}
+
+/* Hairline rows (CSS grid tables). */
+.k-row {
+  display: grid;
+  border-top: 1px solid var(--k-rule);
+  padding: var(--space-3) 0;
+}
+.k-row:hover { background: var(--k-hover); }
+
+.k-skeleton {
+  background: var(--k-hover);
+  min-height: 1rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

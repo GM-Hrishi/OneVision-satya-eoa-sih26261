@@ -5,7 +5,7 @@
   "description": "SATYA workbench shell (advisory decision support; synthetic data only).",
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/gen-tokens.mjs --check && next build",
+    "build": "node scripts/gen-tokens.mjs --check && node scripts/check-fixtures.mjs && next build",
     "start": "next start",
     "gen:tokens": "node scripts/gen-tokens.mjs",
     "lint": "eslint .",
@@ -13,6 +13,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@fontsource-variable/archivo": "5.3.0",
+    "@fontsource/jetbrains-mono": "5.3.0",
     "@fontsource/noto-sans": "5.3.0",
     "@fontsource/noto-sans-devanagari": "5.3.0",
     "@fontsource/noto-sans-mono": "5.3.0",

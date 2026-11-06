@@ -1,13 +1,14 @@
-/* SourceTag (v0.8): small neutral tag, 11.5px, 1px border, 4px radius, focusable. */
+/* SourceTag (style K): small mono label with a hairline box, focusable. Words, not upper-case shouting. */
 .tag {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   padding: 0 6px 0 4px;
-  border: 1px solid var(--tag-neutral-border);
-  border-radius: 4px;
-  background: var(--tag-neutral-bg);
-  color: var(--tag-neutral-fg);
+  border: 1px solid var(--k-muted);
+  border-radius: 0;
+  background: var(--k-paper);
+  color: var(--k-muted);
+  font-family: var(--font-kmono);
   font-size: 0.71875rem;
   font-weight: 500;
   line-height: 1.55;
@@ -16,15 +17,15 @@
 }
 
 .tag:focus-visible {
-  outline: 2px solid var(--color-surface);
-  box-shadow: 0 0 0 4px var(--color-saffron-rule);
+  outline: var(--size-k-focus-outer) solid var(--k-ink);
+  outline-offset: var(--size-k-focus-inner);
+  box-shadow: 0 0 0 var(--size-k-focus-inner) var(--k-desk);
 }
 
 .tip {
   padding: 6px 10px;
-  border-radius: 4px;
-  background: var(--color-text);
-  color: var(--color-surface);
+  background: var(--k-ink);
+  color: var(--k-paper);
   font-size: 0.75rem;
   line-height: 1.4;
   max-width: 20rem;

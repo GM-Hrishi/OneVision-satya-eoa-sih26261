@@ -10,8 +10,12 @@ export const generateMetadata = (): Promise<Metadata> => pageMetadata("sitemap")
 const WORK = [
   { href: "/overview", key: "overview" },
   { href: "/rb-queue", key: "queue" },
+  { href: "/manual", key: "manual" },
   { href: "/alerts", key: "alerts" },
+  { href: "/rules", key: "rules" },
   { href: "/audit", key: "audit" },
+  { href: "/audit/replay", key: "auditReplay" },
+  { href: "/audit/integrity", key: "auditIntegrity" },
 ] as const;
 const INFO = [
   { href: "/help", key: "help" },

@@ -1,5 +1,6 @@
 .band {
   display: inline-block;
+  border-radius: 0;
   font-family: var(--font-caps);
   font-weight: 800;
   font-size: 0.75rem;
@@ -41,12 +42,13 @@
 .filters select,
 .field,
 .textarea {
+  border-radius: 0;
   font: inherit;
   padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-field);
-  background: var(--color-surface);
-  color: var(--color-text);
-  min-height: 2.5rem;
+  border: 1px solid var(--k-ink);
+  background: var(--k-paper);
+  color: var(--k-ink);
+  min-height: 46px;
 }
 
 .textarea {
@@ -57,22 +59,22 @@
 
 .button {
   font: inherit;
-  font-weight: 700;
-  padding: var(--space-2) var(--space-4);
-  min-height: 2.5rem;
-  background: var(--color-chrome);
-  color: var(--color-surface);
-  border: 1px solid var(--color-chrome);
+  font-weight: 800;
+  padding: 0 var(--space-5);
+  min-height: 50px;
+  background: var(--k-accent);
+  color: var(--k-paper);
+  border: 1px solid var(--k-accent);
   cursor: pointer;
 }
 
 .button:hover {
-  background: var(--color-chrome-2);
+  background: var(--k-accent-ink);
 }
 
 .button:disabled {
-  background: var(--color-muted);
-  border-color: var(--color-muted);
+  background: var(--k-muted);
+  border-color: var(--k-muted);
   cursor: progress;
 }
 
@@ -81,7 +83,7 @@
   background: none;
   border: 0;
   padding: 0;
-  color: var(--color-accent);
+  color: var(--k-accent-ink);
   text-decoration: underline;
   cursor: pointer;
 }
@@ -132,14 +134,14 @@
 }
 
 .flagItem {
-  border: 1px solid var(--color-rule);
-  background: var(--color-surface);
+  border: 1px solid var(--k-rule);
+  background: var(--k-paper);
   padding: var(--space-3) var(--space-4);
   margin-bottom: var(--space-3);
 }
 
 .flagItem[data-selected="true"] {
-  outline: var(--size-focus-ring) solid var(--color-accent);
+  outline: var(--size-focus-ring) solid var(--k-accent-ink);
   outline-offset: -1px;
 }
 
@@ -165,7 +167,7 @@
 }
 
 .evidence dt {
-  color: var(--color-muted);
+  color: var(--k-muted);
 }
 
 .evidence dd {
@@ -174,13 +176,12 @@
 }
 
 .decision {
-  border-top: 1px solid var(--color-rule);
+  border-top: 1px solid var(--k-rule);
   margin-top: var(--space-3);
   padding-top: var(--space-3);
 }
 
 .decision fieldset {
-  border: 0;
   padding: 0;
   margin: 0 0 var(--space-3);
 }
@@ -191,31 +192,77 @@
   margin-bottom: var(--space-2);
 }
 
-.radio {
+.decision fieldset {
   display: flex;
-  gap: var(--space-2);
-  align-items: baseline;
-  margin-bottom: var(--space-1);
+  flex-wrap: wrap;
+  border: 1px solid var(--k-ink);
+  width: fit-content;
+  max-width: 100%;
+}
+
+/* Segmented control: a native radio per option, stretched invisibly over its label (keyboard and screen
+   reader semantics stay native); the checked option is filled ink with white text. */
+.radio {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 46px;
+  padding: 0 var(--space-4);
+  background: var(--k-paper);
+  color: var(--k-ink);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  border-right: 1px solid var(--k-ink);
+}
+
+.radio:last-child {
+  border-right: 0;
+}
+
+.radio input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.radio:hover {
+  background: var(--k-hover);
+}
+
+.radio:has(input:checked) {
+  background: var(--k-ink);
+  color: var(--k-paper);
+}
+
+.radio:has(input:focus-visible) {
+  outline: var(--size-k-focus-outer) solid var(--k-ink);
+  outline-offset: var(--size-k-focus-inner);
+  box-shadow: 0 0 0 var(--size-k-focus-inner) var(--k-desk);
+  z-index: 1;
 }
 
 .recorded {
-  background: var(--color-added-tint);
-  color: var(--color-added-ink);
+  background: var(--k-hover);
+  color: var(--k-ink);
   padding: var(--space-2) var(--space-3);
   font-size: 0.875rem;
 }
 
 .error {
-  background: var(--color-mismatch-tint);
-  color: var(--color-mismatch-ink);
+  background: var(--k-red-tint);
+  color: var(--k-red-ink);
   padding: var(--space-2) var(--space-3);
   font-size: 0.875rem;
   margin: var(--space-2) 0;
 }
 
 .viewer {
-  background: var(--color-viewer);
-  border: 1px solid var(--color-rule);
+  background: var(--k-hover);
+  border: 1px solid var(--k-rule);
   padding: var(--space-3);
 }
 
@@ -244,9 +291,15 @@
   height: auto;
 }
 
+.region > span {
+  position: absolute;
+  left: -14px;
+  top: -14px;
+}
+
 .region {
   position: absolute;
-  border: 2px solid var(--color-mismatch-border);
+  border: 2px solid var(--k-red);
   background: rgba(180, 35, 24, 0.14);
   pointer-events: none;
 }
@@ -260,14 +313,14 @@
 
 .chain[data-ok="true"] {
   border-color: var(--color-label-verified);
-  color: var(--color-added-ink);
-  background: var(--color-added-tint);
+  color: var(--k-ink);
+  background: var(--k-hover);
 }
 
 .chain[data-ok="false"] {
-  border-color: var(--color-mismatch-border);
-  color: var(--color-mismatch-ink);
-  background: var(--color-mismatch-tint);
+  border-color: var(--k-red);
+  color: var(--k-red-ink);
+  background: var(--k-red-tint);
 }
 
 .mono {
@@ -281,7 +334,7 @@
   font-size: 0.8125rem;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-  background: var(--color-viewer);
+  background: var(--k-hover);
   padding: var(--space-3);
   margin: var(--space-2) 0 0;
 }
@@ -305,14 +358,14 @@
 }
 
 .alertList li {
-  background: var(--color-surface);
-  border: 1px solid var(--color-rule);
+  background: var(--k-paper);
+  border: 1px solid var(--k-rule);
   padding: var(--space-3) var(--space-4);
   margin-bottom: var(--space-2);
 }
 
 .skeletonBlock {
   height: 6rem;
-  background: var(--color-viewer);
+  background: var(--k-hover);
   margin-bottom: var(--space-3);
 }

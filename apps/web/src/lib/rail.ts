@@ -10,9 +10,11 @@ export interface RailItem {
 const RB: RailItem[] = [
   { href: "/overview", labelKey: "overview" },
   { href: "/rb-queue", labelKey: "queue" },
+  { href: "/manual", labelKey: "manual" },
   { href: "/alerts", labelKey: "alerts" },
+  { href: "/rules", labelKey: "rules" },
   { href: "/audit", labelKey: "audit" },
-  // P1, later slices: /rb-queue/manual (RB-09). P2 hidden: evc-selection, monitoring.
+  // P2 hidden: evc-selection, monitoring.
 ];
 const AU: RailItem[] = [{ href: "/audit", labelKey: "audit" }];
 
@@ -27,11 +29,17 @@ export interface Crumb {
 
 /** Breadcrumb trail for a path: fixed routes from CRUMBS, case routes by pattern. */
 export function crumbsFor(pathname: string): Crumb[] {
+  const docView = /^\/case\/([^/]+)\/documents\/[^/]+$/.exec(pathname);
+  if (docView?.[1]) return [{ labelKey: "queue", href: "/rb-queue" }, { labelKey: "caseOverview", href: `/case/${docView[1]}` }, { labelKey: "documentEvidence" }];
   const caseView = /^\/case\/[^/]+\/(affidavit|verification|upload)$/.exec(pathname);
   if (caseView?.[1]) {
     return [{ labelKey: "queue", href: "/rb-queue" }, { labelKey: caseView[1] }];
   }
   if (/^\/case\/[^/]+$/.test(pathname)) return [{ labelKey: "queue", href: "/rb-queue" }, { labelKey: "caseOverview" }];
+  const rule = /^\/rules\/[^/]+$/.exec(pathname);
+  if (rule) return [{ labelKey: "rules", href: "/rules" }, { labelKey: "ruleDetail" }];
+  const audit = /^\/audit\/(replay|integrity)$/.exec(pathname);
+  if (audit?.[1]) return [{ labelKey: "audit", href: "/audit" }, { labelKey: audit[1] === "replay" ? "auditReplay" : "auditIntegrity" }];
   const keys = CRUMBS[pathname] ?? [];
   return keys.map((labelKey) => ({ labelKey }));
 }
@@ -40,6 +48,8 @@ export function crumbsFor(pathname: string): Crumb[] {
 export const CRUMBS: Record<string, string[]> = {
   "/overview": ["overview"],
   "/rb-queue": ["queue"],
+  "/manual": ["manual"],
+  "/rules": ["rules"],
   "/alerts": ["alerts"],
   "/audit": ["audit"],
   "/help": ["help"],

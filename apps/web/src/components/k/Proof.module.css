@@ -1,0 +1,67 @@
+.wrap { margin-top: var(--space-7); }
+.title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 80%;
+  letter-spacing: -0.02em;
+  font-size: clamp(1.5rem, 1rem + 1.6vw, 2.25rem);
+  margin: 0 0 var(--space-4);
+}
+.bar { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-4); margin-bottom: var(--space-4); }
+.replay {
+  min-height: 46px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--k-ink);
+  border-radius: 0;
+  background: var(--k-paper);
+  color: var(--k-ink);
+  font: 700 0.9375rem/1 var(--font-display);
+  cursor: pointer;
+}
+.replay:hover { background: var(--k-hover); }
+
+/* Evidence map */
+.mapLayout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem); gap: var(--space-5); align-items: start; }
+@media (max-width: 1023px) { .mapLayout { grid-template-columns: minmax(0, 1fr); } }
+.svg { width: 100%; height: auto; display: block; background: var(--k-paper); border: 1px solid var(--k-rule); }
+.nodeRect { fill: var(--k-paper); stroke: var(--k-ink); stroke-width: 1.5; }
+.node[data-kind="portal"] .nodeRect { fill: var(--k-desk); }
+.nodeText { font-family: var(--font-display); font-weight: 700; font-size: 15px; fill: var(--k-ink); }
+.nodeSub { font-family: var(--font-kmono); font-size: 11px; fill: var(--k-muted); }
+.nodeLink { cursor: pointer; }
+.nodeLink:hover .nodeRect { fill: var(--k-hover); }
+.nodeLink:focus-visible { outline: none; }
+.nodeLink:focus-visible .nodeRect { stroke: var(--k-ink); stroke-width: 5; }
+.edge { fill: none; stroke-linecap: butt; }
+.edge[data-state="disagrees"] { stroke: var(--k-red); stroke-width: 6; }
+.edge[data-state="agrees"] { stroke: var(--k-agree); stroke-width: 3; }
+.edge[data-state="waiting"] { stroke: var(--k-wait); stroke-width: 3; stroke-dasharray: 10 7; }
+.edge[data-state="check"] { stroke: var(--k-check); stroke-width: 3; stroke-dasharray: 2 6; stroke-linecap: round; }
+.pinCircle { fill: var(--k-red); }
+.pinRing { fill: none; stroke: var(--k-red); stroke-width: 3; }
+.pinText { font-family: var(--font-kmono); font-weight: 700; font-size: 14px; fill: var(--k-paper); }
+.legend { list-style: none; margin: var(--space-3) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); font-size: 0.8125rem; }
+.legend li { display: inline-flex; align-items: center; gap: var(--space-2); }
+.sample { width: 36px; height: 8px; display: inline-block; }
+.sample[data-state="disagrees"] { background: var(--k-red); height: 6px; }
+.sample[data-state="agrees"] { background: var(--k-agree); height: 3px; }
+.sample[data-state="waiting"] { height: 0; border-top: 3px dashed var(--k-wait); }
+.sample[data-state="check"] { height: 0; border-top: 3px dotted var(--k-check); }
+.panel h3 { font-family: var(--font-kmono); font-size: 0.71875rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--k-muted); margin: 0 0 var(--space-2); }
+.list { list-style: none; margin: 0 0 var(--space-4); padding: 0; }
+.list li { display: flex; gap: var(--space-3); align-items: baseline; padding: var(--space-2) 0; border-top: 1px solid var(--k-rule); }
+.plain { margin: 0; font-size: 0.9375rem; }
+
+/* Journey */
+.scroll { overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; min-width: 46rem; }
+.table caption { text-align: left; padding-bottom: var(--space-2); }
+.table th, .table td { padding: var(--space-3) var(--space-3) var(--space-3) 0; border-top: 1px solid var(--k-rule); text-align: left; vertical-align: top; }
+.table thead th { border-top: 0; border-bottom: 1px solid var(--k-rule-strong); }
+.step { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8125rem; font-weight: 700; color: var(--k-ink); position: relative; }
+.step[data-state="disagrees"] { color: var(--k-red-ink); }
+.step[data-state="na"] { color: var(--k-muted); font-weight: 500; }
+.ring { position: absolute; left: -4px; top: -2px; width: 26px; height: 26px; border: 2px solid var(--k-red); border-radius: 50%; pointer-events: none; }
+.stop { margin: var(--space-2) 0 0; font-size: 0.875rem; font-weight: 700; max-width: 52ch; }
+.verdict { margin: var(--space-1) 0 0; max-width: 44ch; font-weight: 400; }
+.docTitle { font-weight: 700; overflow-wrap: anywhere; }

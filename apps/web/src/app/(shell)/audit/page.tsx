@@ -5,7 +5,10 @@ import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import styles from "@/components/demo/Demo.module.css";
 import diff from "@/components/diff/DiffView.module.css";
-import { PageHeader } from "@/components/ui/PageHeader";
+import { ChainBlocks } from "@/components/k/ChainBlocks";
+import { Numeral } from "@/components/k/Numeral";
+import ak from "@/components/k/Audit.module.css";
+import { Icon } from "@/components/ui/Icon";
 import { SourceTag } from "@/components/ui/SourceTag";
 import { audit } from "@/lib/demo";
 import { requireSession } from "@/lib/session";
@@ -33,19 +36,40 @@ export default async function AuditPage({ searchParams }: Props) {
   if (!session.user.roles.some((r) => r === "RB" || r === "AU")) forbidden();
   const data = await audit("/audit", caseId);
   const t = await getTranslations("demo");
+  const tk = await getTranslations("k.audit");
   const locale = await getLocale();
   const fmt = new Intl.DateTimeFormat(locale === "hi" ? "hi-IN" : "en-IN", { timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "medium" });
   return (
     <>
-      <PageHeader title={t("audit.heading")}>
-        <Note>{t("audit.intro")}</Note>
-      </PageHeader>
+      <header className={ak.head}>
+        <Numeral value={data.chain.rows} caption={tk("countCaption")} />
+        <div>
+          <h1 className="k-h1">{tk("headline", { count: data.chain.rows })}</h1>
+          <p className={ak.state} data-state={data.chain.ok ? "intact" : "broken"}>
+            <Icon name={data.chain.ok ? "circle-check" : "circle-x"} size={20} />
+            {data.chain.ok ? tk("intact") : tk("broken", { entry: data.chain.broken_at ?? 0 })}
+          </p>
+          <div className={ak.actions}>
+            <Link className="k-btn k-btn-2" href={caseId ? `/audit?case=${caseId}` : "/audit"}>
+              {tk("verifyAgain")}
+            </Link>
+          </div>
+          <div className={ak.links}>
+            <Link href="/audit/replay">{tk("replayLink")}</Link>
+            <Link href="/audit/integrity">{tk("integrityLink")}</Link>
+          </div>
+        </div>
+      </header>
+      <Note>{t("audit.intro")}</Note>
       <div className={styles.chain} data-ok={data.chain.ok} role="status">
         {data.chain.ok
           ? t("audit.chainOk", { rows: data.chain.rows })
           : t("audit.chainBroken", { seq: data.chain.broken_at ?? 0, reason: data.chain.reason ?? "" })}
         <p className={diff.note}>{t("audit.method")} {fmt.format(new Date(data.chain.recomputed_at))}</p>
       </div>
+      <h2 className={ak.sectionTitle}>{tk("blocksHeading")}</h2>
+      <ChainBlocks entries={data.entries} eventLabel={(kind) => eventLabel(t, kind)} />
+      <h2 className={ak.sectionTitle}>{tk("tableHeading")}</h2>
       {caseId ? (
         <p>
           {t("audit.filtered")} <Link href="/audit">{t("audit.showAll")}</Link>

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Reuse graph · SATYA-EoA</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@500;700&family=Public+Sans:wght@800&display=swap">
+<style>
+body{margin:0;font-family:'Archivo',system-ui,sans-serif;color:#10202E;background:#E6ECF1;font-size:16px;line-height:1.5}
+a{color:#10202E}a:hover{color:#B45309}
+.mono{font-family:'JetBrains Mono',monospace}
+.k{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:#42566A}
+.big{font-stretch:62%;font-weight:800;line-height:.86;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.h1{margin:0;font-weight:800;font-stretch:80%;letter-spacing:-.02em;line-height:1.04;text-wrap:balance}
+.pin{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;flex:none}
+.sl{display:inline-flex;gap:6px;align-items:center;font-weight:600;font-size:14px;white-space:nowrap}
+.tag{display:inline-flex;align-items:center;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.04em;color:#42566A;border:1px solid #9FB0C0;padding:0 6px;border-radius:2px}
+.seg{display:flex;flex-wrap:wrap;border:1px solid #10202E;width:fit-content;max-width:100%;background:#fff}
+.seg button{min-height:46px;padding:0 16px;border:0;border-left:1px solid #10202E;background:#fff;font-family:inherit;font-size:15px;cursor:pointer}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed=true]{background:#10202E;color:#fff;font-weight:600}
+.cta{min-height:50px;padding:0 24px;background:#B45309;color:#fff;border:0;font-family:inherit;font-weight:700;font-size:16px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.cta:hover{background:#9A4607;color:#fff}
+.ghost{min-height:46px;padding:0 16px;border:1px solid #10202E;background:#fff;font-family:inherit;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;text-decoration:none;color:#10202E}
+.hl{border-top:1px solid #10202E}
+.tr{display:grid;align-items:center;column-gap:20px;padding:14px 0;border-top:1px solid #B8C5D1}
+.tr:hover{background:#DDE5EC}
+.band{font-family:'Public Sans','Archivo',sans-serif;font-weight:800;letter-spacing:.06em;font-size:12px;padding:2px 8px}
+.paper{background:#fff;box-shadow:0 2px 0 #BFCBD6,0 18px 40px rgb(16 32 46 / .14)}
+.ln{height:6px;background:#E1E7ED}
+input[type=text],textarea{font-family:inherit;color:#10202E}
+.tr{transition:background-color .2s}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes drop{from{opacity:0;transform:translateY(-26px)}to{opacity:1;transform:none}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes ping{0%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(2.4)}}
+@keyframes stamp{0%{opacity:0;transform:scale(1.35) rotate(-3deg)}60%{opacity:1;transform:scale(.97) rotate(-1deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes flash{from{background-color:transparent}to{background-color:var(--to,#FBE3E0)}}
+.draw{stroke-dasharray:1;stroke-dashoffset:0;animation:draw .8s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+.pop{transform-box:fill-box;transform-origin:center;animation:pop .5s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+.rise{animation:rise .55s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+.drop{transform-box:fill-box;transform-origin:center;animation:drop .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+.growx{transform-origin:left center;animation:grow .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+.ping{transform-box:fill-box;transform-origin:center;animation:ping 1.6s ease-out 3 both;animation-delay:var(--d,0s)}
+.stamp{display:inline-block;animation:stamp .7s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+.flash{animation:flash .9s ease-out both;animation-delay:var(--d,0s)}
+.nd{cursor:pointer;outline:none}
+.nd:hover rect,.nd:focus-visible rect{stroke:#E07B00;stroke-width:3}
+.dot{cursor:pointer}.dot:hover circle,.dot:focus-visible circle{stroke:#10202E;stroke-width:3}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@keyframes fade{from{opacity:0}to{opacity:1}}.fade{animation:fade .7s ease-out both;animation-delay:var(--d,0s)}</style>
+</helmet>
+<div style="min-height:1100px;display:flex;flex-direction:column">
+<a href="#main" style="position:absolute;left:-9999px">Skip to main content</a>
+<header style="display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between;padding:20px 44px;border-bottom:1px solid #10202E">
+  <div style="font-weight:800;font-stretch:75%;font-size:24px;letter-spacing:.06em">SATYA<span style="color:#B45309">·</span>EoA</div>
+  <nav aria-label="Main" style="display:flex;flex-wrap:wrap;gap:26px;font-size:15px"><a href="Main.dc.html" style="color:#42566A;text-decoration:none">Overview</a><a href="Queue.dc.html" style="color:#42566A;text-decoration:none">Queue</a><a href="Manual.dc.html" style="color:#42566A;text-decoration:none">Manual checks</a><a href="Alerts.dc.html" style="color:#42566A;text-decoration:none">Alerts</a><a href="Rules.dc.html" style="color:#42566A;text-decoration:none">Rules</a><a href="Audit.dc.html" aria-current="page" style="color:#10202E;font-weight:700;text-decoration:none;border-bottom:3px solid #B45309;padding-bottom:3px">Audit</a></nav>
+  <div style="display:flex;gap:16px;align-items:center;font-size:14px;color:#42566A"><span>Regulation Bureau · Southern region · AY 2026-27</span><span style="color:#10202E;font-weight:600">RB Officer 01</span></div>
+</header>
+<main id="main" style="flex:1;padding:28px 44px 36px;max-width:1440px;box-sizing:border-box;width:100%">
+<div class="k" style="color:#B45309;margin-bottom:6px">Planned after Update day · mockup · needs the fingerprint index [VERIFY]</div><h1 class="h1" style="font-size:56px;max-width:1000px">Two stamps and two signatures show up in more than one college.</h1><section style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:40px;margin-top:28px;align-items:start"><div style="grid-column:span 8;min-width:0" class="hl"><div style="padding-top:12px"><svg viewBox="0 0 900 520" width="100%" role="img" aria-label="Graph of institutions sharing a stamp paper serial and a signature image"><path class="draw" style="--d:0.10s" pathLength="1" d="M150 140 L330 140" fill="none" stroke="#B42318" stroke-width="5"/><path class="draw" style="--d:0.20s" pathLength="1" d="M450 140 L560 250" fill="none" stroke="#B42318" stroke-width="5"/><path class="draw" style="--d:0.30s" pathLength="1" d="M560 250 L660 140" fill="none" stroke="#B45309" stroke-width="5"/><path class="draw" style="--d:0.40s" pathLength="1" d="M660 140 L820 140" fill="none" stroke="#B45309" stroke-width="5"/><path class="draw" style="--d:0.50s" pathLength="1" d="M560 250 L450 140" fill="none" stroke="#B42318" stroke-width="5"/><g class="nd pop" tabindex="0" style="--d:0.62s"><title>STAMP PAPER SERIAL: STP-…0042, found in two colleges</title><rect x="330" y="108" width="150" height="64" fill="#FBE3E0" stroke="#B42318" stroke-width="2.5"/><text x="342" y="130" text-anchor="start" fill="#42566A" style="font-family:JetBrains Mono,monospace;font-size:11px;font-weight:600" >STAMP PAPER SERIAL</text><text x="342" y="156" text-anchor="start" fill="#10202E" style="font-family:JetBrains Mono,monospace;font-size:17px;font-weight:800" >STP-…0042</text></g><g class="pop" style="--d:0.72s"><circle cx="480" cy="108" r="14" fill="#B42318"/><text x="480" y="113" text-anchor="middle" fill="#fff" style="font-family:Archivo,sans-serif;font-size:14px;font-weight:800" >2</text></g><circle class="ping" cx="480" cy="108" r="14" fill="none" stroke="#B42318" stroke-width="2.5" style="--d:0.72s"/><g class="nd pop" tabindex="0" style="--d:0.84s"><title>SIGNATURE IMAGE: 9c2e…41b7, found in two colleges</title><rect x="640" y="108" width="170" height="64" fill="#F1EBFA" stroke="#5B2E91" stroke-width="2.5"/><text x="652" y="130" text-anchor="start" fill="#42566A" style="font-family:JetBrains Mono,monospace;font-size:11px;font-weight:600" >SIGNATURE IMAGE</text><text x="652" y="156" text-anchor="start" fill="#10202E" style="font-family:JetBrains Mono,monospace;font-size:17px;font-weight:800" >9c2e…41b7</text></g><g class="pop" style="--d:0.94s"><circle cx="810" cy="108" r="14" fill="#5B2E91"/><text x="810" y="113" text-anchor="middle" fill="#fff" style="font-family:Archivo,sans-serif;font-size:14px;font-weight:800" >2</text></g><circle class="ping" cx="810" cy="108" r="14" fill="none" stroke="#5B2E91" stroke-width="2.5" style="--d:0.94s"/><g class="nd pop" tabindex="0" style="--d:1.06s"><title>Synthetic College C</title><circle cx="110" cy="140" r="36" fill="#fff" stroke="#10202E" stroke-width="2"/><text x="110" y="151" text-anchor="middle" fill="#10202E" style="font-family:Archivo,sans-serif;font-size:32px;font-weight:800" >C</text><text x="110" y="202" text-anchor="middle" fill="#10202E" style="font-family:Archivo,sans-serif;font-size:13px;font-weight:600" >Synthetic College C</text></g><g class="nd pop" tabindex="0" style="--d:1.18s"><title>Synthetic College A</title><circle cx="560" cy="270" r="36" fill="#fff" stroke="#10202E" stroke-width="2"/><text x="560" y="281" text-anchor="middle" fill="#10202E" style="font-family:Archivo,sans-serif;font-size:32px;font-weight:800" >A</text><text x="560" y="332" text-anchor="middle" fill="#10202E" style="font-family:Archivo,sans-serif;font-size:13px;font-weight:600" >Synthetic College A</text></g><g class="nd pop" tabindex="0" style="--d:1.30s"><title>Synthetic College D</title><circle cx="850" cy="140" r="36" fill="#fff" stroke="#10202E" stroke-width="2"/><text x="850" y="151" text-anchor="middle" fill="#10202E" style="font-family:Archivo,sans-serif;font-size:32px;font-weight:800" >D</text><text x="850" y="202" text-anchor="middle" fill="#10202E" style="font-family:Archivo,sans-serif;font-size:13px;font-weight:600" >Synthetic College D</text></g><g class="nd pop" tabindex="0" style="--d:1.42s"><title>Synthetic College B</title><circle cx="210" cy="400" r="36" fill="#fff" stroke="#10202E" stroke-width="2"/><text x="210" y="411" text-anchor="middle" fill="#10202E" style="font-family:Archivo,sans-serif;font-size:32px;font-weight:800" >B</text><text x="210" y="462" text-anchor="middle" fill="#10202E" style="font-family:Archivo,sans-serif;font-size:13px;font-weight:600" >Synthetic College B</text></g><rect x="300" y="380" width="170" height="40" fill="#fff" stroke="#9FB0C0" stroke-width="1.5" stroke-dasharray="4 4"/><text x="312" y="405" text-anchor="start" fill="#42566A" style="font-family:Archivo,sans-serif;font-size:12px;font-weight:500" >own stamp, own seal</text><path class="draw" style="--d:1.52s" pathLength="1" d="M246 400 L300 400" fill="none" stroke="#9FB0C0" stroke-width="2"/><text x="240" y="128" text-anchor="middle" fill="#10202E" style="font-family:Archivo,sans-serif;font-size:12px;font-weight:600" paint-order="stroke" stroke="#E6ECF1" stroke-width="6">Affidavit 2</text><text x="500" y="192" text-anchor="middle" fill="#10202E" style="font-family:Archivo,sans-serif;font-size:12px;font-weight:600" paint-order="stroke" stroke="#E6ECF1" stroke-width="6">Affidavit 2</text><text x="690" y="200" text-anchor="middle" fill="#10202E" style="font-family:Archivo,sans-serif;font-size:12px;font-weight:600" paint-order="stroke" stroke="#E6ECF1" stroke-width="6">Certificate 3</text><text x="740" y="128" text-anchor="middle" fill="#10202E" style="font-family:Archivo,sans-serif;font-size:12px;font-weight:600" paint-order="stroke" stroke="#E6ECF1" stroke-width="6">Certificate 3</text></svg></div></div><aside style="grid-column:span 4;min-width:0"><div class="big" style="font-size:110px;color:#B42318">2</div><div style="font-size:18px;font-weight:700;margin-bottom:16px">colleges swore on the same stamp paper serial.</div><div class="big" style="font-size:110px;color:#5B2E91">2</div><div style="font-size:18px;font-weight:700">colleges carry the same signature image on a structural certificate.</div><div class="hl" style="margin-top:24px;padding-top:14px"><div><span class="sl" style="color:#5B2E91"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="M15 15l5 5"/></svg>Manual review required</span></div><p style="margin:6px 0 0;font-size:15px">Reuse like this is a reason for a person to look, not a ruling.</p></div><div class="hl" style="margin-top:14px;padding-top:12px"><div class="k" style="color:#6B4A00">What this does not prove</div><p style="margin:4px 0 0;font-size:15px">One consultant, one architect or one bulk stamp purchase can lawfully appear across several colleges.</p></div><p style="font-size:12.5px;color:#42566A;margin-top:14px">Serials and hashes are made up. This view comes from perceptual hashes already stored per document.</p></aside></section>
+</main>
+<footer style="padding:12px 44px;border-top:1px solid #10202E;font-size:12.5px;color:#42566A;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px">
+  <span><a href="Audit.dc.html" style="color:#14532D;font-weight:700;text-decoration:none">Audit chain intact</a> · 1,284 entries · checked 2 min ago</span>
+  <span>Findings are advisory. Decisions rest with AICTE officials. · Updated 6 Nov 2026</span>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+/* Style K motion primitives (prompt section 5). Durations come from tokens (--dur-*), easing from --ease-k.
+   The resting style of every element is its FINAL state: the "from" state exists only inside the keyframes and
+   during the stagger delay (fill-mode backwards), so reduced motion and no-JS show the finished view at once.
+   Classes are added once on first mount of a view (see lib/motion.ts); nothing here reacts to scroll, hover or cursor. */
+@keyframes k-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes k-pop {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+@keyframes k-rise {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes k-drop {
+  from { transform: translateY(-26px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes k-growx {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes k-ping {
+  from { transform: scale(1); opacity: 0.7; }
+  to { transform: scale(2.4); opacity: 0; }
+}
+@keyframes k-stamp {
+  from { transform: scale(1.35) rotate(-3deg); opacity: 0; }
+  to { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+@keyframes k-flash {
+  from { background-color: transparent; }
+  to { background-color: var(--k-red-tint); }
+}
+
+.m-draw {
+  stroke-dasharray: 1;
+  animation: k-draw var(--dur-draw) var(--ease-k) var(--d, 0s) backwards;
+}
+.m-pop {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: k-pop var(--dur-pop) var(--ease-k) var(--d, 0s) backwards;
+}
+.m-rise {
+  animation: k-rise var(--dur-rise) var(--ease-k) var(--d, 0s) backwards;
+}
+.m-drop {
+  animation: k-drop var(--dur-drop) var(--ease-k) var(--d, 0s) backwards;
+}
+.m-growx {
+  transform-origin: left center;
+  animation: k-growx var(--dur-growx) var(--ease-k) var(--d, 0s) backwards;
+}
+.m-ping {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: k-ping var(--dur-ping) var(--ease-k) var(--d, 0s) 3 backwards;
+}
+.m-stamp {
+  animation: k-stamp var(--dur-stamp) var(--ease-k) var(--d, 0s) backwards;
+}
+.m-flash {
+  animation: k-flash var(--dur-flash) var(--ease-k) var(--d, 0s) backwards;
+}
+
+/* The ping ring is an extra element; at rest it must not be visible. */
+.m-ping {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .m-draw, .m-pop, .m-rise, .m-drop, .m-growx, .m-ping, .m-stamp, .m-flash {
+    animation: none !important;
+  }
+  :root {
+    --dur-draw: 0s;
+    --dur-pop: 0s;
+    --dur-rise: 0s;
+    --dur-drop: 0s;
+    --dur-growx: 0s;
+    --dur-ping: 0s;
+    --dur-stamp: 0s;
+    --dur-flash: 0s;
+  }
+}

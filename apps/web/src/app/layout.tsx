@@ -7,7 +7,12 @@ import "@fontsource/noto-sans-mono/400.css";
 import "@fontsource/noto-sans-mono/700.css";
 import "@fontsource/noto-sans-devanagari/400.css";
 import "@fontsource/noto-sans-devanagari/700.css";
+import "@fontsource-variable/archivo/wdth.css";
+import "@fontsource/jetbrains-mono/500.css";
+import "@fontsource/jetbrains-mono/700.css";
 import "@/styles/globals.css";
+import "@/styles/k.css";
+import "@/styles/motion.css";
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { NextIntlClientProvider } from "next-intl";
@@ -31,7 +36,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   // Per-request CSP nonce from src/proxy.ts; React Aria reads it from this meta element.
   const nonce = (await headers()).get("x-nonce") ?? undefined;
   // Client components only need the navigation labels.
-  const clientMessages = { nav: messages.nav, error: messages.error, demo: messages.demo, status: messages.status, source: messages.source };
+  const clientMessages = { nav: messages.nav, error: messages.error, demo: messages.demo, status: messages.status, source: messages.source, k: messages.k };
   return (
     <html lang={locale}>
       <head>

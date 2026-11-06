@@ -14,9 +14,9 @@
 .th {
   position: relative;
   padding: 0;
-  border: 1px solid var(--color-rule);
-  background: var(--th-bg);
-  color: var(--th-fg);
+  border: 1px solid var(--k-rule);
+  background: var(--k-paper);
+  color: var(--k-muted);
   font-size: 0.78125rem;
   font-weight: 500;
   text-align: left;
@@ -36,17 +36,17 @@
 }
 
 .th[data-allows-sorting][data-hovered] {
-  background: var(--th-hover);
+  background: var(--k-hover);
 }
 
 .th[aria-sort="ascending"],
 .th[aria-sort="descending"] {
-  color: var(--color-text);
+  color: var(--k-ink);
   font-weight: 700;
 }
 
 .th[data-focus-visible] {
-  box-shadow: inset 0 0 0 2px var(--color-surface), inset 0 0 0 4px var(--color-saffron-rule);
+  box-shadow: inset 0 0 0 2px var(--k-paper), inset 0 0 0 4px var(--k-ink);
 }
 
 .row {
@@ -55,7 +55,7 @@
 
 .td {
   padding: var(--space-1) var(--space-2);
-  border: 1px solid var(--color-rule);
+  border: 1px solid var(--k-rule);
   text-align: left;
   vertical-align: top;
   outline: none;
