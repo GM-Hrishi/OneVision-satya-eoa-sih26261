@@ -106,8 +106,9 @@ async function login(page, username) {
   await page.getByRole("button", { name: /Account menu/ }).click();
   await page.getByRole("menuitemradio", { name: "हिन्दी" }).click();
   await page.waitForFunction(() => document.documentElement.lang === "hi");
-  await page.waitForFunction(() => document.querySelector("h1")?.textContent?.includes("सत्यापन कतार"), null, { timeout: 15000 }).catch(() => {});
-  check((await page.textContent("h1")).includes("सत्यापन कतार"), "switches to Hindi (lang=hi)");
+  // The queue H1 is a one-sentence headline since style K, so assert Devanagari, not a fixed title.
+  await page.waitForFunction(() => /[\u0900-\u097F]/.test(document.querySelector("h1")?.textContent ?? ""), null, { timeout: 15000 }).catch(() => {});
+  check(/[\u0900-\u097F]/.test((await page.textContent("h1")) ?? ""), "switches to Hindi (lang=hi)");
   await page.screenshot({ path: path.join(shots, "rb-queue-hi.png"), fullPage: true });
   await page.getByRole("button", { name: /खाता मेनू/ }).click();
   await page.getByRole("menuitemradio", { name: "English" }).click();
