@@ -1039,7 +1039,8 @@
       "stopped": "Stopped here: {reason}",
       "stopUnreadable": "the file could not be read well enough, so later steps wait for a person.",
       "stopSource": "the source did not answer, so the document was not compared with it.",
-      "noJourney": "No documents on this case."
+      "noJourney": "No documents on this case.",
+      "limitationLabel": "What this does not prove"
     },
     "audit": {
       "headline": "{count, plural, =0 {The ledger has no entries yet.} one {The ledger holds # entry.} other {The ledger holds # entries.}}",
@@ -1241,6 +1242,22 @@
       "severityLabel": "Severity",
       "back": "All rules",
       "clauseUnconfirmed": "Clause not confirmed [VERIFY]"
+    },
+    "reuse": {
+      "title": "Shared artifacts",
+      "description": "Institutions and the stamp-paper serials or signature images they share. Development view; not part of the live workbench yet.",
+      "headline": "{count, plural, =0 {No artifact is shared between institutions.} one {# artifact appears on more than one institution.} other {# artifacts appear on more than one institution.}}",
+      "caption": "Circles are institutions, boxes are artifacts. A line means the artifact appears on that institution's filing. The badge counts the institutions that share it.",
+      "kind": {
+        "stamp_serial": "Stamp-paper serial",
+        "signature_image": "Signature image fingerprint"
+      },
+      "badge": "Shared by {count, plural, one {# institution} other {# institutions}}",
+      "nodeInstitution": "Institution {name}",
+      "nodeArtifact": "{kind} {label}, shared by {count, plural, one {# institution} other {# institutions}}",
+      "notProve": "One consultant, one architect or one bulk stamp purchase can lawfully appear across several colleges.",
+      "devNote": "Development fixture. This view needs a cross-case fingerprint index that no API provides yet.",
+      "back": "Back to the case"
     }
   }
 }

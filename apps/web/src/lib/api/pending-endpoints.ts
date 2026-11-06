@@ -20,3 +20,11 @@ export const ruleDetail = (ruleId: string) => `/v1/rules/${encodeURIComponent(ru
  * GET /v1/cases/{id}/replay as_of, digest_original, digest_replayed.
  */
 export const PENDING_FIELDS = ["limitation", "why_detail", "check_kind", "why_summary", "summary", "coverage", "digest_original", "digest_replayed"] as const;
+
+/**
+ * NOT ON MAIN AND NOT ON PR #15: the cross-case fingerprint index behind the reuse graph (T13). Contract the UI would
+ * read (docs/ui-style-k/MERGE-NOTES.md): GET /v1/cases/{id}/reuse ->
+ * { institutions: [{id, name}], artifacts: [{id, kind: "stamp_serial" | "signature_image", label, institution_ids: [id]}] }
+ * Counts and edges come from this payload only.
+ */
+export const reuseIndex = (caseId: string) => `/v1/cases/${caseId}/reuse`;

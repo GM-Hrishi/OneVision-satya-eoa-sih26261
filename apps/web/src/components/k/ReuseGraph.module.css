@@ -1,0 +1,11 @@
+.svg { width: 100%; height: auto; display: block; background: var(--k-paper); border: 1px solid var(--k-rule); }
+.edge { stroke: var(--k-ink); stroke-width: 2; fill: none; }
+.inst { fill: var(--k-paper); stroke: var(--k-ink); stroke-width: 2; }
+.box { fill: var(--k-desk); stroke: var(--k-ink); stroke-width: 2; }
+.text { font-family: var(--font-display); font-weight: 700; font-size: 14px; fill: var(--k-ink); }
+.sub { font-family: var(--font-kmono); font-size: 11px; fill: var(--k-muted); }
+.badge { fill: var(--k-ink); }
+.badgeText { font-family: var(--font-kmono); font-weight: 700; font-size: 13px; fill: var(--k-paper); }
+.note { margin: var(--space-4) 0; padding: var(--space-3) var(--space-4); border: 1px solid var(--k-ink); background: var(--k-paper); max-width: 62ch; }
+.list { list-style: none; margin: var(--space-4) 0; padding: 0; }
+.list li { padding: var(--space-2) 0; border-top: 1px solid var(--k-rule); }

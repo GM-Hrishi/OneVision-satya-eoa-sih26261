@@ -576,5 +576,18 @@
   "k.rules.failsLine": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
   "k.rules.severityLabel": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
   "k.rules.back": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
-  "k.rules.clauseUnconfirmed": "[VERIFY] new in style K; machine-drafted Hindi, native review needed"
+  "k.rules.clauseUnconfirmed": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
+  "k.reuse.title": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
+  "k.reuse.description": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
+  "k.reuse.headline": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
+  "k.reuse.caption": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
+  "k.reuse.kind.stamp_serial": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
+  "k.reuse.kind.signature_image": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
+  "k.reuse.badge": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
+  "k.reuse.nodeInstitution": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
+  "k.reuse.nodeArtifact": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
+  "k.reuse.notProve": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
+  "k.reuse.devNote": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
+  "k.reuse.back": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
+  "k.proof.limitationLabel": "[VERIFY] new in style K; machine-drafted Hindi"
 }

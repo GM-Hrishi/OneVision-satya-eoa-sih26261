@@ -1,0 +1,13 @@
+{
+  "_note": "DEVELOPMENT ONLY. Invented, obviously synthetic values for the dev-only reuse view. No API provides this index yet (see MERGE-NOTES.md).",
+  "institutions": [
+    { "id": "inst_a", "name": "Demo Institute of Technology 01" },
+    { "id": "inst_b", "name": "Demo Institute of Technology 02" },
+    { "id": "inst_c", "name": "Demo Institute of Technology 03" }
+  ],
+  "artifacts": [
+    { "id": "art_1", "kind": "stamp_serial", "label": "SYNTH-STAMP-0001", "institution_ids": ["inst_a", "inst_b"] },
+    { "id": "art_2", "kind": "signature_image", "label": "SYNTH-SIGIMG-0007", "institution_ids": ["inst_a", "inst_b", "inst_c"] },
+    { "id": "art_3", "kind": "stamp_serial", "label": "SYNTH-STAMP-0002", "institution_ids": ["inst_c"] }
+  ]
+}

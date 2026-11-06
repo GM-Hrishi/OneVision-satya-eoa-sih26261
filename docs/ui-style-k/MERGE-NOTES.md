@@ -17,7 +17,9 @@ After both branches are merged: (1) regenerate shared types, (2) delete `apps/we
 | affidavit-diff `summary {...}` | T9 | affidavit headline and numerals | counted client-side from the rows |
 | expiry check `coverage {...}` | T10 | document evidence page | not shown |
 | replay `as_of`, `digest_original`, `digest_replayed` | `replay.ts` | `ReplayDiff` | not shown |
-| Cross-case fingerprint index (stamp serial, signature image fingerprint) | none on either branch | reuse graph `/case/[id]/reuse` (T13), behind `features.reuseGraph` | route and nav hidden |
+| Cross-case fingerprint index (stamp serial, signature image fingerprint): proposed `GET /v1/cases/{id}/reuse` returning `{institutions:[{id,name}], artifacts:[{id, kind: stamp_serial or signature_image, label, institution_ids:[id]}]}` | `reuseIndex()` in `pending-endpoints.ts`, `k-adapters/reuse.ts` | reuse graph `/case/[id]/reuse` (T13), behind `features.reuseGraph` | route answers 404, no nav item; dev fixture only with `NEXT_PUBLIC_UI_FIXTURES=1` |
+| Manual-task list and resolve endpoints (spec §7.6) | none on either branch | `/manual/[taskId]` and the resolve panel (not built, T11) | `/manual` lists the overview's open checks and opens the case |
+| Rule list endpoint (count, ruleset id/hash) | none on either branch | `/rules` headline 'N rules run' (not built, T12) | `/rules` lists rules seen on queue rows |
 
 Other seams
 - Waiting days: no field on `GET /v1/cases` rows. Derived client-side from `submitted_at` against the overview `as_of` (T8).
