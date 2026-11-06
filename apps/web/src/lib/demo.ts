@@ -1,7 +1,7 @@
 // Slice D (demo flow) data: queue, case review, alerts and audit from the Workbench API (server only).
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { apiGet, apiGetQuiet } from "./api";
+import { apiGet } from "./api";
 import type { Audit, Overview, AlertItem, QueueRow, Review, Band, SortDir, SortKey } from "./demo-types";
 
 export * from "./demo-types";
@@ -28,7 +28,6 @@ export const caseReview = cache(async (caseId: string, callbackPath: string): Pr
 export const overview = (path: string, ay: string) => apiGet<Overview>(`/v1/overview?ay=${encodeURIComponent(ay)}`, path);
 
 export const alerts = (path: string) => apiGet<{ items: AlertItem[] }>("/v1/alerts", path);
-export const alertsQuiet = () => apiGetQuiet<{ items: AlertItem[] }>("/v1/alerts");
 
 export const audit = (path: string, caseId?: string) =>
   apiGet<Audit>(caseId && CASE_ID.test(caseId) ? `/v1/audit?case_id=${caseId}` : "/v1/audit", path);
