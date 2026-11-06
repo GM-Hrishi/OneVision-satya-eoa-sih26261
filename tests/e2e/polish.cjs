@@ -85,11 +85,12 @@ const check = (ok, msg) => { console.log(`${ok ? "PASS" : "FAIL"} ${msg}`); if (
   const tipHover = await page.locator('[role="tooltip"]').first().textContent().catch(() => "");
   check(full.test(tipHover), `status label tooltip shows the full name on hover ("${tipHover}")`);
   await page.mouse.move(0, 0);
+  await page.waitForSelector('[role="tooltip"]', { state: "detached", timeout: 5000 }).catch(() => {});
   // The table is one tab stop; arrow keys move between cells (down to the row, right to the labels).
   await page.getByRole("columnheader", { name: "Application" }).focus();
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("ArrowRight");
-  await page.waitForSelector('[role="tooltip"]', { timeout: 5000 }).catch(() => {});
+  await page.waitForFunction(() => (document.querySelector('[role="tooltip"]')?.textContent ?? "").trim().length > 0, null, { timeout: 5000 }).catch(() => {});
   const tipFocus = await page.locator('[role="tooltip"]').first().textContent().catch(() => "");
   check(full.test(tipFocus), `status label tooltip shows the full name on keyboard focus ("${tipFocus}")`);
 
