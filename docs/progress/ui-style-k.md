@@ -41,6 +41,9 @@ Prompt: `docs/prompts/PROMPT_ui_style_k.md` (v1.1). Rule: continue from the firs
 14. Mockups (static `.dc.html`, 15 files) copied to `docs/ui-style-k/mockups/` as visual reference only.
 15. e2e specs are Playwright `.cjs` files in `tests/e2e/` and need the running stack (`make up`); they cannot run in this cloud session. Unit tests (`pnpm test`), lint and typecheck can.
 
+## CI fix log
+- Lockfile mismatch: `@fontsource-variable/archivo` and `@fontsource/jetbrains-mono` were `^5.3.0` in `pnpm-lock.yaml` but exact `5.3.0` in `apps/web/package.json`. Regenerated the lockfile with `pnpm install` (specifiers now exact); `pnpm install --frozen-lockfile` passes. Local: lint, typecheck, test all green (one backend quota test failed once in the full run and passed on rerun, with and without this change), `make gen-types` leaves no diff.
+
 ## Blockers / questions
 - Do NOT import runtime values from `@satya/shared-types` in web code: Turbopack cannot resolve its `./generated/constants.js` re-export (vitest can, so tests pass while `next build` fails). Use `lib/labels.ts` (found by running `pnpm build` in T4).
 - Branch name (see top). 
