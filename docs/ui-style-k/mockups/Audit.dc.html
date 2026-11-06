@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Audit trail · SATYA-EoA</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@500;700&family=Public+Sans:wght@800&display=swap">
+<style>
+body{margin:0;font-family:'Archivo',system-ui,sans-serif;color:#10202E;background:#E6ECF1;font-size:16px;line-height:1.5}
+a{color:#10202E}a:hover{color:#B45309}
+.mono{font-family:'JetBrains Mono',monospace}
+.k{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:#42566A}
+.big{font-stretch:62%;font-weight:800;line-height:.86;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.h1{margin:0;font-weight:800;font-stretch:80%;letter-spacing:-.02em;line-height:1.04;text-wrap:balance}
+.pin{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;flex:none}
+.sl{display:inline-flex;gap:6px;align-items:center;font-weight:600;font-size:14px;white-space:nowrap}
+.tag{display:inline-flex;align-items:center;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.04em;color:#42566A;border:1px solid #9FB0C0;padding:0 6px;border-radius:2px}
+.seg{display:flex;flex-wrap:wrap;border:1px solid #10202E;width:fit-content;max-width:100%;background:#fff}
+.seg button{min-height:46px;padding:0 16px;border:0;border-left:1px solid #10202E;background:#fff;font-family:inherit;font-size:15px;cursor:pointer}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed=true]{background:#10202E;color:#fff;font-weight:600}
+.cta{min-height:50px;padding:0 24px;background:#B45309;color:#fff;border:0;font-family:inherit;font-weight:700;font-size:16px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.cta:hover{background:#9A4607;color:#fff}
+.ghost{min-height:46px;padding:0 16px;border:1px solid #10202E;background:#fff;font-family:inherit;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;text-decoration:none;color:#10202E}
+.hl{border-top:1px solid #10202E}
+.tr{display:grid;align-items:center;column-gap:20px;padding:14px 0;border-top:1px solid #B8C5D1}
+.tr:hover{background:#DDE5EC}
+.band{font-family:'Public Sans','Archivo',sans-serif;font-weight:800;letter-spacing:.06em;font-size:12px;padding:2px 8px}
+.paper{background:#fff;box-shadow:0 2px 0 #BFCBD6,0 18px 40px rgb(16 32 46 / .14)}
+.ln{height:6px;background:#E1E7ED}
+input[type=text],textarea{font-family:inherit;color:#10202E}
+.tr{transition:background-color .2s}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes drop{from{opacity:0;transform:translateY(-26px)}to{opacity:1;transform:none}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes ping{0%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(2.4)}}
+@keyframes stamp{0%{opacity:0;transform:scale(1.35) rotate(-3deg)}60%{opacity:1;transform:scale(.97) rotate(-1deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes flash{from{background-color:transparent}to{background-color:var(--to,#FBE3E0)}}
+.draw{stroke-dasharray:1;stroke-dashoffset:0;animation:draw .8s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+.pop{transform-box:fill-box;transform-origin:center;animation:pop .5s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+.rise{animation:rise .55s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+.drop{transform-box:fill-box;transform-origin:center;animation:drop .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+.growx{transform-origin:left center;animation:grow .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+.ping{transform-box:fill-box;transform-origin:center;animation:ping 1.6s ease-out 3 both;animation-delay:var(--d,0s)}
+.stamp{display:inline-block;animation:stamp .7s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+.flash{animation:flash .9s ease-out both;animation-delay:var(--d,0s)}
+.nd{cursor:pointer;outline:none}
+.nd:hover rect,.nd:focus-visible rect{stroke:#E07B00;stroke-width:3}
+.dot{cursor:pointer}.dot:hover circle,.dot:focus-visible circle{stroke:#10202E;stroke-width:3}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</helmet>
+<div style="min-height:1240px;display:flex;flex-direction:column">
+<a href="#main" style="position:absolute;left:-9999px">Skip to main content</a>
+<header style="display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between;padding:20px 44px;border-bottom:1px solid #10202E">
+  <div style="font-weight:800;font-stretch:75%;font-size:24px;letter-spacing:.06em">SATYA<span style="color:#B45309">·</span>EoA</div>
+  <nav aria-label="Main" style="display:flex;flex-wrap:wrap;gap:26px;font-size:15px"><a href="Main.dc.html" style="color:#42566A;text-decoration:none">Overview</a><a href="Queue.dc.html" style="color:#42566A;text-decoration:none">Queue</a><a href="Manual.dc.html" style="color:#42566A;text-decoration:none">Manual checks</a><a href="Alerts.dc.html" style="color:#42566A;text-decoration:none">Alerts</a><a href="Rules.dc.html" style="color:#42566A;text-decoration:none">Rules</a><a href="Audit.dc.html" aria-current="page" style="color:#10202E;font-weight:700;text-decoration:none;border-bottom:3px solid #B45309;padding-bottom:3px">Audit</a></nav>
+  <div style="display:flex;gap:16px;align-items:center;font-size:14px;color:#42566A"><span>Regulation Bureau · Southern region · AY 2026-27</span><span style="color:#10202E;font-weight:600">RB Officer 01</span></div>
+</header>
+<main id="main" style="flex:1;padding:28px 44px 36px;max-width:1440px;box-sizing:border-box;width:100%">
+
+<div style="display:flex;flex-wrap:wrap;gap:20px 56px;align-items:flex-end">
+  <div style="flex:1 1 560px"><div class="k">Audit trail</div><h1 class="h1" style="font-size:56px;margin-top:6px">Every entry points at the one before it. Change one and the chain breaks.</h1></div>
+  <div><div class="big" style="font-size:120px;color:#14532D">1,284</div><div class="sl" style="color:#14532D;font-size:17px">Chain intact</div><div style="font-size:13px;color:#42566A">checked today at 09:12 · none altered</div></div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:12px;margin:24px 0 28px"><button class="cta" type="button">Verify again</button><button class="ghost" type="button">Export evidence view</button></div>
+<ol style="list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:12px 0">
+<li style="flex:1 1 230px;min-width:0;display:flex;align-items:center"><div style="flex:1;min-width:0;border:1px solid #10202E;background:#fff;padding:12px"><div class="mono" style="font-size:12px;color:#42566A">Entry 1281</div><div style="font-size:15px;font-weight:600;margin:4px 0">Affidavit 2 read from the file</div><div class="mono" style="font-size:11.5px">fingerprint 9f3a1c07</div><div class="mono" style="font-size:11.5px;color:#42566A">follows 5be2d4a1</div></div><span aria-hidden="true" style="flex:none;width:18px;height:2px;background:#10202E"></span></li><li style="flex:1 1 230px;min-width:0;display:flex;align-items:center"><div style="flex:1;min-width:0;border:1px solid #10202E;background:#fff;padding:12px"><div class="mono" style="font-size:12px;color:#42566A">Entry 1282</div><div style="font-size:15px;font-weight:600;margin:4px 0">Land area flagged as a mismatch</div><div class="mono" style="font-size:11.5px">fingerprint c41d77e0</div><div class="mono" style="font-size:11.5px;color:#42566A">follows 9f3a1c07</div></div><span aria-hidden="true" style="flex:none;width:18px;height:2px;background:#10202E"></span></li><li style="flex:1 1 230px;min-width:0;display:flex;align-items:center"><div style="flex:1;min-width:0;border:1px solid #10202E;background:#fff;padding:12px"><div class="mono" style="font-size:12px;color:#42566A">Entry 1283</div><div style="font-size:15px;font-weight:600;margin:4px 0">Stamp paper date checked, simulated source</div><div class="mono" style="font-size:11.5px">fingerprint 2ab86f5d</div><div class="mono" style="font-size:11.5px;color:#42566A">follows c41d77e0</div></div><span aria-hidden="true" style="flex:none;width:18px;height:2px;background:#10202E"></span></li><li style="flex:1 1 230px;min-width:0;display:flex;align-items:center"><div style="flex:1;min-width:0;border:1px solid #10202E;background:#fff;padding:12px"><div class="mono" style="font-size:12px;color:#42566A">Entry 1284</div><div style="font-size:15px;font-weight:600;margin:4px 0">Officer asked the institution to clarify</div><div class="mono" style="font-size:11.5px">fingerprint 7e0b92c3</div><div class="mono" style="font-size:11.5px;color:#42566A">follows 2ab86f5d</div></div></li>
+</ol>
+
+<section style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:40px;margin-top:44px;align-items:start">
+  <div style="grid-column:span 7;min-width:0">
+    <h2 class="h1" style="font-size:30px;margin-bottom:6px">Latest entries</h2>
+    <div class="tr" style="grid-template-columns:70px minmax(0,1fr) 120px 130px;border-top:0;padding:6px 0"><div class="k">No.</div><div class="k">What happened</div><div class="k">Who</div><div class="k">When</div></div>
+    <div class="tr" style="grid-template-columns:70px minmax(0,1fr) 120px 130px"><div class="mono" style="font-weight:700">1284</div><div>Officer asked the institution to clarify</div><div>RB Officer 01</div><div class="mono" style="font-size:13px">Today 09:05</div></div>
+    <div class="tr" style="grid-template-columns:70px minmax(0,1fr) 120px 130px"><div class="mono" style="font-weight:700">1283</div><div>Stamp paper date checked <span class="tag">Simulated source</span></div><div>SATYA</div><div class="mono" style="font-size:13px">Today 09:02</div></div>
+    <div class="tr" style="grid-template-columns:70px minmax(0,1fr) 120px 130px"><div class="mono" style="font-weight:700">1282</div><div>Land area flagged as a mismatch</div><div>SATYA</div><div class="mono" style="font-size:13px">Today 09:01</div></div>
+    <div class="tr" style="grid-template-columns:70px minmax(0,1fr) 120px 130px"><div class="mono" style="font-weight:700">1281</div><div>Affidavit 2 read from the file</div><div>SATYA</div><div class="mono" style="font-size:13px">Today 09:00</div></div>
+  </div>
+  <aside style="grid-column:span 5;min-width:0">
+    <div class="k">Replay of case 1-90000004217</div>
+    <div style="font-size:30px;font-weight:800;font-stretch:80%;line-height:1.1;margin-top:6px;color:#14532D">Reproduced identically.</div>
+    <p style="margin:8px 0 0;font-size:16px">Running the same rules on the same documents gives the same findings, byte for byte.</p>
+    <div class="hl" style="margin-top:16px;padding-top:12px;display:grid;grid-template-columns:110px 1fr;gap:6px 12px;font-size:14px"><span class="k">Ruleset</span><span class="mono">v2026.11 · 3f9a…c1d2</span><span class="k">As of</span><span class="mono">6 Nov 2026 09:00</span><span class="k">Original</span><span class="mono">7e0b92c3…a41f</span><span class="k">Replayed</span><span class="mono">7e0b92c3…a41f</span></div>
+    <p style="font-size:12.5px;color:#42566A;margin-top:12px">Fingerprints shown are illustrative.</p>
+  </aside>
+</section>
+
+</main>
+<footer style="padding:12px 44px;border-top:1px solid #10202E;font-size:12.5px;color:#42566A;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px">
+  <span><a href="Audit.dc.html" style="color:#14532D;font-weight:700;text-decoration:none">Audit chain intact</a> · 1,284 entries · checked 2 min ago</span>
+  <span>Findings are advisory. Decisions rest with AICTE officials. · Updated 6 Nov 2026</span>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1240}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>

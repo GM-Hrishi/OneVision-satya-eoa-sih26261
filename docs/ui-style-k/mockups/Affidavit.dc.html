@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Affidavit line by line · SATYA-EoA</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=JetBrains+Mono:wght@500;700&family=Public+Sans:wght@800&display=swap">
+<style>
+body{margin:0;font-family:'Archivo',system-ui,sans-serif;color:#10202E;background:#E6ECF1;font-size:16px;line-height:1.5}
+a{color:#10202E}a:hover{color:#B45309}
+.mono{font-family:'JetBrains Mono',monospace}
+.k{font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:#42566A}
+.big{font-stretch:62%;font-weight:800;line-height:.86;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.h1{margin:0;font-weight:800;font-stretch:80%;letter-spacing:-.02em;line-height:1.04;text-wrap:balance}
+.pin{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff;flex:none}
+.sl{display:inline-flex;gap:6px;align-items:center;font-weight:600;font-size:14px;white-space:nowrap}
+.tag{display:inline-flex;align-items:center;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.04em;color:#42566A;border:1px solid #9FB0C0;padding:0 6px;border-radius:2px}
+.seg{display:flex;flex-wrap:wrap;border:1px solid #10202E;width:fit-content;max-width:100%;background:#fff}
+.seg button{min-height:46px;padding:0 16px;border:0;border-left:1px solid #10202E;background:#fff;font-family:inherit;font-size:15px;cursor:pointer}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed=true]{background:#10202E;color:#fff;font-weight:600}
+.cta{min-height:50px;padding:0 24px;background:#B45309;color:#fff;border:0;font-family:inherit;font-weight:700;font-size:16px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.cta:hover{background:#9A4607;color:#fff}
+.ghost{min-height:46px;padding:0 16px;border:1px solid #10202E;background:#fff;font-family:inherit;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;text-decoration:none;color:#10202E}
+.hl{border-top:1px solid #10202E}
+.tr{display:grid;align-items:center;column-gap:20px;padding:14px 0;border-top:1px solid #B8C5D1}
+.tr:hover{background:#DDE5EC}
+.band{font-family:'Public Sans','Archivo',sans-serif;font-weight:800;letter-spacing:.06em;font-size:12px;padding:2px 8px}
+.paper{background:#fff;box-shadow:0 2px 0 #BFCBD6,0 18px 40px rgb(16 32 46 / .14)}
+.ln{height:6px;background:#E1E7ED}
+input[type=text],textarea{font-family:inherit;color:#10202E}
+.tr{transition:background-color .2s}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes drop{from{opacity:0;transform:translateY(-26px)}to{opacity:1;transform:none}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes ping{0%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(2.4)}}
+@keyframes stamp{0%{opacity:0;transform:scale(1.35) rotate(-3deg)}60%{opacity:1;transform:scale(.97) rotate(-1deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes flash{from{background-color:transparent}to{background-color:var(--to,#FBE3E0)}}
+.draw{stroke-dasharray:1;stroke-dashoffset:0;animation:draw .8s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+.pop{transform-box:fill-box;transform-origin:center;animation:pop .5s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+.rise{animation:rise .55s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+.drop{transform-box:fill-box;transform-origin:center;animation:drop .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+.growx{transform-origin:left center;animation:grow .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+.ping{transform-box:fill-box;transform-origin:center;animation:ping 1.6s ease-out 3 both;animation-delay:var(--d,0s)}
+.stamp{display:inline-block;animation:stamp .7s cubic-bezier(.2,.7,.2,1) both;animation-delay:var(--d,0s)}
+.flash{animation:flash .9s ease-out both;animation-delay:var(--d,0s)}
+.nd{cursor:pointer;outline:none}
+.nd:hover rect,.nd:focus-visible rect{stroke:#E07B00;stroke-width:3}
+.dot{cursor:pointer}.dot:hover circle,.dot:focus-visible circle{stroke:#10202E;stroke-width:3}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</helmet>
+<div style="min-height:1180px;display:flex;flex-direction:column">
+<a href="#main" style="position:absolute;left:-9999px">Skip to main content</a>
+<header style="display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between;padding:20px 44px;border-bottom:1px solid #10202E">
+  <div style="font-weight:800;font-stretch:75%;font-size:24px;letter-spacing:.06em">SATYA<span style="color:#B45309">·</span>EoA</div>
+  <nav aria-label="Main" style="display:flex;flex-wrap:wrap;gap:26px;font-size:15px"><a href="Main.dc.html" style="color:#42566A;text-decoration:none">Overview</a><a href="Queue.dc.html" aria-current="page" style="color:#10202E;font-weight:700;text-decoration:none;border-bottom:3px solid #B45309;padding-bottom:3px">Queue</a><a href="Manual.dc.html" style="color:#42566A;text-decoration:none">Manual checks</a><a href="Alerts.dc.html" style="color:#42566A;text-decoration:none">Alerts</a><a href="Rules.dc.html" style="color:#42566A;text-decoration:none">Rules</a><a href="Audit.dc.html" style="color:#42566A;text-decoration:none">Audit</a></nav>
+  <div style="display:flex;gap:16px;align-items:center;font-size:14px;color:#42566A"><span>Regulation Bureau · Southern region · AY 2026-27</span><span style="color:#10202E;font-weight:600">RB Officer 01</span></div>
+</header>
+<main id="main" style="flex:1;padding:28px 44px 36px;max-width:1440px;box-sizing:border-box;width:100%">
+<div style="font-size:13px;color:#42566A;margin-bottom:10px"><a href="Queue.dc.html">Queue</a> / <a href="Case.dc.html" class="mono">1-90000004217</a> / Affidavit 2</div>
+<div class="k">Affidavit 2 against the portal form · case <span class="mono" style="color:#10202E;font-weight:700">1-90000004217</span></div>
+<h1 class="h1" style="font-size:56px;margin-top:8px;max-width:1000px">23 of 24 declarations match. One does not.</h1>
+<div style="display:flex;flex-wrap:wrap;gap:12px 56px;align-items:flex-end;margin:24px 0 32px">
+  <div><div class="big" style="font-size:120px">23</div><div class="k">Match</div></div>
+  <div><div class="big" style="font-size:120px;color:#B45309">1</div><div class="k" style="color:#B45309">Differ</div></div>
+  <div><div class="big" style="font-size:120px;color:#6B7A89">0</div><div class="k">Missing in the sworn copy</div></div>
+  <div style="flex:1 1 280px;font-size:17px;max-width:420px;padding-bottom:6px">The differing one is declaration 4, land held by the institution. Every other declaration was read from the sworn copy and agrees with the portal.</div>
+</div>
+<section style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:40px;align-items:start">
+  <div style="grid-column:span 7;min-width:0">
+    <div class="tr" style="grid-template-columns:40px minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr) 190px;border-top:0;padding:6px 0"><div class="k">No.</div><div class="k">Declaration</div><div class="k">Portal form</div><div class="k">Sworn copy</div><div class="k">Result</div></div>
+    <div class="tr" style="grid-template-columns:40px minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr) 190px;"><div class="mono" style="font-weight:700">2</div><div style="">Registration number</div><div class="mono">REG-0000-0000</div><div class="mono" style="">REG-0000-0000</div><div><span class="sl" style="color:#14532D"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>Same</span></div></div><div class="tr" style="grid-template-columns:40px minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr) 190px;"><div class="mono" style="font-weight:700">3</div><div style="">Programmes offered</div><div class="mono">4</div><div class="mono" style="">4</div><div><span class="sl" style="color:#14532D"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>Same</span></div></div><div class="tr" style="grid-template-columns:40px minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr) 190px;background:#FBE3E0;margin:0 -12px;padding-left:12px;padding-right:12px;outline:2px solid #B42318;"><div class="mono" style="font-weight:700">4</div><div style="font-weight:700">Land held, acres</div><div class="mono">4.80</div><div class="mono" style="font-weight:800;color:#8B0F0F;font-size:20px">6.20</div><div><span class="sl" style="color:#8A1C1C"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>1.40 acres more</span></div></div><div class="tr" style="grid-template-columns:40px minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr) 190px;"><div class="mono" style="font-weight:700">5</div><div style="">Built-up area, sq m</div><div class="mono">9,800</div><div class="mono" style="">9,800</div><div><span class="sl" style="color:#14532D"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>Same</span></div></div><div class="tr" style="grid-template-columns:40px minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr) 190px;"><div class="mono" style="font-weight:700">6</div><div style="">Faculty on roll</div><div class="mono">112</div><div class="mono" style="">112</div><div><span class="sl" style="color:#14532D"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>Same</span></div></div>
+    <div class="tr" style="grid-template-columns:minmax(0,1fr) auto"><div style="color:#42566A">19 more declarations, all the same</div><button type="button" class="ghost">Show all 24</button></div>
+    <p style="margin:18px 0 0;font-size:15px;max-width:620px"><strong>What this does not prove.</strong> A typing slip in the portal form would look exactly like this. This is a preliminary indicator and needs a person to check. Rule: APH Annexure 2.1 consistency check.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:20px"><div class="seg"><button type="button" aria-pressed="true">Ask institution</button><button type="button">Accept</button><button type="button">Override</button><button type="button">Check by hand</button><button type="button">Refer onward</button></div><a class="cta" href="Case.dc.html">Back to the case</a></div>
+  </div>
+  <section aria-label="Affidavit 2, page 2" style="grid-column:span 5;min-width:0">
+    <div class="paper" style="padding:34px 38px;min-height:560px">
+      <div style="text-align:center;font-weight:800;letter-spacing:.2em;font-size:12px">AFFIDAVIT</div>
+      <div class="ln" style="margin:22px 0 10px;width:92%"></div><div class="ln" style="margin:0 0 22px;width:72%"></div>
+      <div style="font-size:14px;margin-bottom:18px;color:#42566A">3. That the institution offers <span class="mono">4</span> programmes.</div>
+      <div style="position:relative;margin:0 -8px 22px;padding:10px 8px;background:#FBE3E0;outline:2px solid #B42318;font-size:15px;font-weight:600;color:#8B0F0F;line-height:1.4">4. That the institution holds <span class="mono">6.20</span> acres of land in its own name.<span class="pin" style="position:absolute;left:-40px;top:8px;background:#B42318" aria-hidden="true">4</span></div>
+      <div style="font-size:14px;margin-bottom:22px;color:#42566A">5. That the built-up area is <span class="mono">9,800</span> square metres.</div>
+      <div class="ln" style="margin:0 0 22px;width:80%"></div><div class="ln" style="margin:0 0 40px;width:55%"></div>
+      <div class="ln" style="width:35%"></div>
+    </div>
+    <div class="k" style="margin-top:10px">Affidavit 2 · page 2 · declaration 4 highlighted</div>
+  </section>
+</section>
+
+</main>
+<footer style="padding:12px 44px;border-top:1px solid #10202E;font-size:12.5px;color:#42566A;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px">
+  <span><a href="Audit.dc.html" style="color:#14532D;font-weight:700;text-decoration:none">Audit chain intact</a> · 1,284 entries · checked 2 min ago</span>
+  <span>Findings are advisory. Decisions rest with AICTE officials. · Updated 6 Nov 2026</span>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1180}}'>
+class Component extends DCLogic { renderVals() { return {}; } }
+</script>
+</body>
+</html>
