@@ -1,82 +1,56 @@
-/* StatusLabel (v0.8): tint background, text and icon in the same dark colour, 6px radius, no border. */
+/* StatusLabel (style K): icon and word in the label ink, no pill and no fill. Never colour alone: the word
+   always shows. Zero counts fall back to the muted ink. */
 .pill {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  border-radius: 6px;
-  font-family: var(--font-sans);
-  font-weight: 500;
+  gap: 5px;
+  font-family: var(--font-display);
+  font-weight: 700;
   white-space: nowrap;
 }
 
 .pill[data-size="md"] {
-  padding: 2px 8px 2px 6px;
-  font-size: 0.78125rem;
+  font-size: 0.875rem;
   line-height: 20px;
 }
 
 .pill[data-size="sm"] {
-  padding: 1px 7px 1px 5px;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   line-height: 18px;
 }
 
 .count {
+  font-family: var(--font-kmono);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
-.pill[data-label="verified"] {
-  background: var(--label-verified-bg);
-  color: var(--label-verified-fg);
-}
+.pill[data-label="verified"] { color: var(--k-st-verified); }
+.pill[data-label="mismatch_detected"] { color: var(--k-st-mismatch); }
+.pill[data-label="expired"] { color: var(--k-st-expired); }
+.pill[data-label="verification_pending"] { color: var(--k-st-pending); }
+.pill[data-label="source_unavailable"] { color: var(--k-st-unavailable); }
+.pill[data-label="manual_review_required"] { color: var(--k-st-review); }
 
-.pill[data-label="mismatch_detected"] {
-  background: var(--label-mismatch-bg);
-  color: var(--label-mismatch-fg);
-}
-
-.pill[data-label="expired"] {
-  background: var(--label-expired-bg);
-  color: var(--label-expired-fg);
-}
-
-.pill[data-label="verification_pending"] {
-  background: var(--label-pending-bg);
-  color: var(--label-pending-fg);
-}
-
-.pill[data-label="source_unavailable"] {
-  background: var(--label-unavail-bg);
-  color: var(--label-unavail-fg);
-}
-
-.pill[data-label="manual_review_required"] {
-  background: var(--label-review-bg);
-  color: var(--label-review-fg);
-}
-
-/* A zero count renders untinted (still text, never colour alone). */
+/* A zero count renders muted (still text, never colour alone). */
 .pill[data-zero="true"] {
-  background: transparent;
-  color: var(--label-zero-fg);
+  color: var(--k-muted);
 }
 
 .focus {
   display: inline-flex;
-  border-radius: 6px;
 }
 
 .focus:focus-visible {
-  outline: 2px solid var(--color-surface);
-  box-shadow: 0 0 0 4px var(--color-saffron-rule);
+  outline: var(--size-k-focus-outer) solid var(--k-ink);
+  outline-offset: var(--size-k-focus-inner);
+  box-shadow: 0 0 0 var(--size-k-focus-inner) var(--k-desk);
 }
 
 .tip {
   padding: 4px 8px;
-  border-radius: 4px;
-  background: var(--color-text);
-  color: var(--color-surface);
+  background: var(--k-ink);
+  color: var(--k-paper);
   font-size: 0.75rem;
   line-height: 1.4;
   max-width: 18rem;

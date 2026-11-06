@@ -324,5 +324,6 @@
   "verification.source.icai-udin-mock": "[VERIFY] new in Slice W (B-43)",
   "chain.intact": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
   "chain.broken": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
-  "chain.entries": "[VERIFY] new in style K; machine-drafted Hindi, native review needed"
+  "chain.entries": "[VERIFY] new in style K; machine-drafted Hindi, native review needed",
+  "k.limitation.title": "[VERIFY] new in style K; machine-drafted Hindi"
 }
