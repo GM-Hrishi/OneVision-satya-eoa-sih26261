@@ -1,24 +1,24 @@
 /* Overview: equal, plain, white, bordered panels in a responsive grid. No charts, no KPI cards. */
 .context {
   margin: 0 0 var(--space-3);
-  color: var(--color-muted);
+  color: var(--k-muted);
   font-size: 0.875rem;
 }
 
 .primary {
   display: inline-block;
   padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-chrome);
-  border-radius: 4px;
-  background: var(--color-chrome);
-  color: var(--color-surface);
+  border: 1px solid var(--k-ink);
+  border-radius: 0;
+  background: var(--k-ink);
+  color: var(--k-paper);
   font-family: var(--font-caps);
   font-weight: 800;
   text-decoration: none;
 }
 
 .primary:hover {
-  background: var(--color-chrome-2);
+  background: var(--k-accent-ink);
 }
 
 .grid {
@@ -30,8 +30,8 @@
 .panel {
   min-width: 0;
   padding: var(--space-4);
-  border: 1px solid var(--color-rule);
-  background: var(--color-surface);
+  border: 1px solid var(--k-rule);
+  background: var(--k-paper);
 }
 
 .panel h2 {
@@ -41,7 +41,7 @@
 
 .total {
   margin: 0 0 var(--space-2);
-  color: var(--color-muted);
+  color: var(--k-muted);
   font-size: 0.875rem;
 }
 
@@ -59,13 +59,13 @@
   justify-content: space-between;
   gap: var(--space-3);
   padding: var(--space-1) 0;
-  border-bottom: 1px solid var(--color-rule);
-  color: var(--color-text);
+  border-bottom: 1px solid var(--k-rule);
+  color: var(--k-ink);
   text-decoration: none;
 }
 
 .row:hover {
-  background: var(--menu-hover);
+  background: var(--k-hover);
 }
 
 .count {
@@ -75,7 +75,7 @@
 
 .list li {
   padding: var(--space-1) 0;
-  border-bottom: 1px solid var(--color-rule);
+  border-bottom: 1px solid var(--k-rule);
   font-size: 0.875rem;
 }
 
@@ -88,17 +88,17 @@
 }
 
 .mono {
-  font-family: var(--font-mono);
+  font-family: var(--font-kmono);
   font-size: 0.8125rem;
 }
 
 .age {
-  color: var(--color-muted);
+  color: var(--k-muted);
 }
 
 .empty {
   margin: 0;
-  color: var(--color-muted);
+  color: var(--k-muted);
   font-size: 0.875rem;
 }
 
@@ -112,7 +112,7 @@
 .skelRow {
   height: 1rem;
   margin-bottom: var(--space-2);
-  background: var(--color-viewer);
+  background: var(--k-hover);
 }
 
 .skelTitle {
@@ -126,4 +126,93 @@
 
 .skelRow:nth-child(4) {
   width: 65%;
+}
+
+/* Style K hero: one sentence, four huge numerals, the start-here band, the next-in-line table. */
+.numerals {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-5) var(--space-6);
+  margin: var(--space-5) 0 var(--space-6);
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 1023px) {
+  .numerals {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.start {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-5);
+  align-items: end;
+  padding: var(--space-5) 0;
+  border-top: 2px solid var(--k-rule-strong);
+  border-bottom: 1px solid var(--k-rule);
+  margin-bottom: var(--space-6);
+}
+
+@media (max-width: 767px) {
+  .start {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.sentence {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: var(--space-2) 0 var(--space-3);
+  max-width: 48ch;
+}
+
+.pair {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-6);
+  margin: var(--space-3) 0;
+}
+
+.sectionLabel {
+  font-family: var(--font-kmono);
+  font-size: 0.71875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--k-muted);
+  margin: var(--space-6) 0 var(--space-3);
+}
+
+.nextWrap {
+  overflow-x: auto;
+}
+
+.next {
+  width: 100%;
+  min-width: 44rem;
+  border-collapse: collapse;
+}
+
+.next th,
+.next td {
+  padding: var(--space-3) var(--space-3) var(--space-3) 0;
+  border-top: 1px solid var(--k-rule);
+  text-align: left;
+  vertical-align: top;
+}
+
+.next thead th {
+  border-top: 0;
+  border-bottom: 1px solid var(--k-rule-strong);
+}
+
+.next tbody tr:hover {
+  background: var(--k-hover);
+}
+
+.sits {
+  max-width: 62ch;
+  margin: var(--space-6) 0 var(--space-4);
 }

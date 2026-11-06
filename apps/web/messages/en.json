@@ -1085,6 +1085,32 @@
       "differsLine": "{what} is different. Open the audit trail for this case and look at the entries from the first changed run.",
       "auditLink": "Open this case in the audit trail",
       "fixtureNote": "Development fixture: an example of a failed replay, built from the documented example with one digest changed."
+    },
+    "overview": {
+      "headline": "{waiting, plural, =0 {No files are waiting.} one {# file is waiting.} other {# files are waiting.}} {high, plural, =0 {None need you first.} one {# needs you first.} other {# need you first.}}",
+      "numeralsLabel": "Counts",
+      "waiting": "Files waiting",
+      "high": "High attention",
+      "manual": "Manual checks",
+      "longest": "Longest wait in days",
+      "longestNone": "none",
+      "startHeading": "Start here",
+      "startNote": "The top of the list is where review usually begins. It is not a decision.",
+      "startNone": "No file is waiting.",
+      "openCase": "Open case",
+      "nextHeading": "Next in line",
+      "colBand": "Attention",
+      "colApplication": "Application",
+      "colWhy": "What stands out",
+      "colLabel": "Worst document label",
+      "colWait": "Days waiting",
+      "colOpen": "Open",
+      "open": "Open {id}",
+      "days": "{days, plural, =0 {today} one {# day} other {# days}}",
+      "noSentence": "No finding text for this file yet.",
+      "sitsHeading": "Where SATYA sits",
+      "sits": "On the self-disclosure route there is no Scrutiny, EVC or SHC stage (APH Table 2.3). SATYA is the first-pass scrutiny for that route and an evidence assistant for every committee after it. It advises. Officials decide.",
+      "detailHeading": "The detail"
     }
   }
 }
