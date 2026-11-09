@@ -24,7 +24,7 @@ One line per document. Synthetic data only; advisory only; mock approval portal.
 - [specs/05-ui-design-spec.md](specs/05-ui-design-spec.md): workbench design system and screens.
 
 ## Screenshots
-- [screens/ui-polish/](screens/ui-polish/): synthetic workbench screenshots (queue in colour and greyscale, overview in greyscale).
+- [screens/workbench/](screens/workbench/): synthetic workbench screenshots (review queue and a case view).
 
 ## Progress and decision logs ([progress/](progress/))
 - Step tables ([foundation](progress/PROGRESS.md), [affidavit comparison](progress/PROGRESS-SLICE-1.md), [signatures](progress/PROGRESS-SLICE-2.md)): one per area.

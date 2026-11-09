@@ -6,9 +6,15 @@ SATYA-EoA is a decision-support platform that helps AICTE officials check Extens
 
 Built by Team OneVision for Smart India Hackathon 2026, problem statement SIH26261. It is a prototype that runs against a mock approval portal on synthetic data.
 
-![Validation queue on synthetic cases, listing five applications with a risk band, document labels and top reasons](docs/screens/ui-polish/queue-colour.png)
+Demo video: https://youtu.be/55EMIrAkPaU
 
-*The validation queue, on synthetic cases only. The screenshot is from an earlier build, so labels and wording on the current screens may differ.*
+![The review queue on synthetic cases: risk band first, then application, document labels, awaiting count, status and top reasons](docs/screens/workbench/queue.png)
+
+*The review queue. All applications and documents are synthetic.*
+
+![A case view: the headline says 4 things on this file do not add up; the first finding, a missing category line, is marked Mismatch detected and shown next to the sworn page](docs/screens/workbench/case.png)
+
+*A case view: each finding names its rule and Handbook clause and sits next to the page it came from. Advisory only.*
 
 ## The gap it targets
 
